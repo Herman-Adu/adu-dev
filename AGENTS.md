@@ -117,3 +117,7 @@ Default canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `read
 ### Domain docs
 
 Single-context: `CONTEXT.md` at the repo root plus `docs/adr/`. See `docs/agents/domain.md`.
+
+### Strapi MCP server
+
+Strapi's built-in MCP server (`http://localhost:1337/mcp`, project-scoped `.mcp.json`, name `strapi`) exposes schema-aware content tools gated by an Admin API token in the `STRAPI_MCP_TOKEN` environment variable. Enabled per-environment via `STRAPI_MCP_ENABLED` in `strapi/.env`; requires the Strapi dev server running. Prefer MCP introspection over guessing content-type shapes when frontend code consumes Strapi data.
