@@ -36,7 +36,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,md,yml,yaml}": [
-      "yarn fix:format"
+      "prettier --write --cache"
     ],
     "next/**/*.{js,jsx,ts,tsx}": [
       "cd next && yarn lint --fix"

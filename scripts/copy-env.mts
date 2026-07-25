@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
-import dotenv from 'dotenv'
 
-dotenv.config({ path: '../next/.env' })
+dotenv.config({ path: '../next/.env' });
 
 const TO_BE_MODIFIED_KEY = /tobemodified/g;
 const PREVIEW_SECRET_KEY = 'preview_secret';
@@ -40,11 +40,11 @@ function copyEnvFile(targetDir: string): void {
 
           // Update env variables with generated secrets
           const currentEnv = fs.readFileSync(envPath, 'utf8');
-        
+
           // Replace all occurrences with a new secret
           const updatedEnv = currentEnv
             .replace(TO_BE_MODIFIED_KEY, generateSecret)
-            .replace(PREVIEW_SECRET_KEY, previewSecret)
+            .replace(PREVIEW_SECRET_KEY, previewSecret);
 
           // Rewrite .env file with updated env variables
           fs.writeFileSync(envPath, updatedEnv, 'utf8');
