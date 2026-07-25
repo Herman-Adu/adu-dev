@@ -95,14 +95,22 @@ Create local env files before running the apps:
 - Keep server data fetching in server components/helpers unless interactivity requires a client component.
 - When touching localized pages, verify localized slugs and locale switcher behavior.
 
+## Testing
+
+- Framework: Vitest in both apps. Next also uses React Testing Library (`jsdom` environment) for components.
+- Tests are co-located with the code they cover: `<name>.test.ts` / `<name>.test.tsx` next to the source file, not in a separate `__tests__` tree.
+- Run: `yarn test` (root, runs strapi then next), `cd next && yarn test`, or `cd strapi && yarn test` (add `:run` for a single non-watch pass, e.g. `yarn test:run`).
+- Follow the `/tdd` skill: agree the seam (the public interface under test) before writing a test, assert behavior through that interface only, and use independent literal expected values — never recompute the expectation the way the implementation does.
+- `cd next && yarn lint` is currently broken upstream (Next 16 removed the `lint` subcommand; tracked in issue #1) — `yarn build` is the only frontend correctness gate until that's fixed.
+
 ## Verification
 
 Choose the smallest useful check for the change:
 
 - Docs-only: `yarn check:format`
-- Next UI/data changes: `cd next && yarn lint && yarn build`
-- Strapi schema/backend changes: `cd strapi && yarn build`
-- Full confidence path: `yarn check:format`, `cd next && yarn lint && yarn build`, `cd strapi && yarn build`
+- Next UI/data changes: `cd next && yarn build && yarn test:run`
+- Strapi schema/backend changes: `cd strapi && yarn build && yarn test:run`
+- Full confidence path: `yarn check:format`, `cd next && yarn build && yarn test:run`, `cd strapi && yarn build && yarn test:run`
 
 ## Agent skills
 

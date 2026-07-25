@@ -8,6 +8,8 @@
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
+    "test": "vitest",
+    "test:run": "vitest run",
     "strapi": "strapi",
     "deploy": "strapi deploy",
     "seed": "strapi import -f ./data/export_20250116105447.tar.gz",
@@ -17,7 +19,8 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.50.0",

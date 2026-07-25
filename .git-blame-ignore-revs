@@ -1,0 +1,4 @@
+# One-time repo-wide prettier format (batch 5, agentic-OS setup) - mostly
+# CRLF/import-order noise predating this repo's prettier config, not real
+# authorship. Use with: git blame --ignore-revs-file .git-blame-ignore-revs
+83777fa7f5ed2b92bb1526ebe13fea3f5419b32f
