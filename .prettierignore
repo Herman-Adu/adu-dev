@@ -41,3 +41,8 @@ Thumbs.db
 # Vendored agent skills (mattpocock/skills) - keep byte-identical to upstream for lock-hash updates
 .claude/skills/
 skills-lock.json
+
+# Generated artifacts (rewritten by dev servers with platform EOL)
+next/next-env.d.ts
+strapi/.strapi/
+strapi/.strapi-updater.json
