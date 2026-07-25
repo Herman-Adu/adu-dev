@@ -104,3 +104,16 @@ Choose the smallest useful check for the change:
 - Strapi schema/backend changes: `cd strapi && yarn build`
 - Full confidence path: `yarn check:format`, `cd next && yarn lint && yarn build`, `cd strapi && yarn build`
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues (Herman-Adu/adu-dev), managed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` at the repo root plus `docs/adr/`. See `docs/agents/domain.md`.
