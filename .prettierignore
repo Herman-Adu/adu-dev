@@ -38,3 +38,6 @@ Thumbs.db
 
 # Temporary files
 .tmp
+# Vendored agent skills (mattpocock/skills) - keep byte-identical to upstream for lock-hash updates
+.claude/skills/
+skills-lock.json
