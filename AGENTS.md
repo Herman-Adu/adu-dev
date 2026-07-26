@@ -34,6 +34,7 @@ Run these from the repo root. `pnpm --filter <name> <script>` targets one app �
 - Format check: `pnpm check:format`
 - Format fix: `pnpm fix:format`
 - Tests, both apps: `pnpm test`
+- Typecheck, both apps: `pnpm typecheck`
 - Next dev: `pnpm --filter nextjs dev`
 - Next build: `pnpm --filter nextjs build`
 - Strapi dev: `pnpm --filter strapi develop`
@@ -114,9 +115,16 @@ Create local env files before running the apps:
 Choose the smallest useful check for the change:
 
 - Docs-only: `pnpm check:format`
-- Next UI/data changes: `pnpm --filter nextjs build` and `pnpm test:next`
-- Strapi schema/backend changes: `pnpm --filter strapi build` and `pnpm test:strapi`
-- Full confidence path: `pnpm check:format`, then both builds, then `pnpm test`
+- Next UI/data changes: `pnpm typecheck:next`, `pnpm --filter nextjs build` and `pnpm test:next`
+- Strapi schema/backend changes: `pnpm typecheck:strapi`, `pnpm --filter strapi build` and `pnpm test:strapi`
+- Full confidence path: `pnpm check:format`, then `pnpm typecheck`, then both builds, then `pnpm test`
+
+`pnpm typecheck` runs `tsc --noEmit` in each app and emits no build output. Run it before the builds — it is faster and its failures are more specific.
+
+What it does **not** cover, in both cases matching the reference implementation ([notum-cz/strapi-next-monorepo-starter](https://github.com/notum-cz/strapi-next-monorepo-starter)), whose Strapi app draws the same boundary:
+
+- `apps/strapi/src/admin/` — excluded from the backend `tsconfig.json` so it stays out of the server build. It has its own `tsconfig.json`, which does not currently pass: Strapi's design-system packages pull React 19 types into an app pinned to React 18. Tracked in issue #25. The admin panel is still covered by `pnpm --filter strapi build`.
+- `apps/strapi/**/*.test.ts` — excluded by the same config, to keep tests out of `dist/`. The frontend has no such exclusion, so its tests are typechecked.
 
 ## Agent skills
 
