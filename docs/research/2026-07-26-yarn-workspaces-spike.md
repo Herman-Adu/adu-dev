@@ -8,14 +8,14 @@ Run in an isolated copy (`git archive` of tracked files, fresh install), never i
 
 ## Result
 
-| Check | Without hoisting limit | With `nmHoistingLimits: workspaces` |
-| --- | --- | --- |
-| `yarn install` | exit 0 | exit 0 |
-| React split (next 19 / strapi 18) | correct | correct |
-| `strapi build` | exit 0 | exit 0 |
-| `next build` | **fails — 100 errors** | **exit 0**, compiled in 5.2s |
-| Vitest (next) | **fails to load config** | **exit 0** |
-| Full suite | 2 of 11 tests ran | **11 of 11 pass** |
+| Check                             | Without hoisting limit   | With `nmHoistingLimits: workspaces` |
+| --------------------------------- | ------------------------ | ----------------------------------- |
+| `yarn install`                    | exit 0                   | exit 0                              |
+| React split (next 19 / strapi 18) | correct                  | correct                             |
+| `strapi build`                    | exit 0                   | exit 0                              |
+| `next build`                      | **fails — 100 errors**   | **exit 0**, compiled in 5.2s        |
+| Vitest (next)                     | **fails to load config** | **exit 0**                          |
+| Full suite                        | 2 of 11 tests ran        | **11 of 11 pass**                   |
 
 ## What the failures actually were
 
