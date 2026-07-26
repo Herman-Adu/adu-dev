@@ -19,6 +19,8 @@
     "typecheck": "turbo run typecheck",
     "typecheck:next": "turbo run typecheck --filter=nextjs",
     "typecheck:strapi": "turbo run typecheck --filter=strapi",
+    "sync:types": "tsx ./scripts/sync-strapi-types.mts",
+    "check:types-drift": "tsx ./scripts/sync-strapi-types.mts --check",
     "seed": "pnpm --filter strapi exec strapi import -f ./data/export_20250116105447.tar.gz --force",
     "export": "pnpm --filter strapi exec strapi export --no-encrypt -f ./data/export_20250116105447",
     "check:format": "prettier . --check --cache",

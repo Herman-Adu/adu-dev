@@ -8,6 +8,7 @@ adu-dev is a Strapi + Next.js monorepo template. It began as Strapi's LaunchPad 
 
 - `apps/strapi/`: Strapi 5 backend, content types, components, seeded demo data, SQLite default database.
 - `apps/next/`: Next.js 16 App Router frontend, React 19, Tailwind, localized `en` and `fr` routes.
+- `packages/strapi-types/`: `@repo/strapi-types`, a types-only mirror of the backend's generated content-type definitions.
 - Root: a pnpm workspaces root holding the shared toolchain and the scripts that drive both apps.
 
 Both apps are pnpm workspaces matched by the `apps/*` glob in `pnpm-workspace.yaml` and resolved by a single root lockfile. The directory is `apps/next`, but the workspace name is `nextjs` — `pnpm --filter` takes the name, not the path. pnpm's isolated `node_modules` gives each app its own dependency versions by default — the frontend on React 19, the backend on React 18 — with no hoisting configuration to maintain and no root `.npmrc`. A package a workspace does not declare is a package it cannot import, which is the point: see `docs/adr/0002-pnpm-not-yarn.md` for why this was chosen over Yarn 4, and `docs/research/2026-07-26-pnpm-workspaces-spike.md` for the evidence.
@@ -88,9 +89,30 @@ Create local env files before running the apps:
 - Keep existing Prettier settings: semicolons, single quotes, 2 spaces, trailing commas where valid.
 - Let names carry what the code does, and reserve comments for why something non-obvious is the way it is.
 
+## Content types and the frontend
+
+The frontend consumes the backend's content model through `@repo/strapi-types` rather than reaching into `apps/strapi`. That package is a **mirror**: Strapi generates into `apps/strapi/types/generated` and stays there, because its own `ts:generate-types --help` warns that redirecting the output can break types the platform depends on.
+
+- After changing any schema, run `pnpm sync:types`. It regenerates and updates the mirror in one command, so the two cannot diverge by doing only half the job.
+- `pnpm check:types-drift` regenerates and fails if the committed mirror differs. It is part of the verification path for backend changes.
+- The mirror is committed on purpose: a content-model change then shows up as a reviewable type diff in the pull request.
+
+The generated files describe **schemas**, not data — `Schema.Attribute.String` is a description of a field, not a `string`. Use the helpers the package exports rather than the raw interfaces:
+
+```ts
+import type { Block, Entry, Fieldset } from '@repo/strapi-types';
+
+type Hero = Block<'dynamic-zone.hero'>; // a dynamic-zone entry
+type Button = Fieldset<'shared.button'>; // a reusable field group
+type Page = Entry<'api::page.page'>; // a content type
+```
+
+`apps/next/components/dynamic-zone/hero.tsx` is the worked example. Most other Block components are still untyped; issue #15 converts them.
+
 ## Strapi Changes
 
 - Update content-type schemas under `apps/strapi/src/api/**/content-types/**/schema.json`.
+- After any schema or component change, run `pnpm sync:types` so `@repo/strapi-types` keeps up.
 - Update components under `apps/strapi/src/components/**`.
 - When adding a new dynamic-zone component, update both Strapi schema/components and the Next dynamic-zone mapping.
 - `deepPopulate` shapes every default GET API response, so weigh any change to it against both apps.
@@ -120,8 +142,8 @@ Choose the smallest useful check for the change:
 
 - Docs-only: `pnpm check:format`
 - Next UI/data changes: `pnpm typecheck:next`, `pnpm build:next` and `pnpm test:next`
-- Strapi schema/backend changes: `pnpm typecheck:strapi`, `pnpm build:strapi` and `pnpm test:strapi`
-- Full confidence path: `pnpm check:format`, then `pnpm typecheck`, then `pnpm build`, then `pnpm test`
+- Strapi schema/backend changes: `pnpm check:types-drift`, `pnpm typecheck:strapi`, `pnpm build:strapi` and `pnpm test:strapi`
+- Full confidence path: `pnpm check:format`, then `pnpm check:types-drift`, then `pnpm typecheck`, then `pnpm build`, then `pnpm test`
 
 `pnpm typecheck` runs `tsc --noEmit` in each app and emits no build output. Run it before the builds — it is faster and its failures are more specific.
 
