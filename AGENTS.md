@@ -35,10 +35,15 @@ Run these from the repo root. `pnpm --filter <name> <script>` targets one app �
 - Format fix: `pnpm fix:format`
 - Tests, both apps: `pnpm test`
 - Typecheck, both apps: `pnpm typecheck`
+- Build, both apps: `pnpm build`
 - Next dev: `pnpm --filter nextjs dev`
-- Next build: `pnpm --filter nextjs build`
+- Next build: `pnpm build:next`
 - Strapi dev: `pnpm --filter strapi develop`
-- Strapi build: `pnpm --filter strapi build`
+- Strapi build: `pnpm build:strapi`
+
+`build`, `test`, `typecheck` and `lint` run through Turborepo, which hashes each task's inputs and skips what has not changed — a repeat run with nothing touched finishes in milliseconds and prints `FULL TURBO`. Change one app and only that app is rebuilt. See `docs/adr/0004-turborepo-task-runner.md`. Add `--force` to bypass the cache when you need to see a task actually execute.
+
+Inside an app, `pnpm test` is a single pass and `pnpm test:watch` is the watcher. `pnpm dev` is deliberately not a Turbo task: it starts Strapi, waits for port 1337, then starts Next, and Turbo has no equivalent readiness gate.
 
 Running a script from inside `apps/next/` or `apps/strapi/` also works; the root commands are the documented path because they need no directory changes.
 
@@ -60,8 +65,7 @@ One `pnpm install` at the root installs both apps — there is no per-app instal
 After setup, verify both apps are healthy:
 
 ```sh
-pnpm --filter nextjs build
-pnpm --filter strapi build
+pnpm build
 ```
 
 The first `pnpm --filter strapi develop` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
@@ -106,7 +110,7 @@ Create local env files before running the apps:
 
 - Framework: Vitest in both apps. Next also uses React Testing Library (`jsdom` environment) for components.
 - Tests are co-located with the code they cover: `<name>.test.ts` / `<name>.test.tsx` next to the source file, not in a separate `__tests__` tree.
-- Run: `pnpm test` from the root for a single pass over both apps (strapi then next). Inside an app, `pnpm test` watches and `pnpm test:run` is a single pass — there is no `test:run` at the root, because the root script is already single-pass.
+- Run: `pnpm test` from the root for a single pass over both apps, in parallel via Turbo. Inside an app, `pnpm test` is that same single pass and `pnpm test:watch` is the watcher.
 - Follow the `/tdd` skill: agree the seam (the public interface under test) before writing a test, assert behavior through that interface only, and write expected values as independent literals so the test states the answer rather than recomputing it.
 - Linting the frontend is currently broken upstream (see Commands) — its build and test suite are the correctness gates until issue #13 lands.
 
@@ -115,15 +119,15 @@ Create local env files before running the apps:
 Choose the smallest useful check for the change:
 
 - Docs-only: `pnpm check:format`
-- Next UI/data changes: `pnpm typecheck:next`, `pnpm --filter nextjs build` and `pnpm test:next`
-- Strapi schema/backend changes: `pnpm typecheck:strapi`, `pnpm --filter strapi build` and `pnpm test:strapi`
-- Full confidence path: `pnpm check:format`, then `pnpm typecheck`, then both builds, then `pnpm test`
+- Next UI/data changes: `pnpm typecheck:next`, `pnpm build:next` and `pnpm test:next`
+- Strapi schema/backend changes: `pnpm typecheck:strapi`, `pnpm build:strapi` and `pnpm test:strapi`
+- Full confidence path: `pnpm check:format`, then `pnpm typecheck`, then `pnpm build`, then `pnpm test`
 
 `pnpm typecheck` runs `tsc --noEmit` in each app and emits no build output. Run it before the builds — it is faster and its failures are more specific.
 
 What it does **not** cover, in both cases matching the reference implementation ([notum-cz/strapi-next-monorepo-starter](https://github.com/notum-cz/strapi-next-monorepo-starter)), whose Strapi app draws the same boundary:
 
-- `apps/strapi/src/admin/` — excluded from the backend `tsconfig.json` so it stays out of the server build. It has its own `tsconfig.json`, which does not currently pass: Strapi's design-system packages pull React 19 types into an app pinned to React 18. Tracked in issue #25. The admin panel is still covered by `pnpm --filter strapi build`.
+- `apps/strapi/src/admin/` — excluded from the backend `tsconfig.json` so it stays out of the server build. It has its own `tsconfig.json`, which does not currently pass: Strapi's design-system packages pull React 19 types into an app pinned to React 18. Tracked in issue #25. The admin panel is still covered by `pnpm build:strapi`.
 - `apps/strapi/**/*.test.ts` — excluded by the same config, to keep tests out of `dist/`. The frontend has no such exclusion, so its tests are typechecked.
 
 ## Agent skills

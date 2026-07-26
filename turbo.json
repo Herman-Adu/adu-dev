@@ -1,0 +1,28 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env", "**/.env.*local"],
+  "globalEnv": [
+    "CI",
+    "ENVIRONMENT",
+    "IMAGE_HOSTNAME",
+    "NEXT_OUTPUT",
+    "NEXT_PUBLIC_API_URL",
+    "NODE_ENV"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    }
+  },
+  "ui": "stream"
+}
