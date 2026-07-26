@@ -1,16 +1,18 @@
-# LaunchPad - Official Strapi Demo
+# adu-dev
 
-![LaunchPad](./LaunchPad.jpg)
+![adu-dev](./LaunchPad.jpg)
 
-Welcome aboard **LaunchPad**, the official Strapi demo application, where we launch your content into the stratosphere at the speed of _"we-can't-even-measure-it!"_.
-This repository contains the following:
+A Strapi + Next.js monorepo template. It began life as Strapi's [LaunchPad](https://github.com/strapi/LaunchPad) demo and no longer tracks it.
 
-- A Strapi project with content-types and data already onboard
-- A Next.js client that's primed and ready to fetch the content from Strapi faster than you can say "blast off!"
+This repository contains:
+
+- A Strapi 5 project with content-types and seeded demo data
+- A Next.js 16 client that renders that content, localized in English and French
+- Shared tooling at the root, with both apps as Yarn 4 workspaces resolved by a single lockfile
 
 ## 🌌 Get started
 
-Strap yourself in! You can get started with this project on your local machine by following the instructions below, or you can [request a private instance on our website](https://strapi.io/demo)
+Strap yourself in! Get started on your local machine by following the instructions below.
 
 ### Prerequisites
 

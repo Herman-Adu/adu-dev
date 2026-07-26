@@ -61,7 +61,7 @@ yarn workspace nextjs build
 yarn workspace strapi build
 ```
 
-First `yarn develop` in `strapi/` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
+The first `yarn workspace strapi develop` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
 
 ## Environment
 

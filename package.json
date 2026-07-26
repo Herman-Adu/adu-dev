@@ -10,12 +10,10 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "next": "yarn workspace nextjs dev",
-    "strapi": "yarn workspace strapi develop",
     "setup:next": "node --loader ts-node/esm ./scripts/copy-env.mts ./next",
     "setup:strapi": "node --loader ts-node/esm ./scripts/copy-env.mts ./strapi",
     "setup": "yarn install && yarn setup:next && yarn setup:strapi",
-    "dev": "yarn concurrently \"yarn workspace strapi develop\" \"npx wait-on http://localhost:1337 && yarn workspace nextjs dev\"",
+    "dev": "yarn concurrently \"yarn workspace strapi develop\" \"yarn wait-on http://localhost:1337 && yarn workspace nextjs dev\"",
     "test": "yarn test:strapi && yarn test:next",
     "test:next": "yarn workspace nextjs test:run",
     "test:strapi": "yarn workspace strapi test:run",
