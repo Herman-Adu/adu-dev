@@ -4,11 +4,13 @@ Guidance for LLM agents working in this repository.
 
 ## Repo Overview
 
-LaunchPad is the official Strapi demo app.
+adu-dev is a Strapi + Next.js monorepo template. It began as Strapi's LaunchPad demo and no longer tracks it.
 
 - `strapi/`: Strapi 5 backend, content types, components, seeded demo data, SQLite default database.
-- `next/`: Next.js 15 App Router frontend, React 19, Tailwind, localized `en` and `fr` routes.
-- Root: workspace-level setup/dev/format scripts using Yarn 4.5.0.
+- `next/`: Next.js 16 App Router frontend, React 19, Tailwind, localized `en` and `fr` routes.
+- Root: a Yarn 4 workspaces root holding the shared toolchain and the scripts that drive both apps.
+
+Both apps are Yarn workspaces resolved by a single root lockfile. Hoisting is limited to workspaces (`nmHoistingLimits`), which keeps each app on its own dependency versions — the frontend on React 19, the backend on React 18. Removing that setting breaks both apps; see `docs/research/2026-07-26-yarn-workspaces-spike.md`.
 
 ## First Read
 
@@ -22,41 +24,44 @@ Before editing, read:
 
 ## Commands
 
-Run commands from the correct directory.
+Run these from the repo root. `yarn workspace <name> <script>` targets one app — the workspaces are named `nextjs` and `strapi`.
 
-- Root setup: `yarn setup`
-- Root dev: `yarn dev`
+- Setup: `yarn setup`
+- Dev, both apps: `yarn dev`
 - Seed Strapi: `yarn seed`
 - Format check: `yarn check:format`
 - Format fix: `yarn fix:format`
-- Next dev: `cd next && yarn dev`
-- Next build: `cd next && yarn build`
-- Next lint: `cd next && yarn lint`
-- Strapi dev: `cd strapi && yarn develop`
-- Strapi build: `cd strapi && yarn build`
+- Tests, both apps: `yarn test`
+- Next dev: `yarn workspace nextjs dev`
+- Next build: `yarn workspace nextjs build`
+- Strapi dev: `yarn workspace strapi develop`
+- Strapi build: `yarn workspace strapi build`
+
+Running a script from inside `next/` or `strapi/` still works; the root commands are the documented path because they need no directory changes.
+
+`yarn workspace nextjs lint` is currently broken upstream — Next 16 removed the `lint` subcommand and `eslint-config-next` is flat-config-only against this app's ESLint 8. Tracked in issue #1, superseded by issue #13.
 
 ## Setup
 
 Run once after cloning, from the repo root:
 
 ```sh
-yarn install          # install root workspace deps first
-yarn setup            # installs next/ and strapi/ deps, copies .env files
+yarn setup            # installs every workspace, then copies .env files
 yarn seed             # imports demo data into SQLite (191 entities, 115 assets)
 ```
 
-`yarn setup` calls `setup:next` and `setup:strapi` in sequence. Each sub-script runs `yarn` in the sub-directory then copies `.env.example` → `.env` only if `.env` does not already exist.
+One `yarn install` at the root installs both apps — there is no per-app install step. `yarn setup` runs that install and then copies `.env.example` → `.env` in each app, only where `.env` does not already exist.
 
 `yarn seed` is destructive — it wipes existing data before importing. Re-run it to reset to the demo baseline.
 
 After setup, verify both apps are healthy:
 
 ```sh
-cd next && yarn build
-cd strapi && yarn build
+yarn workspace nextjs build
+yarn workspace strapi build
 ```
 
-First `yarn develop` in `strapi/` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
+The first `yarn workspace strapi develop` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
 
 ## Environment
 
@@ -101,16 +106,16 @@ Create local env files before running the apps:
 - Tests are co-located with the code they cover: `<name>.test.ts` / `<name>.test.tsx` next to the source file, not in a separate `__tests__` tree.
 - Run: `yarn test` from the root for a single pass over both apps (strapi then next). Inside an app, `yarn test` watches and `yarn test:run` is a single pass — there is no `test:run` at the root, because the root script is already single-pass.
 - Follow the `/tdd` skill: agree the seam (the public interface under test) before writing a test, assert behavior through that interface only, and use independent literal expected values — never recompute the expectation the way the implementation does.
-- `cd next && yarn lint` is currently broken upstream (Next 16 removed the `lint` subcommand; tracked in issue #1) — `yarn build` is the only frontend correctness gate until that's fixed.
+- Linting the frontend is currently broken upstream (see Commands) — its build and test suite are the correctness gates until issue #13 lands.
 
 ## Verification
 
 Choose the smallest useful check for the change:
 
 - Docs-only: `yarn check:format`
-- Next UI/data changes: `cd next && yarn build && yarn test:run`
-- Strapi schema/backend changes: `cd strapi && yarn build && yarn test:run`
-- Full confidence path: `yarn check:format`, `cd next && yarn build && yarn test:run`, `cd strapi && yarn build && yarn test:run`
+- Next UI/data changes: `yarn workspace nextjs build` and `yarn test:next`
+- Strapi schema/backend changes: `yarn workspace strapi build` and `yarn test:strapi`
+- Full confidence path: `yarn check:format`, then both builds, then `yarn test`
 
 ## Agent skills
 

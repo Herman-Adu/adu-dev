@@ -1,9 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
-dotenv.config({ path: '../next/.env' });
+// Resolved from this file rather than the working directory, so the secret is
+// shared between both apps no matter where the script is invoked from.
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..'
+);
+
+dotenv.config({ path: path.join(repoRoot, 'next', '.env') });
 
 const TO_BE_MODIFIED_KEY = /tobemodified/g;
 const PREVIEW_SECRET_KEY = 'preview_secret';
