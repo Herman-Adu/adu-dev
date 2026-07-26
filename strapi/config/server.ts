@@ -4,4 +4,7 @@ export default ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS') || ['tobemodified1', 'tobemodified2'],
   },
+  mcp: {
+    enabled: env.bool('STRAPI_MCP_ENABLED', false),
+  },
 });
