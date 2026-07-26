@@ -103,6 +103,6 @@ Visit http://localhost:1337/admin to create your first Strapi user, and http://l
 
 - The Strapi application contains a custom population middlewares in every api route.
 
-- The Strapi application contains a postinstall script that will regenerate an uuid for the project in order to get some anonymous usage information concerning this demo. You can disable it by removing the uuid inside the `./strapi/packages.json` file.
+- The Strapi application contains a postinstall script that will regenerate an uuid for the project in order to get some anonymous usage information concerning this demo. You can disable it by removing the uuid inside the `./apps/strapi/package.json` file.
 
-- The Strapi application contains a patch for the @strapi/admin package. It is only necessary for the hosted demos since we automatically create the Super Admin users for them when they request this demo on our website.
+- The Strapi application contains a script that prefills the login fields, at `apps/strapi/scripts/prefillLoginFields.js`. It exists for the hosted LaunchPad demos, where a Super Admin is created automatically, and has no effect on a local install.

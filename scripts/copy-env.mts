@@ -11,7 +11,7 @@ const repoRoot = path.resolve(
   '..'
 );
 
-dotenv.config({ path: path.join(repoRoot, 'next', '.env') });
+dotenv.config({ path: path.join(repoRoot, 'apps', 'next', '.env') });
 
 const TO_BE_MODIFIED_KEY = /tobemodified/g;
 const PREVIEW_SECRET_KEY = 'preview_secret';
