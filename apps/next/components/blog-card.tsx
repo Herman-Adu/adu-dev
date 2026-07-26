@@ -1,10 +1,8 @@
 import { format } from 'date-fns';
 import { Link } from 'next-view-transitions';
-import Image from 'next/image';
 import React from 'react';
 import Balancer from 'react-wrap-balancer';
 
-import { Logo } from './logo';
 import { BlurImage } from '@/components/blur-image';
 import { resolveStrapiMedia } from '@/lib/strapi/strapiImage';
 import { truncate } from '@/lib/utils';

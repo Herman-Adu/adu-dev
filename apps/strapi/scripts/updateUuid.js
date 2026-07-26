@@ -16,7 +16,6 @@ if (packageJson.strapi && packageJson.strapi.uuid === 'LAUNCHPAD') {
     packageJson.strapi.uuid = `LAUNCHPAD-LOCAL-${uuidv4()}`;
   } else if (environment === 'production') {
     packageJson.strapi.uuid = `LAUNCHPAD-HOSTED-${uuidv4()}`;
-  } else {
   }
 
   fs.writeFileSync(
@@ -24,5 +23,4 @@ if (packageJson.strapi && packageJson.strapi.uuid === 'LAUNCHPAD') {
     JSON.stringify(packageJson, null, 2),
     'utf-8'
   );
-} else {
 }

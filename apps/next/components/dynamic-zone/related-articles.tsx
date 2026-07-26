@@ -6,7 +6,6 @@ import { BlogCardVertical } from '../blog-card';
 
 export const RelatedArticles = ({
   heading,
-  sub_heading,
   articles,
   locale,
 }: {

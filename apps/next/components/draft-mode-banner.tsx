@@ -1,11 +1,10 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export function DraftModeBanner() {
   const router = useRouter();
-  const pathname = usePathname();
   const [isExiting, setIsExiting] = useState(false);
   const [isIframe, setIsIframe] = useState(true);
 

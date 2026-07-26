@@ -8,7 +8,6 @@ export const Subheading = ({
   className,
   as: Tag = 'h2',
   children,
-  ...props
 }: {
   className?: string;
   as?: any;

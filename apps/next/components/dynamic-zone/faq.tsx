@@ -6,7 +6,6 @@ import { Heading } from '@/components/elements/heading';
 
 export const FAQ = ({
   heading,
-  sub_heading,
   faqs,
 }: {
   heading: string;

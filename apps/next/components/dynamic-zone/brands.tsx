@@ -22,7 +22,7 @@ export const Brands = ({
   const logosArraySplitInHalf = [firstHalf, secondHalf];
 
   // State to track the current logo set
-  let [stateLogos, setLogos] = useState(logosArraySplitInHalf);
+  const [stateLogos, setLogos] = useState(logosArraySplitInHalf);
   const [activeLogoSet, setActiveLogoSet] = useState(stateLogos[0]);
 
   const flipLogos = () => {

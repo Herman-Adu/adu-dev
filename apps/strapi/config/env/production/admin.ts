@@ -1,4 +1,7 @@
-const getPreviewPathname = (uid, { locale, document }): string | null => {
+const getPreviewPathname = (
+  uid,
+  { locale: _locale, document }
+): string | null => {
   const { slug } = document;
 
   switch (uid) {

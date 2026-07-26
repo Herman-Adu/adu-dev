@@ -34,6 +34,7 @@ Run these from the repo root. `pnpm --filter <name> <script>` targets one app �
 - Seed Strapi: `pnpm seed`
 - Format check: `pnpm check:format`
 - Format fix: `pnpm fix:format`
+- Lint, both apps: `pnpm lint`
 - Tests, both apps: `pnpm test`
 - Typecheck, both apps: `pnpm typecheck`
 - Build, both apps: `pnpm build`
@@ -48,7 +49,7 @@ Inside an app, `pnpm test` is a single pass and `pnpm test:watch` is the watcher
 
 Running a script from inside `apps/next/` or `apps/strapi/` also works; the root commands are the documented path because they need no directory changes.
 
-`pnpm --filter nextjs lint` is currently broken upstream — Next 16 removed the `lint` subcommand and `eslint-config-next` is flat-config-only against this app's ESLint 8. Tracked in issue #13, which replaces it with a shared flat config.
+Lint rules live in `@repo/eslint-config`: a TypeScript base every workspace uses, plus a frontend layer for the React and Next.js rules. Both apps run ESLint 9 flat config and both lint clean. The strictness was set by measuring what the code already satisfied rather than by picking an ambitious preset — see `docs/adr/0005-shared-lint-config.md`. `@typescript-eslint/no-explicit-any` is deliberately a warning until #15 converts the remaining Block components; #30 promotes it.
 
 ## Setup
 
@@ -134,16 +135,16 @@ type Page = Entry<'api::page.page'>; // a content type
 - Tests are co-located with the code they cover: `<name>.test.ts` / `<name>.test.tsx` next to the source file, not in a separate `__tests__` tree.
 - Run: `pnpm test` from the root for a single pass over both apps, in parallel via Turbo. Inside an app, `pnpm test` is that same single pass and `pnpm test:watch` is the watcher.
 - Follow the `/tdd` skill: agree the seam (the public interface under test) before writing a test, assert behavior through that interface only, and write expected values as independent literals so the test states the answer rather than recomputing it.
-- Linting the frontend is currently broken upstream (see Commands) — its build and test suite are the correctness gates until issue #13 lands.
+- Lint, typecheck, build and the test suites are all correctness gates; run the smallest set that covers the change.
 
 ## Verification
 
 Choose the smallest useful check for the change:
 
 - Docs-only: `pnpm check:format`
-- Next UI/data changes: `pnpm typecheck:next`, `pnpm build:next` and `pnpm test:next`
-- Strapi schema/backend changes: `pnpm check:types-drift`, `pnpm typecheck:strapi`, `pnpm build:strapi` and `pnpm test:strapi`
-- Full confidence path: `pnpm check:format`, then `pnpm check:types-drift`, then `pnpm typecheck`, then `pnpm build`, then `pnpm test`
+- Next UI/data changes: `pnpm lint`, `pnpm typecheck:next`, `pnpm build:next` and `pnpm test:next`
+- Strapi schema/backend changes: `pnpm check:types-drift`, `pnpm lint`, `pnpm typecheck:strapi`, `pnpm build:strapi` and `pnpm test:strapi`
+- Full confidence path: `pnpm check:format`, then `pnpm check:types-drift`, then `pnpm lint`, then `pnpm typecheck`, then `pnpm build`, then `pnpm test`
 
 `pnpm typecheck` runs `tsc --noEmit` in each app and emits no build output. Run it before the builds — it is faster and its failures are more specific.
 
