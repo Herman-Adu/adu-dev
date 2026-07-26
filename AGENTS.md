@@ -153,6 +153,23 @@ What it does **not** cover, in both cases matching the reference implementation 
 - `apps/strapi/src/admin/` — excluded from the backend `tsconfig.json` so it stays out of the server build. It has its own `tsconfig.json`, which does not currently pass: Strapi's design-system packages pull React 19 types into an app pinned to React 18. Tracked in issue #25. The admin panel is still covered by `pnpm build:strapi`.
 - `apps/strapi/**/*.test.ts` — excluded by the same config, to keep tests out of `dist/`. The frontend has no such exclusion, so its tests are typechecked.
 
+## Continuous integration
+
+`.github/workflows/ci.yml` verifies every pull request. It runs only the work a change actually affects, which it works out from Turbo's dependency graph rather than from path globs:
+
+```
+change apps/strapi only        -> strapi
+change packages/strapi-types   -> @repo/strapi-types, nextjs
+```
+
+The second line is the reason globs were not used. `packages/strapi-types` is consumed by the frontend, so a change there has to run the frontend's checks — a per-application path filter would miss that.
+
+Jobs: `format` always runs, because formatting covers docs and config too. `frontend` and `backend` are conditional. `types-drift` runs when either the backend or the shared types package moved, since the mirror can fall out of date from either end.
+
+**Branch protection**: require the **`Verify`** job, and nothing else. The per-application jobs are conditional, and GitHub treats a skipped check as blocking rather than passing — requiring them directly would stop every pull request that legitimately skips one. `Verify` always runs, depends on all the others, and fails if any of them failed while tolerating the ones that were skipped.
+
+To see a task actually execute rather than come from cache, add `--force`.
+
 ## Agent skills
 
 ### Issue tracker

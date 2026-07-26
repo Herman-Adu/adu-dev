@@ -1,0 +1,29 @@
+name: Setup
+description: Node, pnpm and an installed, cached workspace
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      # Version comes from the packageManager field in package.json, so it can
+      # never drift from what developers run locally.
+
+    - name: Install Node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+      # --frozen-lockfile makes CI fail rather than silently resolving a
+      # different tree when the lockfile is out of date.
+
+    - name: Restore Turbo cache
+      uses: actions/cache@v4
+      with:
+        path: .turbo
+        key: turbo-${{ runner.os }}-${{ github.sha }}
+        restore-keys: turbo-${{ runner.os }}-

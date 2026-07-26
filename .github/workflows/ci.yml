@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# A new push to the same pull request cancels the previous run. Pushes to main
+# are never cancelled, so every commit on the default branch keeps its result.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # Which workspaces does this change actually touch? Turbo answers from the
+  # dependency graph rather than from path globs, which is what makes a change
+  # to packages/strapi-types correctly pull in the frontend that depends on it.
+  affected:
+    name: Determine affected workspaces
+    runs-on: ubuntu-latest
+    outputs:
+      next: ${{ steps.detect.outputs.next }}
+      strapi: ${{ steps.detect.outputs.strapi }}
+      types: ${{ steps.detect.outputs.types }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Turbo compares against the merge base, so it needs real history.
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Detect
+        id: detect
+        env:
+          TURBO_SCM_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          TURBO_SCM_HEAD: ${{ github.sha }}
+        run: |
+          packages=$(pnpm exec turbo run build --affected --dry=json | node -e "
+            let s='';
+            process.stdin.on('data', (d) => (s += d));
+            process.stdin.on('end', () => console.log(JSON.parse(s).packages.join(' ')));
+          ")
+          echo "affected packages: ${packages:-(none)}"
+
+          contains() { echo " $packages " | grep -q " $1 "; }
+          contains nextjs && echo "next=true" >> "$GITHUB_OUTPUT" || echo "next=false" >> "$GITHUB_OUTPUT"
+          contains strapi && echo "strapi=true" >> "$GITHUB_OUTPUT" || echo "strapi=false" >> "$GITHUB_OUTPUT"
+          contains @repo/strapi-types && echo "types=true" >> "$GITHUB_OUTPUT" || echo "types=false" >> "$GITHUB_OUTPUT"
+
+  # Formatting covers documentation and config as well as code, so it is never
+  # scoped to a workspace and always runs.
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm check:format
+
+  frontend:
+    name: Frontend
+    needs: affected
+    if: needs.affected.outputs.next == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter nextjs lint
+      - run: pnpm typecheck:next
+      - run: pnpm test:next
+      - run: pnpm build:next
+
+  backend:
+    name: Backend
+    needs: affected
+    if: needs.affected.outputs.strapi == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter strapi lint
+      - run: pnpm typecheck:strapi
+      - run: pnpm test:strapi
+      - run: pnpm build:strapi
+
+  # The mirror in @repo/strapi-types is a copy of the backend's generated types,
+  # so it can fall out of date from either side. Run whenever either end moved.
+  types-drift:
+    name: Types drift
+    needs: affected
+    if: needs.affected.outputs.strapi == 'true' || needs.affected.outputs.types == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm check:types-drift
+
+  # A skipped job blocks a merge rather than passing it, so conditional jobs
+  # cannot be required status checks directly. This one always runs and reports
+  # the overall result, and is the job branch protection should require.
+  verify:
+    name: Verify
+    if: always()
+    needs: [affected, format, frontend, backend, types-drift]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "job results: $RESULTS"
+          for result in $RESULTS; do
+            case "$result" in
+              success | skipped) ;;
+              *)
+                echo "A required job did not succeed."
+                exit 1
+                ;;
+            esac
+          done
+          echo "All checks passed."
