@@ -29,19 +29,18 @@ Strap yourself in! You can get started with this project on your local machine b
 > npm install -g yarn
 > ```
 
-## 1. Clone and Install
+## 1. Clone
 
-To infinity and beyond! Clone the repo and install root dependencies:
+To infinity and beyond! Clone the repo:
 
 ```sh
-git clone https://github.com/strapi/launchpad.git
-cd launchpad
-yarn install
+git clone https://github.com/Herman-Adu/adu-dev.git
+cd adu-dev
 ```
 
 ## 2. Setup
 
-Run the setup script to install dependencies in both projects (Strapi and Next.js) and copy the environment files:
+One command installs every workspace — both apps and the shared toolchain — and copies the environment files:
 
 ```sh
 yarn setup
