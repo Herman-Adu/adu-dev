@@ -99,7 +99,7 @@ Create local env files before running the apps:
 
 - Framework: Vitest in both apps. Next also uses React Testing Library (`jsdom` environment) for components.
 - Tests are co-located with the code they cover: `<name>.test.ts` / `<name>.test.tsx` next to the source file, not in a separate `__tests__` tree.
-- Run: `yarn test` (root, runs strapi then next), `cd next && yarn test`, or `cd strapi && yarn test` (add `:run` for a single non-watch pass, e.g. `yarn test:run`).
+- Run: `yarn test` from the root for a single pass over both apps (strapi then next). Inside an app, `yarn test` watches and `yarn test:run` is a single pass — there is no `test:run` at the root, because the root script is already single-pass.
 - Follow the `/tdd` skill: agree the seam (the public interface under test) before writing a test, assert behavior through that interface only, and use independent literal expected values — never recompute the expectation the way the implementation does.
 - `cd next && yarn lint` is currently broken upstream (Next 16 removed the `lint` subcommand; tracked in issue #1) — `yarn build` is the only frontend correctness gate until that's fixed.
 
@@ -128,4 +128,9 @@ Single-context: `CONTEXT.md` at the repo root plus `docs/adr/`. See `docs/agents
 
 ### Strapi MCP server
 
-Strapi's built-in MCP server (`http://localhost:1337/mcp`, project-scoped `.mcp.json`, name `strapi`) exposes schema-aware content tools gated by an Admin API token in the `STRAPI_MCP_TOKEN` environment variable. Enabled per-environment via `STRAPI_MCP_ENABLED` in `strapi/.env`; requires the Strapi dev server running. Prefer MCP introspection over guessing content-type shapes when frontend code consumes Strapi data.
+Strapi's built-in MCP server (`http://localhost:1337/mcp`, project-scoped `.mcp.json`, name `strapi`) exposes schema-aware content tools. Two separate settings enable it, and both are opt-in:
+
+- `STRAPI_MCP_ENABLED` in `strapi/.env` turns the endpoint on. It ships `false`.
+- `STRAPI_MCP_TOKEN` must hold a Strapi Admin token (Settings → Administration Panel → Admin Tokens) and lives in your **shell environment**, not in any `.env` file — `.mcp.json` interpolates it at session start, which is why a new token only takes effect in a newly launched terminal. The token's permissions decide which MCP tools exist at all.
+
+The server is only reachable while the Strapi dev server is running; if Claude Code starts first, `/mcp` shows it failed until you reconnect. Prefer MCP introspection over guessing content-type shapes when frontend code consumes Strapi data.
