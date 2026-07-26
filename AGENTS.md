@@ -8,9 +8,11 @@ adu-dev is a Strapi + Next.js monorepo template. It began as Strapi's LaunchPad 
 
 - `strapi/`: Strapi 5 backend, content types, components, seeded demo data, SQLite default database.
 - `next/`: Next.js 16 App Router frontend, React 19, Tailwind, localized `en` and `fr` routes.
-- Root: a Yarn 4 workspaces root holding the shared toolchain and the scripts that drive both apps.
+- Root: a pnpm workspaces root holding the shared toolchain and the scripts that drive both apps.
 
-Both apps are Yarn workspaces resolved by a single root lockfile. Hoisting is limited to workspaces (`nmHoistingLimits`), which keeps each app on its own dependency versions — the frontend on React 19, the backend on React 18. Removing that setting breaks both apps; see `docs/research/2026-07-26-yarn-workspaces-spike.md`.
+Both apps are pnpm workspaces declared in `pnpm-workspace.yaml` and resolved by a single root lockfile. pnpm's isolated `node_modules` gives each app its own dependency versions by default — the frontend on React 19, the backend on React 18 — with no hoisting configuration to maintain and no root `.npmrc`. A package a workspace does not declare is a package it cannot import, which is the point: see `docs/adr/0002-pnpm-not-yarn.md` for why this was chosen over Yarn 4, and `docs/research/2026-07-26-pnpm-workspaces-spike.md` for the evidence.
+
+pnpm blocks dependency install scripts by default. `onlyBuiltDependencies` in `pnpm-workspace.yaml` lists the five packages that genuinely need to build or link a native binary. Adding a dependency with a native component means adding it there too; a package whose install script only prints a banner does not belong on that list.
 
 ## First Read
 
@@ -24,44 +26,44 @@ Before editing, read:
 
 ## Commands
 
-Run these from the repo root. `yarn workspace <name> <script>` targets one app — the workspaces are named `nextjs` and `strapi`.
+Run these from the repo root. `pnpm --filter <name> <script>` targets one app — the workspaces are named `nextjs` and `strapi`.
 
-- Setup: `yarn setup`
-- Dev, both apps: `yarn dev`
-- Seed Strapi: `yarn seed`
-- Format check: `yarn check:format`
-- Format fix: `yarn fix:format`
-- Tests, both apps: `yarn test`
-- Next dev: `yarn workspace nextjs dev`
-- Next build: `yarn workspace nextjs build`
-- Strapi dev: `yarn workspace strapi develop`
-- Strapi build: `yarn workspace strapi build`
+- Setup: `pnpm setup`
+- Dev, both apps: `pnpm dev`
+- Seed Strapi: `pnpm seed`
+- Format check: `pnpm check:format`
+- Format fix: `pnpm fix:format`
+- Tests, both apps: `pnpm test`
+- Next dev: `pnpm --filter nextjs dev`
+- Next build: `pnpm --filter nextjs build`
+- Strapi dev: `pnpm --filter strapi develop`
+- Strapi build: `pnpm --filter strapi build`
 
 Running a script from inside `next/` or `strapi/` still works; the root commands are the documented path because they need no directory changes.
 
-`yarn workspace nextjs lint` is currently broken upstream — Next 16 removed the `lint` subcommand and `eslint-config-next` is flat-config-only against this app's ESLint 8. Tracked in issue #1, superseded by issue #13.
+`pnpm --filter nextjs lint` is currently broken upstream — Next 16 removed the `lint` subcommand and `eslint-config-next` is flat-config-only against this app's ESLint 8. Tracked in issue #1, superseded by issue #13.
 
 ## Setup
 
 Run once after cloning, from the repo root:
 
 ```sh
-yarn setup            # installs every workspace, then copies .env files
-yarn seed             # imports demo data into SQLite (191 entities, 115 assets)
+pnpm setup            # installs every workspace, then copies .env files
+pnpm seed             # imports demo data into SQLite (191 entities, 115 assets)
 ```
 
-One `yarn install` at the root installs both apps — there is no per-app install step. `yarn setup` runs that install and then copies `.env.example` → `.env` in each app, only where `.env` does not already exist.
+One `pnpm install` at the root installs both apps — there is no per-app install step. `pnpm setup` runs that install and then copies `.env.example` → `.env` in each app, only where `.env` does not already exist.
 
-`yarn seed` is destructive — it wipes existing data before importing. Re-run it to reset to the demo baseline.
+`pnpm seed` is destructive — it wipes existing data before importing. Re-run it to reset to the demo baseline.
 
 After setup, verify both apps are healthy:
 
 ```sh
-yarn workspace nextjs build
-yarn workspace strapi build
+pnpm --filter nextjs build
+pnpm --filter strapi build
 ```
 
-The first `yarn workspace strapi develop` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
+The first `pnpm --filter strapi develop` will prompt to create a Super Admin at `http://localhost:1337/admin`; the seed does not include admin credentials.
 
 ## Environment
 
@@ -70,7 +72,7 @@ Create local env files before running the apps:
 - `cp ./strapi/.env.example ./strapi/.env`
 - `cp ./next/.env.example ./next/.env`
 
-`yarn setup` does this automatically. Do not commit real secrets. Keep demo placeholders only. If using Next.js draft/preview mode, set a matching `PREVIEW_SECRET` in both files.
+`pnpm setup` does this automatically. Do not commit real secrets. Keep demo placeholders only. If using Next.js draft/preview mode, set a matching `PREVIEW_SECRET` in both files.
 
 ## Coding Style
 
@@ -104,7 +106,7 @@ Create local env files before running the apps:
 
 - Framework: Vitest in both apps. Next also uses React Testing Library (`jsdom` environment) for components.
 - Tests are co-located with the code they cover: `<name>.test.ts` / `<name>.test.tsx` next to the source file, not in a separate `__tests__` tree.
-- Run: `yarn test` from the root for a single pass over both apps (strapi then next). Inside an app, `yarn test` watches and `yarn test:run` is a single pass — there is no `test:run` at the root, because the root script is already single-pass.
+- Run: `pnpm test` from the root for a single pass over both apps (strapi then next). Inside an app, `pnpm test` watches and `pnpm test:run` is a single pass — there is no `test:run` at the root, because the root script is already single-pass.
 - Follow the `/tdd` skill: agree the seam (the public interface under test) before writing a test, assert behavior through that interface only, and use independent literal expected values — never recompute the expectation the way the implementation does.
 - Linting the frontend is currently broken upstream (see Commands) — its build and test suite are the correctness gates until issue #13 lands.
 
@@ -112,10 +114,10 @@ Create local env files before running the apps:
 
 Choose the smallest useful check for the change:
 
-- Docs-only: `yarn check:format`
-- Next UI/data changes: `yarn workspace nextjs build` and `yarn test:next`
-- Strapi schema/backend changes: `yarn workspace strapi build` and `yarn test:strapi`
-- Full confidence path: `yarn check:format`, then both builds, then `yarn test`
+- Docs-only: `pnpm check:format`
+- Next UI/data changes: `pnpm --filter nextjs build` and `pnpm test:next`
+- Strapi schema/backend changes: `pnpm --filter strapi build` and `pnpm test:strapi`
+- Full confidence path: `pnpm check:format`, then both builds, then `pnpm test`
 
 ## Agent skills
 

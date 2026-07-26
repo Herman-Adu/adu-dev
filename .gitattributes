@@ -1,6 +1,6 @@
 # Normalize all text files to LF in the repo AND the working tree.
 # Prettier is configured with endOfLine: lf; without this, core.autocrlf=true
-# checkouts produce CRLF working copies that fail yarn check:format en masse.
+# checkouts produce CRLF working copies that fail pnpm check:format en masse.
 * text=auto eol=lf
 
 # Binary assets - never touch line endings

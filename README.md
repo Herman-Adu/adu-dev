@@ -8,7 +8,7 @@ This repository contains:
 
 - A Strapi 5 project with content-types and seeded demo data
 - A Next.js 16 client that renders that content, localized in English and French
-- Shared tooling at the root, with both apps as Yarn 4 workspaces resolved by a single lockfile
+- Shared tooling at the root, with both apps as pnpm workspaces resolved by a single lockfile
 
 ## 🌌 Get started
 
@@ -17,18 +17,20 @@ Strap yourself in! Get started on your local machine by following the instructio
 ### Prerequisites
 
 - **Node.js** v18 or higher
-- **Yarn** as your package manager (this project uses Yarn internally for its scripts)
+- **pnpm** as your package manager (this project uses pnpm internally for its scripts)
 
-> **Don't have Yarn installed?** You can enable it via Node.js Corepack:
+> **Don't have pnpm installed?** You can enable it via Node.js Corepack, which
+> reads the `packageManager` field and gives you the exact version this repo
+> expects:
 >
 > ```sh
 > corepack enable
 > ```
 >
-> Or install it globally via npm:
+> Or install it globally:
 >
 > ```sh
-> npm install -g yarn
+> npm install -g pnpm
 > ```
 
 ## 1. Clone
@@ -45,7 +47,7 @@ cd adu-dev
 One command installs every workspace — both apps and the shared toolchain — and copies the environment files:
 
 ```sh
-yarn setup
+pnpm setup
 ```
 
 ## 3. Seed the Data
@@ -53,7 +55,7 @@ yarn setup
 Populate your Strapi instance with demo content:
 
 ```sh
-yarn seed
+pnpm seed
 ```
 
 ## 4. Start the Development Servers
@@ -61,7 +63,7 @@ yarn seed
 Launch both Strapi and Next.js concurrently from the root:
 
 ```sh
-yarn dev
+pnpm dev
 ```
 
 This starts the Strapi server first, waits for it to be ready, then starts the Next.js frontend. You're now a spacefaring content master!

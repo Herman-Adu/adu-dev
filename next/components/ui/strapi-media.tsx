@@ -9,8 +9,10 @@ import {
 import { getStrapiSource } from '@/lib/strapi/sourceMap';
 import { API_URL, stripStegaMarkers } from '@/lib/utils';
 
-interface StrapiMediaProps
-  extends Omit<ComponentProps<typeof Image>, 'src' | 'alt'> {
+interface StrapiMediaProps extends Omit<
+  ComponentProps<typeof Image>,
+  'src' | 'alt'
+> {
   src: string;
   alt?: string | null;
   mime?: string | null;
