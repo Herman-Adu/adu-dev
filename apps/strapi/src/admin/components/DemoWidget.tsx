@@ -1,6 +1,5 @@
 import { Box, Flex, LinkButton, Typography } from '@strapi/design-system';
 import {
-  Cast,
   Database,
   ExternalLink,
   Globe,

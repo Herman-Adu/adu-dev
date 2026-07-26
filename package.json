@@ -13,6 +13,8 @@
     "build": "turbo run build",
     "build:next": "turbo run build --filter=nextjs",
     "build:strapi": "turbo run build --filter=strapi",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
     "test": "turbo run test",
     "test:next": "turbo run test --filter=nextjs",
     "test:strapi": "turbo run test --filter=strapi",
@@ -29,10 +31,12 @@
     "lint-staged": "lint-staged"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/node": "^22.5.2",
     "concurrently": "^8.2.2",
     "dotenv": "^17.2.3",
+    "eslint": "^9.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "prettier": "^3.5.3",
@@ -45,6 +49,9 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,md,yml,yaml}": [
       "prettier --write --cache"
+    ],
+    "*.{js,jsx,ts,tsx,mjs,cjs,mts}": [
+      "eslint -c ./eslint.config.mjs --fix --max-warnings=-1"
     ]
   },
   "packageManager": "pnpm@10.28.1"

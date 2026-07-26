@@ -126,7 +126,7 @@ const populate = {
   },
 };
 
-export default (config, { strapi }: { strapi: Core.Strapi }) => {
+export default (_config, { strapi: _strapi }: { strapi: Core.Strapi }) => {
   return async (ctx, next) => {
     ctx.query.populate = populate;
     await next();

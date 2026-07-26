@@ -31,7 +31,7 @@ export const Card = ({
     clientX,
     clientY,
   }: ReactMouseEvent<HTMLDivElement>) {
-    let { left, top } = currentTarget.getBoundingClientRect();
+    const { left, top } = currentTarget.getBoundingClientRect();
 
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -49,7 +49,7 @@ export const Card = ({
     damping: 90,
   });
 
-  useMotionValueEvent(width, 'change', (latest) => {});
+  useMotionValueEvent(width, 'change', (_latest) => {});
   return (
     <div
       ref={ref}

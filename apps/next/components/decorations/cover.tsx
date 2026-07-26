@@ -1,6 +1,6 @@
 'use client';
 
-import { HTMLMotionProps, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 export const Cover = ({ children }: { children?: React.ReactNode }) => {

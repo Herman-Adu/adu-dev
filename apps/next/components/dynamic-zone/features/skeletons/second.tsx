@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useId, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 import { SparklesCore } from '@/components/ui/sparkles';
 import { cn } from '@/lib/utils';

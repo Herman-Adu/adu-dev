@@ -17,7 +17,6 @@ export function FormNextToSection({
   sub_heading,
   form,
   section,
-  social_media_icon_links,
 }: {
   heading: string;
   sub_heading: string;

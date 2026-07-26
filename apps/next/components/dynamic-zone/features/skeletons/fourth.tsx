@@ -17,7 +17,7 @@ import {
 } from '@/components/icons/illustrations';
 import { cn } from '@/lib/utils';
 
-var loopInterval: NodeJS.Timeout;
+let loopInterval: NodeJS.Timeout;
 export const SkeletonFour = () => {
   const icons = useMemo(
     () => [
