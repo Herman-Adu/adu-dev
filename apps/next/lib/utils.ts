@@ -49,5 +49,3 @@ export const normalizeStrapiMediaUrl = (url: string): string => {
   }
   return cleanUrl;
 };
-
-// CI filtering probe: touches the frontend only. Reverted in the next commit.
