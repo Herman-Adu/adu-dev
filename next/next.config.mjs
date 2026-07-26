@@ -1,10 +1,14 @@
+import path from 'path';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: process.env.NEXT_OUTPUT || undefined,
   // Enable Next.js 16 cache components
   cacheComponents: true,
   turbopack: {
-    root: process.cwd().replace('/next', ''),
+    // Resolved from this file so it holds on any platform and from any cwd.
+    // process.cwd().replace('/next', '') silently did nothing on Windows.
+    root: path.resolve(import.meta.dirname, '..'),
   },
   images: {
     // Disable image optimization for localhost in development
