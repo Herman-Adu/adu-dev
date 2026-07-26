@@ -14,9 +14,13 @@ _Avoid_: component, section, module, widget
 The ordered list of Blocks that makes up a page's body.
 _Avoid_: block list, zone, page builder
 
+**Fieldset**:
+A reusable group of fields shared across content types — an SEO panel, a button, a link. Unlike a Block, a Fieldset is never chosen or ordered by an editor; it is part of whatever it sits on.
+_Avoid_: component, field group, shared component
+
 **Page**:
 An editor-created page, addressed by a slug and composed of Blocks.
-_Avoid_: route, screen
+_Avoid_: route, screen, collection type
 
 **Listing page**:
 One of the two fixed pages that list published content — the blog listing and the product listing. Editors configure them but cannot create more.
