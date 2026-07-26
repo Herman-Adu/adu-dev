@@ -166,7 +166,13 @@ The second line is the reason globs were not used. `packages/strapi-types` is co
 
 Jobs: `format` always runs, because formatting covers docs and config too. `frontend` and `backend` are conditional. `types-drift` runs when either the backend or the shared types package moved, since the mirror can fall out of date from either end.
 
-**Branch protection**: require the **`Verify`** job, and nothing else. The per-application jobs are conditional, and GitHub treats a skipped check as blocking rather than passing — requiring them directly would stop every pull request that legitimately skips one. `Verify` always runs, depends on all the others, and fails if any of them failed while tolerating the ones that were skipped.
+**Branch protection**: `main` is protected by an active repository ruleset named `main-protection`, targeting the default branch. It requires a pull request (0 approvals), requires the **`Verify`** check, blocks force pushes and restricts deletion. Branches are not forced up to date before merging.
+
+`Verify` is the only required check, and no other job may be added to that list. The per-application jobs are conditional, and GitHub treats a skipped check as blocking rather than passing — requiring them directly would stop every pull request that legitimately skips one. `Verify` always runs, depends on all the others, and fails if any of them failed while tolerating the ones that were skipped.
+
+Two settings that look wrong and are not. Required approvals is **0** because GitHub forbids self-approval, so requiring one would lock a solo maintainer out of their own repository. Admin bypass is `pull_request` mode rather than `always`, so it allows forcing a merge when CI itself is broken but does **not** allow a direct push — pushing to `main` is rejected for the repository admin too.
+
+So the only route to `main` is: branch, open a pull request, wait for `Verify`, then `gh pr merge --merge --delete-branch`. The `.husky/pre-commit` hook enforces the first step locally, refusing a commit while `main` is checked out so the mistake costs a second rather than a rejected push.
 
 To see a task actually execute rather than come from cache, add `--force`.
 

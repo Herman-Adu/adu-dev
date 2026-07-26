@@ -1,1 +1,23 @@
+# Refuse to commit while main is checked out. main is protected by the
+# main-protection ruleset, so the commit could never be pushed anyway —
+# failing here costs a second instead of a rejected push later.
+# A detached HEAD reports an empty branch name and is left alone.
+branch="$(git branch --show-current 2>/dev/null || true)"
+
+if [ "$branch" = "main" ]; then
+  cat <<'EOF'
+Refusing to commit: you are on 'main'.
+
+main is protected by the "main-protection" ruleset — direct pushes are
+rejected, and changes must arrive through a pull request whose Verify
+check passes.
+
+Move this work onto a branch and commit there:
+
+  git switch -c <type>/<description>
+
+EOF
+  exit 1
+fi
+
 pnpm lint-staged
