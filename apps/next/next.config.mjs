@@ -6,9 +6,11 @@ const nextConfig = {
   // Enable Next.js 16 cache components
   cacheComponents: true,
   turbopack: {
-    // Resolved from this file so it holds on any platform and from any cwd.
-    // process.cwd().replace('/next', '') silently did nothing on Windows.
-    root: path.resolve(import.meta.dirname, '..'),
+    // The repo root, resolved from this file so it holds on any platform and
+    // from any cwd. This app sits at apps/next, so the root is two levels up;
+    // moving this file without updating the depth silently points Turbopack at
+    // the wrong directory rather than failing.
+    root: path.resolve(import.meta.dirname, '..', '..'),
   },
   images: {
     // Disable image optimization for localhost in development

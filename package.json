@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "setup:next": "tsx ./scripts/copy-env.mts ./next",
-    "setup:strapi": "tsx ./scripts/copy-env.mts ./strapi",
+    "setup:next": "tsx ./scripts/copy-env.mts ./apps/next",
+    "setup:strapi": "tsx ./scripts/copy-env.mts ./apps/strapi",
     "setup": "pnpm install && pnpm setup:next && pnpm setup:strapi",
     "dev": "pnpm exec concurrently \"pnpm --filter strapi develop\" \"pnpm exec wait-on http://localhost:1337 && pnpm --filter nextjs dev\"",
     "test": "pnpm test:strapi && pnpm test:next",

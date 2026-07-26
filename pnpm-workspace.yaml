@@ -1,6 +1,5 @@
 packages:
-  - 'next'
-  - 'strapi'
+  - 'apps/*'
 
 # pnpm blocks dependency install scripts by default. Only packages that need to
 # build or link a native binary are allowed through; everything else stays

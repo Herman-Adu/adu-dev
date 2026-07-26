@@ -18,17 +18,17 @@ out/
 coverage/
 
 # Strapi specific
-strapi/dist/
-strapi/build/
-strapi/public/uploads/
-strapi/database/
-strapi/types/generated/
-strapi/src/api/*/content-types/*/schema.json
-strapi/src/components/*/*.json
+apps/strapi/dist/
+apps/strapi/build/
+apps/strapi/public/uploads/
+apps/strapi/database/
+apps/strapi/types/generated/
+apps/strapi/src/api/*/content-types/*/schema.json
+apps/strapi/src/components/*/*.json
 
 # Next.js specific
-next/.next/
-next/out/
+apps/next/.next/
+apps/next/out/
 
 # Logs
 *.log
@@ -48,6 +48,6 @@ Thumbs.db
 skills-lock.json
 
 # Generated artifacts (rewritten by dev servers with platform EOL)
-next/next-env.d.ts
-strapi/.strapi/
-strapi/.strapi-updater.json
+apps/next/next-env.d.ts
+apps/strapi/.strapi/
+apps/strapi/.strapi-updater.json
