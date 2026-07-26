@@ -1,0 +1,18 @@
+packages:
+  - 'next'
+  - 'strapi'
+
+# pnpm blocks dependency install scripts by default. Only packages that need to
+# build or link a native binary are allowed through; everything else stays
+# blocked, which keeps the install-time execution surface as small as it can be.
+#
+# Deliberately NOT listed, though pnpm reports them as ignored:
+#   @tsparticles/engine - its install script only prints a thank-you banner
+#   core-js-pure        - its postinstall only prints a donation notice
+# Both are pure JavaScript and work correctly with their scripts blocked.
+onlyBuiltDependencies:
+  - '@swc/core'
+  - better-sqlite3
+  - esbuild
+  - sharp
+  - unrs-resolver
