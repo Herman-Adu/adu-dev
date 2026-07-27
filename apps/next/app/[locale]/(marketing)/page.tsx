@@ -1,3 +1,4 @@
+import type { Entry } from '@repo/strapi-types';
 import { Metadata } from 'next';
 
 import ClientSlugHandler from './ClientSlugHandler';
@@ -7,12 +8,14 @@ import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchCollectionType } from '@/lib/strapi';
 import type { LocaleParamsProps } from '@/types/types';
 
+type Page = Entry<'api::page.page'>;
+
 export async function generateMetadata({
   params,
 }: LocaleParamsProps): Promise<Metadata> {
   const { locale } = await params;
 
-  const [pageData] = await fetchCollectionType('pages', {
+  const [pageData] = await fetchCollectionType<Page[]>('pages', {
     filters: {
       slug: {
         $eq: 'homepage',
@@ -29,7 +32,7 @@ export async function generateMetadata({
 export default async function HomePage({ params }: LocaleParamsProps) {
   const { locale } = await params;
 
-  const [pageData] = await fetchCollectionType('pages', {
+  const [pageData] = await fetchCollectionType<Page[]>('pages', {
     filters: {
       slug: {
         $eq: 'homepage',

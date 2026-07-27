@@ -1,5 +1,6 @@
 'use client';
 
+import type { Entry, Fieldset } from '@repo/strapi-types';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { Link } from 'next-view-transitions';
 import { useState } from 'react';
@@ -11,18 +12,15 @@ import { Button } from '@/components/elements/button';
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
 
+// Both navbars render `shared.link` entries and the `api::logo.logo` relation
+// the global navbar points at, rather than hand-copied shapes of them.
+type NavbarLink = Fieldset<'shared.link'>;
+type Logo = Entry<'api::logo.logo'>;
+
 type Props = {
-  leftNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  rightNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  logo: any;
+  leftNavbarItems: NavbarLink[];
+  rightNavbarItems: NavbarLink[];
+  logo: Logo | null;
   locale: string;
 };
 
