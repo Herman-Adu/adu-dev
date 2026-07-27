@@ -50,7 +50,7 @@ session will guess.
 Read [notum-cz/strapi-next-monorepo-starter](https://github.com/notum-cz/strapi-next-monorepo-starter)
 **first**. It is the reference implementation for this repo's monorepo tooling.
 Take its structure; judge its specifics. Where we diverge, the reason goes in the
-ADR and the pull request — see `docs/adr/0002`, `0004`, `0005` for worked
+ADR and the pull request — `docs/adr/` 0002, 0004 and 0005 are worked
 examples of both adopting and declining.
 
 Use `/research` when a question needs primary sources rather than recall; it
