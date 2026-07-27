@@ -34,7 +34,7 @@ _Avoid_: post, blog post, story
 
 **Category**:
 A named grouping that Articles belong to — an Article carries as many as apply. Categories group Articles and nothing else; Products are organised by Featured.
-_Avoid_: tag, topic, subject, taxonomy
+_Avoid_: tag, topic, subject
 
 ### Catalog
 
