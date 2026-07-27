@@ -16,3 +16,18 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
+
+# @strapi/admin 5.50.0 pins @strapi/design-system to exactly 2.2.1, whose dist
+# *inlines* a copy of @codemirror/state while importing @codemirror/lang-json as
+# an external. lang-json brings the standalone @codemirror/state, so the admin
+# loads two copies: the JSON editor builds its extensions from one and calls
+# EditorState.create from the other, `instanceof` fails, and every content-manager
+# view holding a JSON field dies with "Unrecognized extension value in extension
+# set". The SEO component puts a JSON field on most types here, so that is most of
+# the content manager.
+#
+# 2.2.3 imports @codemirror/state and @codemirror/view rather than inlining them,
+# which collapses it back to one instance. Patch-level bump; remove this override
+# once @strapi/admin ships a design-system that does not inline.
+overrides:
+  '@strapi/design-system': 2.2.3
