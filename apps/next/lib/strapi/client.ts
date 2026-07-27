@@ -1,7 +1,7 @@
 // The fetch layer must never reach the browser: it reads `draftMode()` from
-// `next/headers` and holds the Strapi API token. Importing it from a client
-// component is now a build error naming this file, rather than something review
-// has to catch.
+// `next/headers` and drives the `next/cache` primitives, none of which exist on
+// the client. Importing it from a client component is now a build error naming
+// this file, rather than something review has to catch.
 //
 // Deliberately not applied to the siblings `sourceMap.ts` and `strapiImage.ts`.
 // Both are pure string handling, both are imported by client components, and

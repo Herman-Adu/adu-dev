@@ -16,7 +16,9 @@ export const Brands = ({ heading, sub_heading, logos }: BrandsProps) => {
       <Heading className="pt-4">{heading}</Heading>
       <Subheading className="max-w-3xl mx-auto">{sub_heading}</Subheading>
 
-      <BrandsCarousel logos={allLogos} />
+      {/* No logos means no row: the carousel's container carries its own
+          spacing, so mounting it empty leaves a gap under the subheading. */}
+      {allLogos.length > 0 && <BrandsCarousel logos={allLogos} />}
     </div>
   );
 };
