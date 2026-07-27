@@ -272,7 +272,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
           const lng = (d as { endLng: number }).endLng;
           return Number.isFinite(lng) ? lng : 0;
         })
-        .arcColor((e: any) => (e as { color: string }).color || '#ffffff')
+        .arcColor((e: unknown) => (e as { color: string }).color || '#ffffff')
         .arcAltitude((e) => {
           const alt = (e as { arcAlt: number }).arcAlt;
           return Number.isFinite(alt) ? alt : 0.1;

@@ -4,14 +4,17 @@ import Balancer from 'react-wrap-balancer';
 
 import { cn } from '@/lib/utils';
 
+// A subheading is a heading or the paragraph that follows one — not any element.
+type SubheadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+
 export const Subheading = ({
   className,
   as: Tag = 'h2',
   children,
 }: {
   className?: string;
-  as?: any;
-  children: any;
+  as?: SubheadingTag;
+  children: React.ReactNode;
   props?: React.HTMLAttributes<HTMLHeadingElement>;
 } & MotionProps &
   React.HTMLAttributes<HTMLHeadingElement>) => {

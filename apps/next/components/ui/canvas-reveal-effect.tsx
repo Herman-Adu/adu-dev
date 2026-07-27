@@ -67,7 +67,7 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
   shader = '',
   center = ['x', 'y'],
 }) => {
-  const uniforms = React.useMemo(() => {
+  const uniforms = React.useMemo<Uniforms>(() => {
     let colorsArray = [
       colors[0],
       colors[0],
@@ -177,11 +177,21 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
   );
 };
 
-type Uniforms = {
-  [key: string]: {
-    value: number[] | number[][] | number;
-    type: string;
-  };
+// A discriminated union on `type`, because that is what this data is: the
+// switch below narrows each uniform to the value shape THREE expects for it.
+type Uniform =
+  | { type: 'uniform1f'; value: number }
+  | { type: 'uniform2f'; value: number[] }
+  | { type: 'uniform3f'; value: number[] }
+  | { type: 'uniform1fv'; value: number[] }
+  | { type: 'uniform3fv'; value: number[][] };
+
+type Uniforms = Record<string, Uniform>;
+
+// What getUniforms hands to THREE.ShaderMaterial, which is a different shape.
+type PreparedUniform = {
+  value: number | number[] | THREE.Vector2 | THREE.Vector3 | THREE.Vector3[];
+  type?: string;
 };
 const ShaderMaterial = ({
   source,
@@ -205,17 +215,17 @@ const ShaderMaterial = ({
     }
     lastFrameTime = timestamp;
 
-    const material: any = ref.current.material;
+    const material = ref.current.material as THREE.ShaderMaterial;
     const timeLocation = material.uniforms.u_time;
     timeLocation.value = timestamp;
   });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getUniforms = () => {
-    const preparedUniforms: any = {};
+    const preparedUniforms: Record<string, PreparedUniform> = {};
 
     for (const uniformName in uniforms) {
-      const uniform: any = uniforms[uniformName];
+      const uniform = uniforms[uniformName];
 
       switch (uniform.type) {
         case 'uniform1f':
@@ -232,9 +242,7 @@ const ShaderMaterial = ({
           break;
         case 'uniform3fv':
           preparedUniforms[uniformName] = {
-            value: uniform.value.map((v: number[]) =>
-              new THREE.Vector3().fromArray(v)
-            ),
+            value: uniform.value.map((v) => new THREE.Vector3().fromArray(v)),
             type: '3fv',
           };
           break;
@@ -285,6 +293,9 @@ const ShaderMaterial = ({
   }, [source, getUniforms]);
 
   return (
+    // react-three-fiber's mesh ref is invariant over THREE.Mesh's generics,
+    // so a correctly-typed useRef<THREE.Mesh> still will not assign.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
     <mesh ref={ref as any}>
       <planeGeometry args={[2, 2]} />
       <primitive object={material} attach="material" />
@@ -301,11 +312,6 @@ const Shader: React.FC<ShaderProps> = ({ source, uniforms, maxFps = 60 }) => {
 };
 interface ShaderProps {
   source: string;
-  uniforms: {
-    [key: string]: {
-      value: number[] | number[][] | number;
-      type: string;
-    };
-  };
+  uniforms: Uniforms;
   maxFps?: number;
 }

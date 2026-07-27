@@ -37,7 +37,7 @@ export const ScrollContent = ({
   item: StickyScrollItem;
   index: number;
 }) => {
-  const ref = useRef<any>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
