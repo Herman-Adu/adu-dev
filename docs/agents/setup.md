@@ -53,6 +53,31 @@ settings enable it, and both are opt-in:
   decide which MCP tools exist at all.
 
 The server is only reachable while the Strapi dev server is running; if Claude
-Code starts first, `/mcp` shows it failed until you reconnect. Prefer MCP
-introspection over guessing content-type shapes when frontend code consumes
-Strapi data.
+Code starts first, `/mcp` shows it failed until you reconnect.
+
+### Schema questions and data questions are answered by different things
+
+Neither needs a custom MCP capability. #48 proposed building some and was closed
+after grilling, because both halves are already covered:
+
+**Schema — what the model _is_.** `packages/strapi-types/generated/*.d.ts`, which
+is authoritative and drift-checked by `pnpm check:types-drift`. It is close to
+exhaustive: field types and optionality, validation constraints, `draftAndPublish`,
+i18n localisation, relation targets, and the **per-content-type dynamic-zone
+allowlist** — `api::article.article` permits only `dynamic-zone.related-articles`
+and `dynamic-zone.cta`, while pages permit more. Read the file; do not query for
+this.
+
+**Data — what actually exists.** A running Strapi:
+
+```sh
+curl 'http://localhost:1337/api/pages?filters[slug][$eq]=x&populate=*'
+```
+
+Which entries use a given Block, whether seeded data exercises a component, what
+a route really returns — all filter queries. The built-in MCP tools do the same
+job with auth pre-wired, when the dev server is up.
+
+The one thing neither answers cheaply is what `deepPopulate` will expand for a
+content type _before_ you call it, since that lives in custom middleware. Call
+the endpoint and look.
