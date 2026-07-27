@@ -9,7 +9,6 @@ export default {
   register(app: StrapiApp) {
     if (process.env.STRAPI_ADMIN_IS_DEMO === 'true') {
       if ('widgets' in app) {
-        // @ts-expect-error widgets is only present on newer Strapi admin builds
         app.widgets.register({
           icon: Information,
           title: {
