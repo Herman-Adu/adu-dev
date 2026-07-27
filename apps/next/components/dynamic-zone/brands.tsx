@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block } from '@repo/strapi-types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -7,18 +8,15 @@ import { Heading } from '../elements/heading';
 import { Subheading } from '../elements/subheading';
 import { StrapiMedia } from '@/components/ui/strapi-media';
 
-export const Brands = ({
-  heading,
-  sub_heading,
-  logos,
-}: {
-  heading: string;
-  sub_heading: string;
-  logos: any[];
-}) => {
-  const middleIndex = Math.floor(logos.length / 2);
-  const firstHalf = logos.slice(0, middleIndex);
-  const secondHalf = logos.slice(middleIndex);
+type BrandsProps = Block<'dynamic-zone.brands'>;
+
+export const Brands = ({ heading, sub_heading, logos }: BrandsProps) => {
+  // The relation is optional in the schema, so an unpopulated or empty
+  // `logos` reaches this component as null rather than an empty array.
+  const allLogos = logos ?? [];
+  const middleIndex = Math.floor(allLogos.length / 2);
+  const firstHalf = allLogos.slice(0, middleIndex);
+  const secondHalf = allLogos.slice(middleIndex);
   const logosArraySplitInHalf = [firstHalf, secondHalf];
 
   // State to track the current logo set
@@ -72,7 +70,7 @@ export const Brands = ({
                 delay: 0.1 * idx,
                 ease: [0.4, 0, 0.2, 1],
               }}
-              key={logo.title || `logo-${idx}`}
+              key={logo.id}
               className="relative"
             >
               <StrapiMedia

@@ -10,7 +10,7 @@ interface ButtonProps {
   children?: React.ReactNode;
   href?: LinkProps['href'];
   onClick?: () => void;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -30,6 +30,9 @@ export const Button: React.FC<ButtonProps> = ({
           : variant === 'muted'
             ? 'bg-neutral-800 relative z-10 hover:bg-neutral-900  border border-transparent text-white text-sm md:text-sm transition font-medium duration-200  rounded-md px-4 py-2  flex items-center justify-center shadow-[0px_1px_0px_0px_#FFFFFF20_inset]'
             : '';
+  // `Tag` is a React.ElementType, so its props are only known at the call
+  // site. No non-any type accepts every element this can render.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
   const Element = Tag as any;
 
   return (

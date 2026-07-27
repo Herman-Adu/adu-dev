@@ -1,5 +1,6 @@
 'use client';
 
+import type { Fieldset } from '@repo/strapi-types';
 import { motion } from 'framer-motion';
 
 import { DesktopNavbar } from './desktop-navbar';
@@ -10,7 +11,7 @@ export function Navbar({
   locale,
   hasBanner,
 }: {
-  data: any;
+  data: Fieldset<'global.navbar'>;
   locale: string;
   hasBanner?: boolean;
 }) {
@@ -22,9 +23,9 @@ export function Navbar({
         {data?.left_navbar_items && (
           <DesktopNavbar
             locale={locale}
-            leftNavbarItems={data?.left_navbar_items}
-            rightNavbarItems={data?.right_navbar_items}
-            logo={data?.logo}
+            leftNavbarItems={data?.left_navbar_items ?? []}
+            rightNavbarItems={data?.right_navbar_items ?? []}
+            logo={data?.logo ?? null}
           />
         )}
       </div>
@@ -32,9 +33,9 @@ export function Navbar({
         {data?.left_navbar_items && (
           <MobileNavbar
             locale={locale}
-            leftNavbarItems={data?.left_navbar_items}
-            rightNavbarItems={data?.right_navbar_items}
-            logo={data?.logo}
+            leftNavbarItems={data?.left_navbar_items ?? []}
+            rightNavbarItems={data?.right_navbar_items ?? []}
+            logo={data?.logo ?? null}
           />
         )}
       </div>

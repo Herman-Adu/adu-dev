@@ -4,6 +4,10 @@ import Balancer from 'react-wrap-balancer';
 
 import { cn } from '@/lib/utils';
 
+// A Heading renders a heading element. `React.ElementType` would permit a div
+// and, being fully generic, collapses `children` to `never` at the render site.
+type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+
 export const Heading = ({
   className,
   as: Tag = 'h2',
@@ -12,8 +16,8 @@ export const Heading = ({
   ...props
 }: {
   className?: string;
-  as?: any;
-  children: any;
+  as?: HeadingTag;
+  children: React.ReactNode;
   size?: 'sm' | 'md' | 'xl' | '2xl';
   props?: React.HTMLAttributes<HTMLHeadingElement>;
 } & MotionProps &

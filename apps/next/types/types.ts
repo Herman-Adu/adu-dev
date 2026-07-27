@@ -1,45 +1,23 @@
-import type { BlocksContent } from '@strapi/blocks-react-renderer';
+import type { Entry } from '@repo/strapi-types';
 
-import type { StrapiLocaleObject } from '@/types/strapi';
+/**
+ * Aliases, not copies: a schema change has to reach every consumer rather than
+ * being absorbed by a duplicate that quietly drifts from it.
+ */
+export type Article = Entry<'api::article.article'>;
+export type Product = Entry<'api::product.product'>;
+export type Category = Entry<'api::category.category'>;
+export type Testimonial = Entry<'api::testimonial.testimonial'>;
 
-export interface Category {
-  name: string;
-}
-
+/**
+ * Strapi generates media fields as `any`, so this is the shape the frontend
+ * relies on rather than one the schema guarantees — the only type here not
+ * backed by the generated definitions.
+ */
 export interface Image {
   url: string;
   alternativeText: string;
   mime?: string;
-}
-
-export interface Article {
-  title: string;
-  description?: string | null;
-  localizations: StrapiLocaleObject[];
-  slug: string;
-  content: BlocksContent;
-  dynamic_zone: any[];
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  locale: string;
-  image: Image;
-  categories: Category[];
-}
-
-export interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  plans: any[];
-  perks: any[];
-  dynamic_zone: any[];
-  featured?: boolean;
-  images: any[];
-  categories?: any[];
-  localizations?: any[];
 }
 
 export type LocaleParamsProps = {

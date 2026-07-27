@@ -1,5 +1,6 @@
 'use client';
 
+import type { Fieldset } from '@repo/strapi-types';
 import {
   motion,
   useMotionTemplate,
@@ -14,15 +15,12 @@ import React, { MouseEvent as ReactMouseEvent, useRef } from 'react';
 import Beam from '../../beam';
 import { CanvasRevealEffect } from '../../ui/canvas-reveal-effect';
 
-export const Card = ({
-  title,
-  description,
-  index,
-}: {
-  title: string;
-  description: string;
-  index: number;
-}) => {
+// Renders one `shared.steps` entry. Both of its text fields are optional in
+// the schema, so absence is a state this component handles rather than one
+// the caller has to paper over with an empty string.
+type CardProps = Fieldset<'shared.steps'> & { index: number };
+
+export const Card = ({ title, description, index }: CardProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -89,8 +87,12 @@ export const Card = ({
           />
         </motion.div>
 
-        <p className="text-xl font-bold relative z-20 mt-2">{title}</p>
-        <p className="text-neutral-400 mt-4 relative z-20">{description}</p>
+        {title !== null && title !== undefined && (
+          <p className="text-xl font-bold relative z-20 mt-2">{title}</p>
+        )}
+        {description !== null && description !== undefined && (
+          <p className="text-neutral-400 mt-4 relative z-20">{description}</p>
+        )}
       </div>
     </div>
   );

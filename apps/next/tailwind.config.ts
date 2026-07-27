@@ -1,8 +1,13 @@
 import svgToDataUri from 'mini-svg-data-uri';
 import type { Config } from 'tailwindcss';
+import type { PluginAPI } from 'tailwindcss/types/config';
 
+// Tailwind ships this helper from an internal path with no type declarations.
+// It flattens the nested colour scale into `{ 'blue-500': '#3b82f6', ... }`.
 const {
   default: flattenColorPalette,
+}: {
+  default: (colors: unknown) => Record<string, string>;
 } = require('tailwindcss/lib/util/flattenColorPalette');
 
 const config: Config = {
@@ -53,25 +58,25 @@ const config: Config = {
     require('tailwindcss-animate'),
     require('@tailwindcss/typography'),
     addVariablesForColors,
-    function ({ matchUtilities, theme }: any) {
+    function ({ matchUtilities, theme }: PluginAPI) {
       matchUtilities(
         {
-          'bg-grid': (value: any) => ({
+          'bg-grid': (value: string) => ({
             backgroundImage: `url("${svgToDataUri(
               `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
             )}")`,
           }),
-          'bg-grid-small': (value: any) => ({
+          'bg-grid-small': (value: string) => ({
             backgroundImage: `url("${svgToDataUri(
               `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
             )}")`,
           }),
-          'bg-dot': (value: any) => ({
+          'bg-dot': (value: string) => ({
             backgroundImage: `url("${svgToDataUri(
               `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="1.6257413380501518"></circle></svg>`
             )}")`,
           }),
-          'bg-dot-thick': (value: any) => ({
+          'bg-dot-thick': (value: string) => ({
             backgroundImage: `url("${svgToDataUri(
               `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="2.5"></circle></svg>`
             )}")`,
@@ -82,7 +87,7 @@ const config: Config = {
 
       matchUtilities(
         {
-          highlight: (value: any) => ({
+          highlight: (value: string) => ({
             boxShadow: `inset 0 1px 0 0 ${value}`,
           }),
         },
@@ -92,7 +97,7 @@ const config: Config = {
   ],
 };
 
-function addVariablesForColors({ addBase, theme }: any) {
+function addVariablesForColors({ addBase, theme }: PluginAPI) {
   const allColors = flattenColorPalette(theme('colors'));
   const newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])

@@ -1,11 +1,10 @@
 'use client';
 
-import { format } from 'date-fns';
 import FuzzySearch from 'fuzzy-search';
 import { Link } from 'next-view-transitions';
 import React, { useEffect, useState } from 'react';
 
-import { truncate } from '@/lib/utils';
+import { formatDate, truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
 
 export const BlogPostRows = ({
@@ -45,10 +44,10 @@ export const BlogPostRows = ({
         {results.length === 0 ? (
           <p className="text-neutral-400 text-center p-4">No results found</p>
         ) : (
-          results.map((article, index) => (
+          results.map((article) => (
             <BlogPostRow
               article={article}
-              key={article.slug + index}
+              key={article.documentId}
               locale={locale}
             />
           ))
@@ -81,7 +80,7 @@ export const BlogPostRow = ({
 
         <div className="flex gap-2 items-center my-4">
           <p className="text-neutral-300 text-sm  max-w-xl group-hover:text-white transition duration-200">
-            {format(new Date(article.publishedAt), 'MMMM dd, yyyy')}
+            {formatDate(article.publishedAt)}
           </p>
           <div className="h-1 w-1 rounded-full bg-neutral-800"></div>
           <div className="flex gap-4 flex-wrap ">

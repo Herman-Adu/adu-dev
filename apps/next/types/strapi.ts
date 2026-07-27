@@ -1,6 +1,8 @@
 export interface StrapiData {
   id: number;
-  [key: string]: any; // Allow for any additional fields
+  // The envelope carries whatever the content type defines; callers narrow
+  // to a generated Entry<> rather than reading through this shape.
+  [key: string]: unknown;
 }
 
 export interface StrapiResponse {

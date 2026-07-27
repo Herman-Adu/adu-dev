@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block } from '@repo/strapi-types';
 import React from 'react';
 import { TbLocationBolt } from 'react-icons/tb';
 
@@ -10,15 +11,13 @@ import { FeatureIconContainer } from '../features/feature-icon-container';
 import { TestimonialsSlider } from './slider';
 import { TestimonialsMarquee } from './testimonials-marquee';
 
+type TestimonialsProps = Block<'dynamic-zone.testimonials'>;
+
 export const Testimonials = ({
   heading,
   sub_heading,
   testimonials,
-}: {
-  heading: string;
-  sub_heading: string;
-  testimonials: object;
-}) => {
+}: TestimonialsProps) => {
   return (
     <div className="relative">
       <AmbientColor />

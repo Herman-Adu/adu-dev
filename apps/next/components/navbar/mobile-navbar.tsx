@@ -7,24 +7,10 @@ import { IoIosMenu } from 'react-icons/io';
 import { IoIosClose } from 'react-icons/io';
 
 import { LocaleSwitcher } from '../locale-switcher';
+import type { NavbarProps as Props } from './types';
 import { Button } from '@/components/elements/button';
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
-
-type Props = {
-  leftNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  rightNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  logo: any;
-  locale: string;
-};
 
 export const MobileNavbar = ({
   leftNavbarItems,
@@ -74,38 +60,18 @@ export const MobileNavbar = ({
             </div>
           </div>
           <div className="flex flex-col items-start justify-start gap-[14px] px-8">
-            {leftNavbarItems.map((navItem: any, idx: number) => (
-              <>
-                {navItem.children && navItem.children.length > 0 ? (
-                  <>
-                    {navItem.children.map((childNavItem: any, idx: number) => (
-                      <Link
-                        key={`link=${idx}`}
-                        href={`/${locale}${childNavItem.URL}`}
-                        onClick={() => setOpen(false)}
-                        className="relative max-w-[15rem] text-left text-2xl"
-                        suppressHydrationWarning
-                      >
-                        <span className="block text-white">
-                          {childNavItem.text}
-                        </span>
-                      </Link>
-                    ))}
-                  </>
-                ) : (
-                  <Link
-                    key={`link=${idx}`}
-                    href={`/${locale}${navItem.URL}`}
-                    onClick={() => setOpen(false)}
-                    className="relative"
-                    suppressHydrationWarning
-                  >
-                    <span className="block text-[26px] text-white">
-                      {navItem.text}
-                    </span>
-                  </Link>
-                )}
-              </>
+            {leftNavbarItems.map((navItem) => (
+              <Link
+                key={navItem.id}
+                href={`/${locale}${navItem.URL ?? ''}`}
+                onClick={() => setOpen(false)}
+                className="relative"
+                suppressHydrationWarning
+              >
+                <span className="block text-[26px] text-white">
+                  {navItem.text}
+                </span>
+              </Link>
             ))}
           </div>
           <div className="flex flex-row w-full items-start gap-2.5  px-8 py-4 ">

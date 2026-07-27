@@ -1,3 +1,4 @@
+import type { Block } from '@repo/strapi-types';
 import { IconRocket } from '@tabler/icons-react';
 import React from 'react';
 
@@ -23,9 +24,14 @@ const wordToNumber: { [key: string]: number } = {
   three: 3,
 };
 
-function convertWordToNumber(word: string) {
-  return wordToNumber[word.toLowerCase()] || null;
+// `span` is an optional enumeration in the schema, so it arrives as null on
+// any card where an editor left it unset.
+function convertWordToNumber(word: string | null | undefined) {
+  if (word === null || word === undefined) return null;
+  return wordToNumber[word.toLowerCase()] ?? null;
 }
+
+type FeaturesProps = Block<'dynamic-zone.features'>;
 
 export const Features = ({
   heading,
@@ -34,14 +40,7 @@ export const Features = ({
   ray_card,
   graph_card,
   social_media_card,
-}: {
-  heading: string;
-  sub_heading: string;
-  globe_card: any;
-  ray_card: any;
-  graph_card: any;
-  social_media_card: any;
-}) => {
+}: FeaturesProps) => {
   return (
     <GradientContainer className="md:my-20">
       <Container className="py-20 max-w-7xl mx-auto  relative z-40">
@@ -98,8 +97,8 @@ export const Features = ({
               <CardSkeletonContainer showGradient={false}>
                 <SkeletonFour />
               </CardSkeletonContainer>
-              <CardTitle>{social_media_card.title}</CardTitle>
-              <CardDescription>{social_media_card.description}</CardDescription>
+              <CardTitle>{social_media_card.Title}</CardTitle>
+              <CardDescription>{social_media_card.Description}</CardDescription>
             </Card>
           )}
         </div>

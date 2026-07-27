@@ -11,24 +11,10 @@ import { useState } from 'react';
 
 import { LocaleSwitcher } from '../locale-switcher';
 import { NavbarItem } from './navbar-item';
+import type { NavbarProps as Props } from './types';
 import { Button } from '@/components/elements/button';
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
-
-type Props = {
-  leftNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  rightNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  logo: any;
-  locale: string;
-};
 
 export const DesktopNavbar = ({
   leftNavbarItems,
@@ -80,7 +66,7 @@ export const DesktopNavbar = ({
             <NavbarItem
               href={`/${locale}${item.URL}` as never}
               key={item.text}
-              target={item.target}
+              target={item.target ?? undefined}
             >
               {item.text}
             </NavbarItem>

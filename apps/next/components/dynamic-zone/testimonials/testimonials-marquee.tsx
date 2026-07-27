@@ -4,12 +4,14 @@ import React from 'react';
 import Marquee from 'react-fast-marquee';
 
 import { StrapiMedia } from '@/components/ui/strapi-media';
+import { testimonialFullName } from '@/lib/shared/testimonial';
 import { cn } from '@/lib/utils';
+import type { Testimonial } from '@/types/types';
 
 export const TestimonialsMarquee = ({
   testimonials,
 }: {
-  testimonials: any;
+  testimonials: Testimonial[];
 }) => {
   const levelOne = testimonials.slice(0, 8);
   const levelTwo = testimonials.slice(8, 16);
@@ -19,7 +21,7 @@ export const TestimonialsMarquee = ({
         <div className="h-full absolute w-20 left-0 inset-y-0 z-30 bg-gradient-to-r from-charcoal to-transparent" />
         <div className="h-full absolute w-20 right-0 inset-y-0 z-30 bg-gradient-to-l from-charcoal to-transparent" />
         <Marquee>
-          {levelOne.map((testimonial: any, index: any) => (
+          {levelOne.map((testimonial, index: number) => (
             <Card
               key={`testimonial-${testimonial.id}-${index}`}
               className="max-w-xl h-60 mx-4"
@@ -28,17 +30,17 @@ export const TestimonialsMarquee = ({
               <div className="flex gap-2 items-center mt-8">
                 <StrapiMedia
                   src={testimonial?.user?.image?.url}
-                  alt={`${testimonial.user.firstname} ${testimonial.user.lastname}`}
+                  alt={testimonialFullName(testimonial)}
                   width={40}
                   height={40}
                   className="rounded-full"
                 />
                 <div className="flex flex-col">
                   <QuoteDescription className="text-neutral-300">
-                    {`${testimonial.user.firstname} ${testimonial.user.lastname}`}
+                    {testimonialFullName(testimonial)}
                   </QuoteDescription>
                   <QuoteDescription className="text-neutral-400">
-                    {testimonial.user.job}
+                    {testimonial.user?.job}
                   </QuoteDescription>
                 </div>
               </div>
@@ -50,7 +52,7 @@ export const TestimonialsMarquee = ({
         <div className="h-full absolute w-20 left-0 inset-y-0 z-30 bg-gradient-to-r from-charcoal to-transparent" />
         <div className="h-full absolute w-20 right-0 inset-y-0 z-30 bg-gradient-to-l from-charcoal to-transparent" />
         <Marquee direction="right" speed={20}>
-          {levelTwo.map((testimonial: any, index: any) => (
+          {levelTwo.map((testimonial, index: number) => (
             <Card
               key={`testimonial-${testimonial.id}-${index}`}
               className="max-w-xl h-60 mx-4"
@@ -59,17 +61,17 @@ export const TestimonialsMarquee = ({
               <div className="flex gap-2 items-center mt-8">
                 <StrapiMedia
                   src={testimonial?.user?.image?.url}
-                  alt={`${testimonial.user.firstname} ${testimonial.user.lastname}`}
+                  alt={testimonialFullName(testimonial)}
                   width={40}
                   height={40}
                   className="rounded-full"
                 />
                 <div className="flex flex-col">
                   <QuoteDescription className="text-neutral-300">
-                    {`${testimonial.user.firstname} ${testimonial.user.lastname}`}
+                    {testimonialFullName(testimonial)}
                   </QuoteDescription>
                   <QuoteDescription className="text-neutral-400">
-                    {testimonial.user.job}
+                    {testimonial.user?.job}
                   </QuoteDescription>
                 </div>
               </div>

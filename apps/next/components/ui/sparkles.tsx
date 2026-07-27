@@ -81,6 +81,9 @@ export const SparklesCore = (props: ParticlesProps) => {
                   enable: false,
                   mode: 'repulse',
                 },
+                // tsparticles types this as an object in v3 while still
+                // accepting the v2 boolean shorthand at runtime.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
                 resize: true as any,
               },
               modes: {

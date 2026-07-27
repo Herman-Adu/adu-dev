@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block, Entry } from '@repo/strapi-types';
 import { IconCheck, IconPlus, IconReceipt2 } from '@tabler/icons-react';
 import React from 'react';
 
@@ -10,31 +11,7 @@ import { Subheading } from '../elements/subheading';
 import { FeatureIconContainer } from './features/feature-icon-container';
 import { cn } from '@/lib/utils';
 
-type Perks = {
-  [key: string]: string;
-};
-
-type CTA = {
-  [key: string]: string;
-};
-
-type Plan = {
-  name: string;
-  price: number;
-  perks: Perks[];
-  additional_perks: Perks[];
-  description: string;
-  number: string;
-  featured?: boolean;
-  CTA?: CTA | undefined;
-  localizations?: Plan[];
-  locale?: string;
-};
-
-// Helper to ensure the plan object has the correct shape if needed
-const normalizePlan = (plan: any): Plan => {
-  return plan as Plan;
-};
+type Plan = Entry<'api::plan.plan'>;
 
 const translations = {
   en: {
@@ -47,17 +24,14 @@ const translations = {
   },
 };
 
+type PricingProps = Block<'dynamic-zone.pricing'> & { locale?: string };
+
 export const Pricing = ({
   heading,
   sub_heading,
   plans,
   locale = 'en',
-}: {
-  heading: string;
-  sub_heading: string;
-  plans: any[];
-  locale?: string;
-}) => {
+}: PricingProps) => {
   const onClick = (plan: Plan) => {
     console.log('click', plan);
   };
@@ -70,10 +44,10 @@ export const Pricing = ({
         <Heading className="pt-4">{heading}</Heading>
         <Subheading className="max-w-3xl mx-auto">{sub_heading}</Subheading>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto gap-4 py-20 lg:items-start">
-          {plans.map((plan) => (
+          {(plans ?? []).map((plan) => (
             <Card
               onClick={onClick}
-              key={plan.name}
+              key={plan.documentId}
               plan={plan}
               locale={locale}
             />
@@ -102,7 +76,7 @@ const Card = ({
   if (plan.localizations && plan.localizations.length > 0) {
     const localizedPlan = plan.localizations.find((p) => p.locale === locale);
     if (localizedPlan) {
-      displayPlan = normalizePlan(localizedPlan); // helper to ensure shape matches if needed, but assuming same shape
+      displayPlan = localizedPlan;
     }
   }
 
@@ -182,7 +156,7 @@ const Card = ({
         </Button>
       </div>
       <div className="mt-1 p-4">
-        {displayPlan.perks.map((feature, idx) => (
+        {displayPlan.perks?.map((feature, idx) => (
           <Step featured={displayPlan.featured} key={idx}>
             {feature.text}
           </Step>
@@ -210,7 +184,8 @@ const Step = ({
 }: {
   children: React.ReactNode;
   additional?: boolean;
-  featured?: boolean;
+  // The schema's boolean is optional, and this is only ever read truthily.
+  featured?: boolean | null;
 }) => {
   return (
     <div className="flex items-start justify-start gap-2 my-4">
@@ -234,7 +209,7 @@ const Step = ({
   );
 };
 
-const Divider = ({ featured }: { featured?: boolean }) => {
+const Divider = ({ featured }: { featured?: boolean | null }) => {
   return (
     <div className="relative">
       <div
