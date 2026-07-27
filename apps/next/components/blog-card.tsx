@@ -1,11 +1,10 @@
-import { format } from 'date-fns';
 import { Link } from 'next-view-transitions';
 import React from 'react';
 import Balancer from 'react-wrap-balancer';
 
 import { BlurImage } from '@/components/blur-image';
 import { resolveStrapiMedia } from '@/lib/strapi/strapiImage';
-import { truncate } from '@/lib/utils';
+import { formatDate, truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
 
 export const BlogCard = ({
@@ -24,7 +23,7 @@ export const BlogCard = ({
         {article.image ? (
           <BlurImage
             {...resolveStrapiMedia(article.image.url)}
-            alt={article.title}
+            alt={article.title ?? ''}
             height="1200"
             width="1200"
             className="h-full object-cover object-top w-full rounded-3xl"
@@ -65,7 +64,7 @@ export const BlogCard = ({
           {/* <p className="text-sm font-normal text-muted">{article.author}</p> */}
           <div className="h-1 w-1 bg-neutral-300 rounded-full"></div>
           <p className="text-neutral-300 text-sm  max-w-xl group-hover:text-white transition duration-200">
-            {format(new Date(article.publishedAt), 'MMMM dd, yyyy')}
+            {formatDate(article.publishedAt)}
           </p>
         </div>
       </div>
@@ -89,7 +88,7 @@ export const BlogCardVertical = ({
         {article.image ? (
           <BlurImage
             {...resolveStrapiMedia(article.image.url)}
-            alt={article.title}
+            alt={article.title ?? ''}
             height="800"
             width="800"
             className=" h-64 md:h-96 object-cover object-top w-full rounded-3xl"
@@ -130,7 +129,7 @@ export const BlogCardVertical = ({
           <p className="text-sm font-normal text-muted">{article.author}</p> */}
           <div className="h-1 w-1 bg-neutral-300 rounded-full"></div>
           <p className="text-neutral-300 text-sm  max-w-xl group-hover:text-white transition duration-200">
-            {format(new Date(article.publishedAt), 'MMMM dd, yyyy')}
+            {formatDate(article.publishedAt)}
           </p>
         </div>
       </div>

@@ -1,11 +1,11 @@
 import { IconArrowLeft } from '@tabler/icons-react';
-import { format } from 'date-fns';
 import { Link } from 'next-view-transitions';
 
 import { Container } from './container';
 import { AmbientColor } from './decorations/ambient-color';
 import DynamicZoneManager from './dynamic-zone/manager';
 import { StrapiMedia } from '@/components/ui/strapi-media';
+import { formatDate } from '@/lib/utils';
 import { Article } from '@/types/types';
 
 export async function BlogLayout({
@@ -77,11 +77,15 @@ export async function BlogLayout({
                 </div>
                 <div className="h-5 rounded-lg w-0.5 bg-neutral-700" />
                 <time
-                  dateTime={article.publishedAt}
+                  dateTime={
+                    article.publishedAt
+                      ? String(article.publishedAt)
+                      : undefined
+                  }
                   className="flex items-center text-base "
                 >
                   <span className="text-muted text-sm">
-                    {format(new Date(article.publishedAt), 'MMMM dd, yyyy')}
+                    {formatDate(article.publishedAt)}
                   </span>
                 </time>
               </div>

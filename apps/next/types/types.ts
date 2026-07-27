@@ -1,45 +1,26 @@
-import type { BlocksContent } from '@strapi/blocks-react-renderer';
+import type { Entry } from '@repo/strapi-types';
 
-import type { StrapiLocaleObject } from '@/types/strapi';
+/**
+ * These were hand-written duplicates of content types the schema already
+ * describes, and they had drifted: `Article` claimed a required `title` and
+ * `slug` that the schema leaves optional, and `Product` typed six of its
+ * fields as `any`. Aliasing the generated definitions means a schema change
+ * reaches every consumer instead of being absorbed here.
+ */
+export type Article = Entry<'api::article.article'>;
+export type Product = Entry<'api::product.product'>;
+export type Category = Entry<'api::category.category'>;
 
-export interface Category {
-  name: string;
-}
-
+/**
+ * Strapi's generated types describe a media field as `any`, so this is the
+ * shape the frontend relies on rather than one the schema guarantees. It is
+ * the one place in this file still not backed by the generated types —
+ * recorded in the pull request for #15.
+ */
 export interface Image {
   url: string;
   alternativeText: string;
   mime?: string;
-}
-
-export interface Article {
-  title: string;
-  description?: string | null;
-  localizations: StrapiLocaleObject[];
-  slug: string;
-  content: BlocksContent;
-  dynamic_zone: any[];
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  locale: string;
-  image: Image;
-  categories: Category[];
-}
-
-export interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  plans: any[];
-  perks: any[];
-  dynamic_zone: any[];
-  featured?: boolean;
-  images: any[];
-  categories?: any[];
-  localizations?: any[];
 }
 
 export type LocaleParamsProps = {

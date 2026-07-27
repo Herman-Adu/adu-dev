@@ -9,6 +9,7 @@ import { Heading } from '@/components/elements/heading';
 import { Subheading } from '@/components/elements/subheading';
 import { Featured } from '@/components/products/featured';
 import { ProductItems } from '@/components/products/product-items';
+import { buildLocalizedSlugs } from '@/lib/shared/localized-slugs';
 import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchCollectionType, fetchSingleType } from '@/lib/strapi';
 import { LocaleParamsProps, Product } from '@/types/types';
@@ -31,16 +32,12 @@ export default async function Products({ params }: LocaleParamsProps) {
   const pageData = await fetchSingleType('product-page', { locale });
   const products = await fetchCollectionType<Product[]>('products', { locale });
 
-  const localizedSlugs = pageData.localizations.reduce(
-    (acc: Record<string, string>, localization: any) => {
-      acc[localization.locale] = 'products';
-      return acc;
-    },
-    { [locale]: 'products' }
+  const localizedSlugs = buildLocalizedSlugs(
+    pageData.localizations,
+    { locale, slug: 'products' },
+    () => 'products'
   );
-  const featured = products.filter(
-    (product: { featured?: boolean }) => product.featured
-  );
+  const featured = products.filter((product) => product.featured);
 
   return (
     <div className="relative overflow-hidden w-full">

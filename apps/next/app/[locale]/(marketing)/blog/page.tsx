@@ -9,6 +9,7 @@ import { AmbientColor } from '@/components/decorations/ambient-color';
 import { FeatureIconContainer } from '@/components/dynamic-zone/features/feature-icon-container';
 import { Heading } from '@/components/elements/heading';
 import { Subheading } from '@/components/elements/subheading';
+import { buildLocalizedSlugs } from '@/lib/shared/localized-slugs';
 import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchCollectionType, fetchSingleType } from '@/lib/strapi';
 import type { Article, LocaleParamsProps } from '@/types/types';
@@ -36,12 +37,10 @@ export default async function Blog({ params }: LocaleParamsProps) {
     }
   );
 
-  const localizedSlugs = pageData.localizations.reduce(
-    (acc: Record<string, string>, localization: any) => {
-      acc[localization.locale] = 'blog';
-      return acc;
-    },
-    { [locale]: 'blog' }
+  const localizedSlugs = buildLocalizedSlugs(
+    pageData.localizations,
+    { locale, slug: 'blog' },
+    () => 'blog'
   );
 
   return (

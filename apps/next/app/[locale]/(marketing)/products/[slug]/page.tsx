@@ -6,6 +6,7 @@ import { Container } from '@/components/container';
 import { AmbientColor } from '@/components/decorations/ambient-color';
 import DynamicZoneManager from '@/components/dynamic-zone/manager';
 import { SingleProduct } from '@/components/products/single-product';
+import { buildLocalizedSlugs } from '@/lib/shared/localized-slugs';
 import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchCollectionType, fetchSingleType } from '@/lib/strapi';
 import type { LocaleSlugParamsProps, Product } from '@/types/types';
@@ -41,14 +42,10 @@ export default async function SingleProductPage({
     redirect('/products');
   }
 
-  const localizedSlugs =
-    pageData.localizations?.reduce(
-      (acc: Record<string, string>, localization: any) => {
-        acc[localization.locale] = localization.slug;
-        return acc;
-      },
-      { [locale]: slug }
-    ) || {};
+  const localizedSlugs = buildLocalizedSlugs(pageData.localizations, {
+    locale,
+    slug,
+  });
 
   return (
     <div className="relative overflow-hidden w-full">

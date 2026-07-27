@@ -1,6 +1,7 @@
 import ClientSlugHandler from '../../ClientSlugHandler';
 import { ArticleContent } from '@/components/article-content';
 import { BlogLayout } from '@/components/blog-layout';
+import { buildLocalizedSlugs } from '@/lib/shared/localized-slugs';
 import { fetchCollectionType } from '@/lib/strapi';
 import type { Article, LocaleSlugParamsProps } from '@/types/types';
 
@@ -21,13 +22,10 @@ export default async function SingleArticlePage({
     return <div>Blog not found</div>;
   }
 
-  const localizedSlugs = article.localizations.reduce(
-    (acc: Record<string, string>, localization: any) => {
-      acc[localization.locale] = localization.slug;
-      return acc;
-    },
-    { [locale]: slug }
-  );
+  const localizedSlugs = buildLocalizedSlugs(article.localizations, {
+    locale,
+    slug,
+  });
 
   return (
     <BlogLayout article={article} locale={locale}>

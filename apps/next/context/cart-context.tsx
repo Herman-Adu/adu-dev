@@ -4,6 +4,10 @@ import React, { createContext, useCallback, useContext, useState } from 'react';
 
 import { Product } from '@/types/types';
 
+// Strapi 5 ids are `string | number`, so the cart takes the product's own id
+// type rather than assuming a number.
+type ProductId = Product['id'];
+
 type CartItem = {
   product: Product;
   quantity: number;
@@ -13,7 +17,7 @@ type CartContextType = {
   items: CartItem[];
   updateQuantity: (product: Product, quantity: number) => void;
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: number) => void;
+  removeFromCart: (productId: ProductId) => void;
   clearCart: () => void;
   getCartTotal: () => number;
 };
@@ -41,7 +45,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, []);
 
-  const removeFromCart = useCallback((productId: number) => {
+  const removeFromCart = useCallback((productId: ProductId) => {
     setItems((prevItems) =>
       prevItems.filter((item) => item.product.id !== productId)
     );
@@ -61,7 +65,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getCartTotal = useCallback(() => {
     return items.reduce(
-      (total, item) => total + item.product.price * item.quantity,
+      // A product with no price contributes nothing rather than turning the
+      // whole cart total into NaN.
+      (total, item) => total + (item.product.price ?? 0) * item.quantity,
       0
     );
   }, [items]);

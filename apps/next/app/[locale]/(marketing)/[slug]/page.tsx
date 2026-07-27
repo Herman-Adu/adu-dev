@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 
 import ClientSlugHandler from '../ClientSlugHandler';
 import PageContent from '@/lib/shared/PageContent';
+import { buildLocalizedSlugs } from '@/lib/shared/localized-slugs';
 import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchCollectionType } from '@/lib/strapi';
 import type { LocaleSlugParamsProps } from '@/types/types';
@@ -35,13 +36,10 @@ export default async function Page({ params }: LocaleSlugParamsProps) {
     },
   });
 
-  const localizedSlugs = pageData.localizations?.reduce(
-    (acc: Record<string, string>, localization: any) => {
-      acc[localization.locale] = localization.slug;
-      return acc;
-    },
-    { [locale]: slug }
-  );
+  const localizedSlugs = buildLocalizedSlugs(pageData.localizations, {
+    locale,
+    slug,
+  });
 
   return (
     <>
