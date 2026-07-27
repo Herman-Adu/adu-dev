@@ -183,6 +183,30 @@ To see a task actually execute rather than come from cache, add `--force`.
 
 ## Agent skills
 
+### Workflow
+
+Which skill to run at which step — framing, design, building, review, landing,
+and ending a session — is in `docs/agents/workflow.md`. Read it before starting a
+piece of work.
+
+Two things from it are worth stating here because they are easy to get wrong.
+**Most workflow-committing skills are human-only** (`disable-model-invocation`):
+`/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/handoff` and others
+cannot be invoked by an agent. When one of those is the right next step, say so
+and stop rather than improvising a substitute — hand-writing an issue instead of
+running `/to-tickets` loses the blocking edges that make the frontier computable.
+And **`/prototype` is the under-used one**: reach for it when a design question is
+hard to settle on paper, before implementing rather than after.
+
+### Resource discipline
+
+Token spend is a primary constraint, and quality is not what to trade for it.
+Read narrowly rather than whole files, batch independent tool calls, and treat
+sub-agents as a cold context each — worth it for a pre-merge `/code-review`, not
+for routine lookups. Ending a session with `/handoff` and picking up fresh is
+cheaper and more reliable than keeping one long context warm. Details in
+`docs/agents/workflow.md`.
+
 ### Issue tracker
 
 Issues live in this repo's GitHub Issues (Herman-Adu/adu-dev), managed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
