@@ -4,12 +4,13 @@ import { strapiImage } from '../strapi/strapiImage';
 
 /**
  * `shared.seo` has no per-network override fields, so the OG and Twitter cards
- * are derived from the shared `meta*` ones. Adding real overrides is a
- * content-model change, tracked in #40.
+ * are derived from the shared `meta*` ones. That is a decision rather than a
+ * gap — see `docs/adr/0009-seo-mirrors-one-set-of-fields.md`, which also names
+ * what would reopen it.
  *
- * Note the Twitter card now carries `metaImage`, which it did not before: it
- * read a `twitterImage` field that does not exist, so the image was always
- * empty. Using `metaImage` matches what `openGraph` above already does.
+ * Note the Twitter card carries `metaImage`. It previously read a `twitterImage`
+ * field that does not exist, so the image was always empty; `metaImage` matches
+ * what `openGraph` already does.
  */
 export function generateMetadataObject(
   seo: Fieldset<'shared.seo'> | null | undefined
