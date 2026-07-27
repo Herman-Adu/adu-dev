@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -220,8 +220,8 @@ const ShaderMaterial = ({
     timeLocation.value = timestamp;
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getUniforms = () => {
+  // Stable identity, so the material memo below is not rebuilt every render.
+  const getUniforms = useCallback(() => {
     const preparedUniforms: Record<string, PreparedUniform> = {};
 
     for (const uniformName in uniforms) {
@@ -263,7 +263,7 @@ const ShaderMaterial = ({
       value: new THREE.Vector2(size.width * 2, size.height * 2),
     }; // Initialize u_resolution
     return preparedUniforms;
-  };
+  }, [uniforms, size.width, size.height]);
 
   // Shader material
   const material = useMemo(() => {

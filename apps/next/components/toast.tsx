@@ -10,9 +10,10 @@ export const AIToast = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsOpen(true);
     }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (

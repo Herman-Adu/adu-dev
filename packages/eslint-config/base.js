@@ -47,9 +47,13 @@ export const base = [
     },
     rules: {
       // The repo's own standard, from AGENTS.md: prefer unknown over any, and
-      // tighten existing broad types incrementally. A warning keeps that
-      // visible without failing a build on code that predates the rule.
-      '@typescript-eslint/no-explicit-any': 'warn',
+      // tighten existing broad types incrementally. Promoted from warning to
+      // error in #30, once #15 had converted the frontend and taken the count
+      // from 73 to 0. Four `any`s remain, each disabled in place with a stated
+      // reason where no non-any type exists: the dynamic-zone dispatcher, the
+      // polymorphic Button element, react-three-fiber's invariant mesh ref, and
+      // tsparticles' v2 boolean shorthand.
+      '@typescript-eslint/no-explicit-any': 'error',
 
       // Unused variables are a genuine signal, but an underscore prefix is the
       // conventional way to say "deliberately unused" for required positional

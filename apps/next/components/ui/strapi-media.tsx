@@ -54,6 +54,7 @@ export function StrapiMedia({
     const url = getStrapiMedia(src);
     if (!url) return null;
     return (
+      // eslint-disable-next-line jsx-a11y/media-has-caption -- see #46
       <video
         src={url}
         controls
@@ -69,6 +70,7 @@ export function StrapiMedia({
     const url = getStrapiMedia(src);
     if (!url) return null;
     return (
+      // eslint-disable-next-line jsx-a11y/media-has-caption -- see #46
       <audio
         src={url}
         controls

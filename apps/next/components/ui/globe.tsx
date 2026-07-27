@@ -8,8 +8,6 @@ import ThreeGlobe from 'three-globe';
 
 import countries from './data/globe.json';
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
 extend({ ThreeGlobe });
 
 const RING_PROPAGATION_SPEED = 3;
@@ -102,6 +100,11 @@ export function Globe({ globeConfig, data }: WorldProps) {
       _buildData();
       _buildMaterial();
     }
+    // `_buildData` and `_buildMaterial` are declared below and rebuilt every
+    // render; including them would rebuild the globe's geometry and material on
+    // every render. globeRef.current is a mutable ref, so it cannot trigger the
+    // effect either — this is deliberately keyed on mount, not on identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeRef.current, isMounted]);
 
   const _buildMaterial = () => {
@@ -221,10 +224,16 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
       setIsAnimationStarted(true);
       // Small delay to ensure initialization is complete
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         startAnimation();
       }, 100);
+      return () => clearTimeout(timer);
     }
+    // `startAnimation` is redeclared every render and `defaultProps` is a fresh
+    // object literal, so both change identity every render — including them
+    // would restart the arc animation continuously. The effect is idempotent
+    // instead: `isAnimationStarted` guards it, so it runs once per data set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeData, isAnimationStarted]);
 
   const startAnimation = () => {
@@ -340,6 +349,11 @@ export function Globe({ globeConfig, data }: WorldProps) {
     return () => {
       clearInterval(interval);
     };
+    // ESLint asks for `data.length`, read inside the interval callback. The
+    // callback reads it on each tick rather than closing over it, so adding it
+    // here would only tear down and rebuild the interval whenever an arc is
+    // added or removed, restarting the cycle mid-way.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeRef.current, globeData]);
 
   // Prevent hydration mismatch by only rendering on client
@@ -361,7 +375,10 @@ export function WebGLRendererConfig() {
     gl.setPixelRatio(window.devicePixelRatio);
     gl.setSize(size.width, size.height);
     gl.setClearColor(0xffaaff, 0);
-  }, []);
+    // `size` changes when the canvas resizes, which is exactly when the
+    // renderer needs re-sizing — an empty array here left it fixed at its
+    // first measurement.
+  }, [gl, size.width, size.height]);
 
   return null;
 }
