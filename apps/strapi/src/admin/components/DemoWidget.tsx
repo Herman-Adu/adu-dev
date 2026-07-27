@@ -25,7 +25,7 @@ const DemoWidget = () => {
         <Box style={{ flex: '1 1 45%' }}>
           <Flex direction="column" alignItems="flex-start" gap={2}>
             <Box marginBottom={2}>
-              <Typography variant="alpha" textColor="neutral800" as="h2">
+              <Typography variant="alpha" textColor="neutral800" tag="h2">
                 Hosted Demo Environment
               </Typography>
             </Box>
