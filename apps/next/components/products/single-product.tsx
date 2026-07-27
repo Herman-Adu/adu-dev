@@ -115,24 +115,6 @@ export const SingleProduct = ({
             </>
           )}
 
-          {product.categories && product.categories.length > 0 && (
-            <>
-              <h3 className="text-sm font-medium text-neutral-400 mb-2 mt-8">
-                Categories
-              </h3>
-              <ul className="flex gap-4 flex-wrap">
-                {product.categories &&
-                  product.categories?.map((category, idx) => (
-                    <li
-                      key={`category-${idx}`}
-                      className=" bg-neutral-800 text-sm text-white px-3 py-1 rounded-full font-medium"
-                    >
-                      {category.name}
-                    </li>
-                  ))}
-              </ul>
-            </>
-          )}
           <AddToCartModal
             onClick={() => addToCart(product)}
             ctaText={addToCartText}

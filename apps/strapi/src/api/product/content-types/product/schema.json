@@ -75,12 +75,6 @@
       "target": "api::plan.plan",
       "mappedBy": "product"
     },
-    "categories": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::category.category",
-      "mappedBy": "product"
-    },
     "dynamic_zone": {
       "type": "dynamiczone",
       "pluginOptions": {

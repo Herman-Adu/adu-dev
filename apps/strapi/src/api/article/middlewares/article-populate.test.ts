@@ -21,6 +21,13 @@ test('article requests reach the handler with media and localizations populated'
   expect(populate.localizations).toBe(true);
 });
 
+test('categories are populated one level deep, because only the name is rendered', async () => {
+  const { ctx } = await runMiddleware();
+  const populate = ctx.query.populate as Record<string, unknown>;
+
+  expect(populate.categories).toBe(true);
+});
+
 test('article requests populate SEO meta images and CTA dynamic-zone content', async () => {
   const { ctx } = await runMiddleware();
   const populate = ctx.query.populate as {

@@ -9,7 +9,7 @@ From the repo root:
 
 ```sh
 pnpm setup            # installs every workspace, then copies .env files
-pnpm seed             # imports demo data into SQLite (222 entities, 115 assets)
+pnpm seed             # imports demo data into SQLite (216 entities, 115 assets)
 ```
 
 One `pnpm install` at the root installs both apps — there is no per-app install
@@ -59,28 +59,30 @@ archive is a 23 MB binary, so regenerate it only when the data actually changed.
 ### What the round trip does and does not preserve
 
 Content, yes. Bytes, no — timestamps make byte-equality meaningless, so it is not
-the bar. Measured on unchanged data, 2026-07-27:
+the bar. Measured 2026-07-27, on unchanged data:
 
 |               | seed | export | seed |
 | ------------- | ---- | ------ | ---- |
-| entities      | 222  | 222    | 222  |
+| entities      | 216  | 216    | 216  |
 | assets        | 115  | 115    | 115  |
-| links         | 750  | 750    | 750  |
-| configuration | 79   | 78     | 78   |
+| links         | 715  | 715    | 715  |
+| configuration | 78   | 78     | 78   |
 
-All 83 populated **content** tables held identical row counts before and after.
-That count excludes Strapi's own `strapi_*` tables, which is where the
-configuration row above lives — the two measurements do not overlap, so both are
+All 82 populated **content** tables held identical row counts before and after.
+That count excludes the `strapi_*` and `admin_*` tables, which is where
+configuration lives — the two rows of the table above do not overlap, so both are
 true at once.
 
-The one configuration row lost on the first cycle is
+Configuration converges rather than shedding a row per cycle. An archive
+committed earlier carried one extra row,
 `plugin_content_manager_configuration_content_types::admin::audit-log` — a view
-setting for an Enterprise-only content type that does not exist in this
-Community Edition database, so export cannot emit it. A second cycle exported 78
-again, so the loop converges rather than shedding a row each time.
+setting for an Enterprise-only content type that does not exist in this Community
+Edition database, so export cannot emit it. It dropped once, on the first export,
+and every cycle since has reported 78.
 
-The entity figure above was previously recorded here as 191. The archive has not
-changed; 191 was simply never measured.
+Re-measure these numbers whenever you regenerate the archive. They are a
+description of one export, not a guarantee, and every figure here has been wrong
+at least once.
 
 ## Environment files
 

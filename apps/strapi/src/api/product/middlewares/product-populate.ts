@@ -20,25 +20,6 @@ const populate = {
       },
     },
   },
-  categories: {
-    populate: {
-      product: true,
-      articles: {
-        populate: {
-          dynamic_zone: {
-            on: {
-              'dynamic-zone.related-articles': true,
-              'dynamic-zone.cta': {
-                populate: {
-                  CTAs: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
   plans: {
     populate: {
       perks: true,
