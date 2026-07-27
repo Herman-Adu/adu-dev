@@ -1,6 +1,5 @@
 import { MotionProps } from 'framer-motion';
 import React from 'react';
-import Balancer from 'react-wrap-balancer';
 
 import { cn } from '@/lib/utils';
 
@@ -32,14 +31,14 @@ export const Heading = ({
     <Tag
       className={cn(
         'text-3xl md:text-5xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight',
-        'font-medium',
+        'font-medium text-balance',
         'bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white',
         sizeVariants[size],
         className
       )}
       {...props}
     >
-      <Balancer>{children}</Balancer>
+      {children}
     </Tag>
   );
 };

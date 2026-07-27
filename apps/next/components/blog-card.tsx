@@ -1,6 +1,5 @@
 import { Link } from 'next-view-transitions';
 import React from 'react';
-import Balancer from 'react-wrap-balancer';
 
 import { BlurImage } from '@/components/blur-image';
 import { resolveStrapiMedia } from '@/lib/strapi/strapiImage';
@@ -46,8 +45,8 @@ export const BlogCard = ({
               </p>
             ))}
           </div>
-          <p className="text-lg md:text-4xl font-bold mb-4">
-            <Balancer>{article.title}</Balancer>
+          <p className="text-lg md:text-4xl font-bold mb-4 text-balance">
+            {article.title}
           </p>
           <p className="text-left text-base md:text-xl mt-2 text-muted">
             {truncate(article.description, 500)}
@@ -111,8 +110,8 @@ export const BlogCardVertical = ({
               </p>
             ))}
           </div>
-          <p className="text-lg md:text-xl font-bold mb-4">
-            <Balancer>{article.title}</Balancer>
+          <p className="text-lg md:text-xl font-bold mb-4 text-balance">
+            {article.title}
           </p>
           <p className="text-left text-sm md:text-base mt-2 text-muted">
             {truncate(article.description, 500)}
