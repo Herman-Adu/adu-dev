@@ -1,5 +1,7 @@
 import nextPlugin from '@next/eslint-plugin-next';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
+import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 
 /**
@@ -26,11 +28,28 @@ export const nextLayer = (files) => [
     plugins: {
       '@next/next': nextPlugin,
       'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+      'unused-imports': unusedImports,
     },
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules,
       ...reactHooks.configs.recommended.rules,
+
+      // Adopted in #30 after measuring what the code already satisfied:
+      // jsx-a11y recommended reported **2** violations across the whole
+      // frontend, both `media-has-caption` on the Strapi media renderer, and
+      // unused-imports reported **0**. Both are errors from the start because
+      // there was nothing to migrate.
+      ...jsxA11y.flatConfigs.recommended.rules,
+      'unused-imports/no-unused-imports': 'error',
+
+      // Promoted from warning in #30. An effect whose dependency array lies is
+      // how this repo's testimonials slider ended up recreating its interval on
+      // every tick — see #41 and the prototype recorded there. Six violations
+      // were hidden behind three suppressions, one of them file-wide; all are
+      // now either fixed or disabled in place with the hazard named.
+      'react-hooks/exhaustive-deps': 'error',
 
       // This app is App Router only — it has no `pages/` directory and never
       // will. The rule exists to catch <a> tags pointing at pages-router

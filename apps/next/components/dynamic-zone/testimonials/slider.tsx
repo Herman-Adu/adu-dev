@@ -19,16 +19,18 @@ export const TestimonialsSlider = ({
   const testimonialsRef = useRef<HTMLDivElement>(null);
 
   const slicedTestimonials = testimonials.slice(0, 3);
+  const slideCount = slicedTestimonials.length;
 
+  // Wrapping by modulo inside the updater keeps the whole transition in one
+  // place, so `active` is not a dependency and the interval survives a tick
+  // rather than being torn down and recreated by every one of them.
   useEffect(() => {
-    if (!autorotate) return;
+    if (!autorotate || slideCount === 0) return;
     const interval = setInterval(() => {
-      setActive(
-        active + 1 === slicedTestimonials.length ? 0 : (active) => active + 1
-      );
+      setActive((current) => (current + 1) % slideCount);
     }, 7000);
     return () => clearInterval(interval);
-  }, [active, autorotate, slicedTestimonials.length]);
+  }, [autorotate, slideCount]);
 
   const heightFix = () => {
     if (testimonialsRef.current && testimonialsRef.current.parentElement)
