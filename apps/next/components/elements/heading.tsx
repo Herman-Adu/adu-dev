@@ -1,4 +1,7 @@
-import { MotionProps } from 'framer-motion';
+// This file declares no directive, so it compiles into whichever graph imports
+// it — server and client both. `MotionProps` is used only in a type position, so
+// `import type` keeps framer-motion out of the server one.
+import type { MotionProps } from 'framer-motion';
 import React from 'react';
 
 import { cn } from '@/lib/utils';

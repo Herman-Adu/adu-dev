@@ -1,8 +1,35 @@
-'use client';
-
 import type { Block, UID } from '@repo/strapi-types';
-import dynamic from 'next/dynamic';
 import React from 'react';
+
+import { Brands } from './brands';
+import { CTA } from './cta';
+import { FAQ } from './faq';
+import { Features } from './features';
+import { FormNextToSection } from './form-next-to-section';
+import { Hero } from './hero';
+import { HowItWorks } from './how-it-works';
+import { Launches } from './launches';
+import { Pricing } from './pricing';
+import { RelatedArticles } from './related-articles';
+import { RelatedProducts } from './related-products';
+import { Testimonials } from './testimonials';
+
+/**
+ * This is a Server Component, and the static imports above are what keep it one.
+ *
+ * Importing the Blocks through `next/dynamic` would force the directive back on,
+ * and that matters more here than anywhere else in the app: this file is the root
+ * of every dynamic zone, so a boundary here puts all twelve Blocks and everything
+ * below them in the client bundle whether they need it or not.
+ *
+ * Static imports leave the boundary at whichever Blocks declare `'use client'`
+ * themselves, and Next code-splits at each one. A Block that declares nothing —
+ * CTA, related-articles, related-products — ships no client JS at all; one whose
+ * children do, like how-it-works or testimonials, ships only those children
+ * rather than itself and its whole subtree. The trade is explicit lazy-loading
+ * for automatic splitting; the pull request for #44 has the measurement that
+ * settled it.
+ */
 
 /**
  * A dynamic zone is a discriminated union: every entry carries the UID of the
@@ -36,36 +63,18 @@ const componentMapping: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
   [K in DynamicZoneUid]?: React.ComponentType<any>;
 } = {
-  'dynamic-zone.hero': dynamic(() => import('./hero').then((mod) => mod.Hero)),
-  'dynamic-zone.features': dynamic(() =>
-    import('./features').then((mod) => mod.Features)
-  ),
-  'dynamic-zone.testimonials': dynamic(() =>
-    import('./testimonials').then((mod) => mod.Testimonials)
-  ),
-  'dynamic-zone.how-it-works': dynamic(() =>
-    import('./how-it-works').then((mod) => mod.HowItWorks)
-  ),
-  'dynamic-zone.brands': dynamic(() =>
-    import('./brands').then((mod) => mod.Brands)
-  ),
-  'dynamic-zone.pricing': dynamic(() =>
-    import('./pricing').then((mod) => mod.Pricing)
-  ),
-  'dynamic-zone.launches': dynamic(() =>
-    import('./launches').then((mod) => mod.Launches)
-  ),
-  'dynamic-zone.cta': dynamic(() => import('./cta').then((mod) => mod.CTA)),
-  'dynamic-zone.form-next-to-section': dynamic(() =>
-    import('./form-next-to-section').then((mod) => mod.FormNextToSection)
-  ),
-  'dynamic-zone.faq': dynamic(() => import('./faq').then((mod) => mod.FAQ)),
-  'dynamic-zone.related-products': dynamic(() =>
-    import('./related-products').then((mod) => mod.RelatedProducts)
-  ),
-  'dynamic-zone.related-articles': dynamic(() =>
-    import('./related-articles').then((mod) => mod.RelatedArticles)
-  ),
+  'dynamic-zone.hero': Hero,
+  'dynamic-zone.features': Features,
+  'dynamic-zone.testimonials': Testimonials,
+  'dynamic-zone.how-it-works': HowItWorks,
+  'dynamic-zone.brands': Brands,
+  'dynamic-zone.pricing': Pricing,
+  'dynamic-zone.launches': Launches,
+  'dynamic-zone.cta': CTA,
+  'dynamic-zone.form-next-to-section': FormNextToSection,
+  'dynamic-zone.faq': FAQ,
+  'dynamic-zone.related-products': RelatedProducts,
+  'dynamic-zone.related-articles': RelatedArticles,
 };
 
 const DynamicZoneManager: React.FC<Props> = ({ dynamicZone, locale }) => {

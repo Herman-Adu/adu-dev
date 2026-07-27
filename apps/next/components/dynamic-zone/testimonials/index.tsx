@@ -1,5 +1,3 @@
-'use client';
-
 import type { Block } from '@repo/strapi-types';
 import React from 'react';
 import { TbLocationBolt } from 'react-icons/tb';

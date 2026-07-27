@@ -1,15 +1,11 @@
-'use client';
-
 import type { Block } from '@repo/strapi-types';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
 
-import ShootingStars from '../decorations/shooting-star';
-import StarBackground from '../decorations/star-background';
 import { Button } from '../elements/button';
 import { Heading } from '../elements/heading';
 import { Subheading } from '../elements/subheading';
+import { HeroBackdrop } from './hero-backdrop';
 
 // The Hero Block's fields come straight from the Strapi schema, so a rename in
 // the backend surfaces here as a typecheck failure rather than a blank render.
@@ -18,14 +14,7 @@ type HeroProps = Block<'dynamic-zone.hero'> & { locale: string };
 export const Hero = ({ heading, sub_heading, CTAs, locale }: HeroProps) => {
   return (
     <div className="h-screen overflow-hidden relative flex flex-col items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        <StarBackground />
-        <ShootingStars />
-      </motion.div>
+      <HeroBackdrop />
       <Heading
         as="h1"
         className="text-4xl md:text-4xl lg:text-8xl font-semibold max-w-7xl mx-auto text-center mt-6 relative z-10  py-6"

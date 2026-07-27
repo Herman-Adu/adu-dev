@@ -1,5 +1,3 @@
-'use client';
-
 import type { Block } from '@repo/strapi-types';
 import { IconSettings } from '@tabler/icons-react';
 import React from 'react';
