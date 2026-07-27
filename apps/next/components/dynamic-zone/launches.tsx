@@ -18,12 +18,8 @@ export const Launches = ({ heading, sub_heading, launches }: LaunchesProps) => {
   // launches reaches this component as null rather than an empty array.
   const allLaunches = launches ?? [];
 
-  // `title` and `description` are optional in the schema but required by
-  // StickyScroll, so they are defaulted here rather than widening its contract.
   const launchesWithDecoration = allLaunches.map((entry) => ({
     ...entry,
-    title: entry.title ?? '',
-    description: entry.description ?? '',
     icon: <IconRocket className="h-8 w-8 text-secondary" />,
     content: (
       <p className="text-4xl md:text-7xl font-bold text-neutral-800">

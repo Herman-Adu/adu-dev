@@ -28,12 +28,7 @@ export const HowItWorks = ({
 
         {steps &&
           steps.map((item, index: number) => (
-            <Card
-              title={item.title ?? ''}
-              description={item.description ?? ''}
-              index={index + 1}
-              key={item.id}
-            />
+            <Card {...item} index={index + 1} key={item.id} />
           ))}
       </Container>
     </div>
