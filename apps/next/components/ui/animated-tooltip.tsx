@@ -1,5 +1,6 @@
 'use client';
 
+import type { Fieldset } from '@repo/strapi-types';
 import {
   AnimatePresence,
   motion,
@@ -11,18 +12,12 @@ import React, { useState } from 'react';
 
 import { StrapiMedia } from '@/components/ui/strapi-media';
 
-export const AnimatedTooltip = ({
-  items,
-}: {
-  items: {
-    id: number;
-    firstname: string;
-    lastname: string;
-    job: string;
-    image: any;
-  }[];
-}) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+// This renders the `shared.user` Fieldset, so it takes that shape rather than
+// a hand-copied duplicate of it that a schema change would not reach.
+type User = Fieldset<'shared.user'>;
+
+export const AnimatedTooltip = ({ items }: { items: User[] }) => {
+  const [hoveredIndex, setHoveredIndex] = useState<User['id'] | null>(null);
   const springConfig = { stiffness: 100, damping: 5 };
   const x = useMotionValue(0); // going to set this value on mouse move
   // rotate the tooltip

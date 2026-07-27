@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block } from '@repo/strapi-types';
 import { IconSettings } from '@tabler/icons-react';
 import React from 'react';
 
@@ -9,15 +10,13 @@ import { Subheading } from '../../elements/subheading';
 import { FeatureIconContainer } from '../features/feature-icon-container';
 import { Card } from './card';
 
+type HowItWorksProps = Block<'dynamic-zone.how-it-works'>;
+
 export const HowItWorks = ({
   heading,
   sub_heading,
   steps,
-}: {
-  heading: string;
-  sub_heading: string;
-  steps: any;
-}) => {
+}: HowItWorksProps) => {
   return (
     <div>
       <Container className="py-20 max-w-7xl mx-auto  relative z-40">
@@ -28,16 +27,14 @@ export const HowItWorks = ({
         <Subheading className="max-w-3xl mx-auto">{sub_heading}</Subheading>
 
         {steps &&
-          steps.map(
-            (item: { title: string; description: string }, index: number) => (
-              <Card
-                title={item.title}
-                description={item.description}
-                index={index + 1}
-                key={'card' + index}
-              />
-            )
-          )}
+          steps.map((item, index: number) => (
+            <Card
+              title={item.title ?? ''}
+              description={item.description ?? ''}
+              index={index + 1}
+              key={item.id}
+            />
+          ))}
       </Container>
     </div>
   );

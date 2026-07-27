@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block } from '@repo/strapi-types';
 import {
   IconBrandGithub,
   IconBrandLinkedin,
@@ -12,18 +13,14 @@ import ShootingStars from '@/components/decorations/shooting-star';
 import StarBackground from '@/components/decorations/star-background';
 import { AnimatedTooltip } from '@/components/ui/animated-tooltip';
 
+type FormNextToSectionProps = Block<'dynamic-zone.form-next-to-section'>;
+
 export function FormNextToSection({
   heading,
   sub_heading,
   form,
   section,
-}: {
-  heading: string;
-  sub_heading: string;
-  form: any;
-  section: any;
-  social_media_icon_links: any;
-}) {
+}: FormNextToSectionProps) {
   const socials = [
     {
       title: 'twitter',
@@ -63,7 +60,7 @@ export function FormNextToSection({
             <div>
               <form className="space-y-4">
                 {form &&
-                  form?.inputs?.map((input: any, index: number) => (
+                  form?.inputs?.map((input, index: number) => (
                     <div key={`form-input-${index}`}>
                       {input.type !== 'submit' && (
                         <label
@@ -79,7 +76,7 @@ export function FormNextToSection({
                           <textarea
                             rows={5}
                             id="message"
-                            placeholder={input.placeholder}
+                            placeholder={input.placeholder ?? undefined}
                             className="block w-full bg-neutral-900  px-4 rounded-md border-0 py-1.5  shadow-aceternity text-neutral-100 placeholder:text-gray-400 focus:ring-2 focus:ring-neutral-400 focus:outline-none sm:text-sm sm:leading-6 "
                           />
                         ) : input.type === 'submit' ? (
@@ -91,8 +88,8 @@ export function FormNextToSection({
                         ) : (
                           <input
                             id="name"
-                            type={input.type}
-                            placeholder={input.placeholder}
+                            type={input.type ?? undefined}
+                            placeholder={input.placeholder ?? undefined}
                             className="block w-full bg-neutral-900 px-4 rounded-md border-0 py-1.5  shadow-aceternity text-neutral-100 placeholder:text-gray-400 focus:ring-2 focus:ring-neutral-400 focus:outline-none sm:text-sm sm:leading-6 "
                           />
                         )}
@@ -116,21 +113,21 @@ export function FormNextToSection({
         <ShootingStars />
         <div className="max-w-sm mx-auto">
           <div className="flex flex-row items-center justify-center mb-10 w-full">
-            <AnimatedTooltip items={section.users} />
+            <AnimatedTooltip items={section?.users ?? []} />
           </div>
           <p
             className={
               'font-semibold text-xl text-center  text-muted text-balance'
             }
           >
-            {section.heading}
+            {section?.heading}
           </p>
           <p
             className={
               'font-normal text-base text-center text-neutral-500  mt-8 text-balance'
             }
           >
-            {section.sub_heading}
+            {section?.sub_heading}
           </p>
         </div>
       </div>
