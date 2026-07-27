@@ -9,15 +9,16 @@ From the repo root:
 
 ```sh
 pnpm setup            # installs every workspace, then copies .env files
-pnpm seed             # imports demo data into SQLite (191 entities, 115 assets)
+pnpm seed             # imports demo data into SQLite (222 entities, 115 assets)
 ```
 
 One `pnpm install` at the root installs both apps — there is no per-app install
 step. `pnpm setup` runs that install and then copies `.env.example` → `.env` in
 each app, only where `.env` does not already exist.
 
-`pnpm seed` is **destructive** — it wipes existing data before importing. Re-run
-it to reset to the demo baseline.
+`pnpm seed` is **destructive** — it wipes existing data before importing, and it
+passes `--force`, so it does not stop to ask. Re-run it to reset to the demo
+baseline.
 
 Verify both apps are healthy afterwards:
 
@@ -27,6 +28,59 @@ pnpm build
 
 The first `pnpm --filter strapi develop` prompts to create a Super Admin at
 `http://localhost:1337/admin`; the seed does not include admin credentials.
+
+## Changing the demo data
+
+Seeding is one half of a loop; `pnpm export` is the other.
+
+```sh
+pnpm seed     # apps/strapi/data/seed.tar.gz -> SQLite
+pnpm export   # SQLite -> apps/strapi/data/seed.tar.gz
+```
+
+So to change what a fresh clone gets: seed, edit in the admin, `pnpm export`,
+commit the archive. Both ends read and write that one date-free path, so
+regenerating never renames a file or edits a package manifest.
+
+Both scripts live in `apps/strapi/package.json` and the root scripts delegate to
+them, so the path is stated in one file — but twice within it, and in two forms:
+`import` takes the filename, `export` takes `./data/seed` and appends
+`.tar.gz` itself. Change one and you must change the other.
+
+Neither command needs the dev server stopped. Both open
+`apps/strapi/.tmp/data.db` directly while `pnpm dev` holds it, and both were
+measured succeeding that way; after a seed, the running server serves the
+replaced content without a restart.
+
+`pnpm export` overwrites the archive in place without prompting, and writes it
+unencrypted; an encrypted archive would demand a key on every import. The
+archive is a 23 MB binary, so regenerate it only when the data actually changed.
+
+### What the round trip does and does not preserve
+
+Content, yes. Bytes, no — timestamps make byte-equality meaningless, so it is not
+the bar. Measured on unchanged data, 2026-07-27:
+
+|               | seed | export | seed |
+| ------------- | ---- | ------ | ---- |
+| entities      | 222  | 222    | 222  |
+| assets        | 115  | 115    | 115  |
+| links         | 750  | 750    | 750  |
+| configuration | 79   | 78     | 78   |
+
+All 83 populated **content** tables held identical row counts before and after.
+That count excludes Strapi's own `strapi_*` tables, which is where the
+configuration row above lives — the two measurements do not overlap, so both are
+true at once.
+
+The one configuration row lost on the first cycle is
+`plugin_content_manager_configuration_content_types::admin::audit-log` — a view
+setting for an Enterprise-only content type that does not exist in this
+Community Edition database, so export cannot emit it. A second cycle exported 78
+again, so the loop converges rather than shedding a row each time.
+
+The entity figure above was previously recorded here as 191. The archive has not
+changed; 191 was simply never measured.
 
 ## Environment files
 

@@ -58,6 +58,19 @@ Populate your Strapi instance with demo content:
 pnpm seed
 ```
 
+This is **destructive** — it wipes existing data first, without asking. Re-run it
+any time to reset to the demo baseline.
+
+To go the other way and turn your current content into the new baseline, export
+it back over the same archive and commit the result:
+
+```sh
+pnpm export
+```
+
+See [`docs/agents/setup.md`](docs/agents/setup.md) for what the round trip does
+and does not preserve.
+
 ## 4. Start the Development Servers
 
 Launch both Strapi and Next.js concurrently from the root:
