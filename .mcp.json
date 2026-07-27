@@ -6,6 +6,10 @@
       "headers": {
         "Authorization": "Bearer ${STRAPI_MCP_TOKEN}"
       }
+    },
+    "strapi-docs": {
+      "type": "http",
+      "url": "https://strapi-docs.mcp.kapa.ai"
     }
   }
 }

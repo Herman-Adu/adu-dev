@@ -111,6 +111,28 @@ settings enable it, and both are opt-in:
 The server is only reachable while the Strapi dev server is running; if Claude
 Code starts first, `/mcp` shows it failed until you reconnect.
 
+## Strapi docs MCP server
+
+A second, unrelated server sits in the same `.mcp.json` under the name
+`strapi-docs` (`https://strapi-docs.mcp.kapa.ai`). It answers questions against
+the full published Strapi documentation — guides, API references and code
+examples — and is run by Kapa, the service behind the Ask AI button on
+docs.strapi.io.
+
+The two are worth keeping straight, because they answer opposite questions:
+`strapi` knows **this project's** content and schema; `strapi-docs` knows **the
+product**. Neither substitutes for the other, and neither replaces
+`packages/strapi-types/generated/*.d.ts` as the authority on our own schema.
+
+It needs no token, but it is OAuth-protected rather than open: the first
+connection returns a 401 whose `www-authenticate` header points at
+`https://mcp.kapa.ai/auth/public`. Run `/mcp` in Claude Code and authenticate in
+the browser it opens. Being remote, it does not depend on the local Strapi
+running.
+
+Reach for it before answering a Strapi API question from memory — the model's
+training data lags the docs, and 5.x has moved fast.
+
 ### Schema questions and data questions are answered by different things
 
 Neither needs a custom MCP capability. #48 proposed building some and was closed
