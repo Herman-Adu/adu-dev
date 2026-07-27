@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block } from '@repo/strapi-types';
 import { IconRocket } from '@tabler/icons-react';
 import { motion, useMotionValueEvent } from 'framer-motion';
 import { useScroll } from 'framer-motion';
@@ -10,17 +11,19 @@ import { Subheading } from '../elements/subheading';
 import { FeatureIconContainer } from './features/feature-icon-container';
 import { StickyScroll } from '@/components/ui/sticky-scroll';
 
-export const Launches = ({
-  heading,
-  sub_heading,
-  launches,
-}: {
-  heading: string;
-  sub_heading: string;
-  launches: any[];
-}) => {
-  const launchesWithDecoration = launches.map((entry) => ({
+type LaunchesProps = Block<'dynamic-zone.launches'>;
+
+export const Launches = ({ heading, sub_heading, launches }: LaunchesProps) => {
+  // The component is optional in the schema, so an authored Block with no
+  // launches reaches this component as null rather than an empty array.
+  const allLaunches = launches ?? [];
+
+  // `title` and `description` are optional in the schema but required by
+  // StickyScroll, so they are defaulted here rather than widening its contract.
+  const launchesWithDecoration = allLaunches.map((entry) => ({
     ...entry,
+    title: entry.title ?? '',
+    description: entry.description ?? '',
     icon: <IconRocket className="h-8 w-8 text-secondary" />,
     content: (
       <p className="text-4xl md:text-7xl font-bold text-neutral-800">
@@ -39,8 +42,8 @@ export const Launches = ({
   const [gradient, setGradient] = useState(backgrounds[0]);
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const cardsBreakpoints = launches.map(
-      (_, index) => index / launches.length
+    const cardsBreakpoints = allLaunches.map(
+      (_, index) => index / allLaunches.length
     );
     const closestBreakpointIndex = cardsBreakpoints.reduce(
       (acc, breakpoint, index) => {

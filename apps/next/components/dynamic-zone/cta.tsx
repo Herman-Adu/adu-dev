@@ -1,5 +1,6 @@
 'use client';
 
+import type { Block } from '@repo/strapi-types';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
@@ -8,17 +9,9 @@ import { Container } from '../container';
 import { AmbientColor } from '../decorations/ambient-color';
 import { Button } from '../elements/button';
 
-export const CTA = ({
-  heading,
-  sub_heading,
-  CTAs,
-  locale,
-}: {
-  heading: string;
-  sub_heading: string;
-  CTAs: any[];
-  locale: string;
-}) => {
+type CTAProps = Block<'dynamic-zone.cta'> & { locale: string };
+
+export const CTA = ({ heading, sub_heading, CTAs, locale }: CTAProps) => {
   return (
     <div className="relative py-40">
       <AmbientColor />
@@ -38,7 +31,7 @@ export const CTA = ({
                 as={Link}
                 key={index}
                 href={`/${locale}${cta.URL}`}
-                variant={cta.variant}
+                {...(cta.variant ? { variant: cta.variant } : {})}
                 className="py-3"
               >
                 {cta.text}
