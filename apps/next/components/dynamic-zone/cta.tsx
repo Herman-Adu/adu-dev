@@ -1,7 +1,4 @@
-'use client';
-
 import type { Block } from '@repo/strapi-types';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
 
@@ -17,9 +14,12 @@ export const CTA = ({ heading, sub_heading, CTAs, locale }: CTAProps) => {
       <AmbientColor />
       <Container className="flex flex-col md:flex-row justify-between items-center w-full px-8">
         <div className="flex flex-col">
-          <motion.h2 className="text-white text-xl text-center md:text-left md:text-3xl font-bold mx-auto md:mx-0 max-w-xl ">
+          {/* Was a `motion.h2` carrying no animation props at all — no initial,
+              animate, transition or variants. It rendered an ordinary <h2> and
+              charged the whole Block a client boundary to do it. */}
+          <h2 className="text-white text-xl text-center md:text-left md:text-3xl font-bold mx-auto md:mx-0 max-w-xl ">
             {heading}
-          </motion.h2>
+          </h2>
           <p className="max-w-md mt-8 text-center md:text-left text-sm md:text-base mx-auto md:mx-0 text-neutral-400">
             {sub_heading}
           </p>

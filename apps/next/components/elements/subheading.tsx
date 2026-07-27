@@ -1,4 +1,6 @@
-import { MotionProps } from 'framer-motion';
+// Type-only: this is a Server Component, and a value import would drag
+// framer-motion into the server graph if the compiler ever stopped eliding it.
+import type { MotionProps } from 'framer-motion';
 import React from 'react';
 
 import { cn } from '@/lib/utils';
