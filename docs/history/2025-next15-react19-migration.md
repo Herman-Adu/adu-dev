@@ -1,5 +1,19 @@
 # Next.js 15 & React 19 Migration Log
 
+> [!WARNING]
+> **Superseded — historical record, not current guidance.**
+>
+> This log describes the migration to **Next.js 15**. The frontend now runs
+> **Next.js 16**, so the versions and workarounds below no longer describe the
+> app. Its package-manager advice predates the move to pnpm (#21,
+> `docs/adr/0002-pnpm-not-yarn.md`): `yarn dlx` and
+> `npm install --legacy-peer-deps` are not how anything is installed here, and
+> `--legacy-peer-deps` appears in no script in this repository.
+>
+> Kept because the component-level fixes it records are the reasoning behind
+> code that is still live. For how the repository actually works, read
+> `AGENTS.md`.
+
 ## Overview
 
 This document details the migration from Next.js 14 to Next.js 15.5.0 and React 18 to React 19.1.1, including all issues encountered and their resolutions.
