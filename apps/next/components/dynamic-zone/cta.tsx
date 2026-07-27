@@ -14,9 +14,6 @@ export const CTA = ({ heading, sub_heading, CTAs, locale }: CTAProps) => {
       <AmbientColor />
       <Container className="flex flex-col md:flex-row justify-between items-center w-full px-8">
         <div className="flex flex-col">
-          {/* Was a `motion.h2` carrying no animation props at all — no initial,
-              animate, transition or variants. It rendered an ordinary <h2> and
-              charged the whole Block a client boundary to do it. */}
           <h2 className="text-white text-xl text-center md:text-left md:text-3xl font-bold mx-auto md:mx-0 max-w-xl ">
             {heading}
           </h2>

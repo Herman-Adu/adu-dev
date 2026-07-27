@@ -15,20 +15,20 @@ import { RelatedProducts } from './related-products';
 import { Testimonials } from './testimonials';
 
 /**
- * This is a Server Component, and the static imports above are what make it one.
+ * This is a Server Component, and the static imports above are what keep it one.
  *
- * It used to be `'use client'` with twelve `next/dynamic` calls. Nothing in this
- * file needs the client — the directive was there only because `dynamic()` was.
- * The cost was that the boundary sat here, at the root of every dynamic zone, so
- * all twelve Blocks and everything below them joined the client bundle whether
- * they needed it or not.
+ * Importing the Blocks through `next/dynamic` would force the directive back on,
+ * and that matters more here than anywhere else in the app: this file is the root
+ * of every dynamic zone, so a boundary here puts all twelve Blocks and everything
+ * below them in the client bundle whether they need it or not.
  *
- * With static imports the boundary moves down to whichever Blocks actually
- * declare `'use client'`, and Next code-splits at each one. Blocks that are
- * wholly server — CTA, how-it-works, testimonials, related-*, form-next-to-
- * section, features — now ship no client JS at all rather than a lazy chunk
- * each. That trades explicit lazy-loading for automatic splitting; see the pull
- * request for #44 for the before/after measurement that settled it.
+ * Static imports leave the boundary at whichever Blocks declare `'use client'`
+ * themselves, and Next code-splits at each one. A Block that declares nothing —
+ * CTA, related-articles, related-products — ships no client JS at all; one whose
+ * children do, like how-it-works or testimonials, ships only those children
+ * rather than itself and its whole subtree. The trade is explicit lazy-loading
+ * for automatic splitting; the pull request for #44 has the measurement that
+ * settled it.
  */
 
 /**

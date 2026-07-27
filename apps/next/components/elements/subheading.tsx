@@ -1,5 +1,5 @@
-// Type-only: this is a Server Component, and a value import would drag
-// framer-motion into the server graph if the compiler ever stopped eliding it.
+// Type-only for the same reason as `heading.tsx`: no directive here, so this
+// compiles into the server graph too, and framer-motion should not follow.
 import type { MotionProps } from 'framer-motion';
 import React from 'react';
 

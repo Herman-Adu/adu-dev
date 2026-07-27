@@ -13,7 +13,8 @@ import StarBackground from '../decorations/star-background';
  * client components in their own right — they own a canvas and an animation
  * frame loop — and the fade is a framer-motion animation. Isolating the three
  * here is what lets the Hero itself stay a Server Component, so its heading,
- * subheading and CTAs render on the server and ship no JS.
+ * subheading and CTAs are rendered on the server rather than shipped as part of
+ * a client Hero.
  */
 export const HeroBackdrop = () => {
   return (
