@@ -97,8 +97,8 @@ export const Features = ({
               <CardSkeletonContainer showGradient={false}>
                 <SkeletonFour />
               </CardSkeletonContainer>
-              <CardTitle>{social_media_card.Title}</CardTitle>
-              <CardDescription>{social_media_card.Description}</CardDescription>
+              <CardTitle>{social_media_card.title}</CardTitle>
+              <CardDescription>{social_media_card.description}</CardDescription>
             </Card>
           )}
         </div>
