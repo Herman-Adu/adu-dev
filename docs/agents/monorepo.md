@@ -35,8 +35,7 @@ state.
 `build`, `test`, `typecheck` and `lint` run through Turborepo, which hashes each
 task's inputs and skips what has not changed — a repeat run with nothing touched
 finishes in milliseconds and prints `FULL TURBO`. Change one app and only that
-app is rebuilt. See `docs/adr/0004-turborepo-task-runner.md`. Add `--force` to
-bypass the cache when you need to see a task actually execute.
+app is rebuilt. See `docs/adr/0004-turborepo-task-runner.md`.
 
 `pnpm dev` is deliberately **not** a Turbo task: it starts Strapi, waits for port
 1337, then starts Next, and Turbo has no equivalent readiness gate.

@@ -91,9 +91,7 @@ Branch from `main`. The `.husky/pre-commit` hook refuses a commit while `main` i
 checked out, because `main` rejects pushes anyway and failing locally costs a
 second rather than a rejected push.
 
-Run the smallest gate that covers the change, per the Verification section of
-`AGENTS.md`. For anything that introduces a **new gate**, demonstrate that it
-fails as well as passes, and show both in the pull request.
+Gates and the prove-it-fails rule are in the Verification section of `AGENTS.md`.
 
 ### 5. Review, before the pull request leaves draft
 

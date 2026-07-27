@@ -4,7 +4,8 @@ Guidance for LLM agents working in this repository.
 
 This file is a **router**, not an encyclopedia. It is read at the start of every
 session, so everything here is paid for on every task. Depth lives in
-`docs/agents/` and is read only when the task needs it — keep it that way.
+`docs/agents/` and is read only when the task needs it. Adding here rather than
+there is how this file silts up.
 
 ## Repo overview
 
@@ -81,16 +82,16 @@ measurement that justified it.
 
 Read these when the task calls for them, not before.
 
-| Topic                                                               | File                                               |
-| ------------------------------------------------------------------- | -------------------------------------------------- |
-| Which skill to run at which step; resource discipline               | `docs/agents/workflow.md`                          |
-| Schemas, `@repo/strapi-types`, Strapi and Next conventions, testing | `docs/agents/content-types.md`                     |
-| pnpm workspaces, install scripts, Turbo, the two React type majors  | `docs/agents/monorepo.md`                          |
-| CI jobs, `Verify`, branch protection, the only route to `main`      | `docs/agents/ci-and-branch-protection.md`          |
-| First-run setup, env files, the Strapi MCP server                   | `docs/agents/setup.md`                             |
-| Issues, via the `gh` CLI                                            | `docs/agents/issue-tracker.md`                     |
-| Triage labels                                                       | `docs/agents/triage-labels.md`                     |
-| Domain vocabulary and ADRs                                          | `CONTEXT.md`, `docs/adr/`, `docs/agents/domain.md` |
+| Topic                                                                                                | File                                               |
+| ---------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **Read before starting work** — which skill at which step, which are human-only, resource discipline | `docs/agents/workflow.md`                          |
+| Schemas, `@repo/strapi-types`, Strapi and Next conventions, testing                                  | `docs/agents/content-types.md`                     |
+| pnpm workspaces, install scripts, Turbo, the two React type majors                                   | `docs/agents/monorepo.md`                          |
+| CI jobs, `Verify`, branch protection, the only route to `main`                                       | `docs/agents/ci-and-branch-protection.md`          |
+| First-run setup, env files, the Strapi MCP server                                                    | `docs/agents/setup.md`                             |
+| Issues, via the `gh` CLI                                                                             | `docs/agents/issue-tracker.md`                     |
+| Triage labels                                                                                        | `docs/agents/triage-labels.md`                     |
+| Domain vocabulary and ADRs                                                                           | `CONTEXT.md`, `docs/adr/`, `docs/agents/domain.md` |
 
 ## Working agreement
 
@@ -103,6 +104,12 @@ welcome: act on them, but keep them to their own commit or their own pull
 request, and say in the body what you did **not** do and why. Architectural
 choices get an ADR in `docs/adr/`; known gaps get a follow-up issue, referenced
 by real number once created.
+
+**Thirteen skills are human-only** and cannot be invoked by an agent — including
+`/wayfinder`, `/to-spec`, `/to-tickets`, `/implement` and `/handoff`. When one of
+those is the right next step, say so and stop rather than improvising: a
+hand-written issue loses the `blocked_by` edges that make the frontier
+computable. The full list is in `docs/agents/workflow.md`.
 
 Two habits that carry the most weight here:
 
