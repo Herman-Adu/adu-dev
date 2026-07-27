@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -220,8 +220,11 @@ const ShaderMaterial = ({
     timeLocation.value = timestamp;
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getUniforms = () => {
+  // Wrapped so the material memo below has a stable dependency. Unwrapped, this
+  // was a new function every render, which made that memo rebuild the
+  // ShaderMaterial on every render — the warning was suppressed rather than
+  // fixed, so the memo was doing no work at all.
+  const getUniforms = useCallback(() => {
     const preparedUniforms: Record<string, PreparedUniform> = {};
 
     for (const uniformName in uniforms) {
@@ -263,7 +266,7 @@ const ShaderMaterial = ({
       value: new THREE.Vector2(size.width * 2, size.height * 2),
     }; // Initialize u_resolution
     return preparedUniforms;
-  };
+  }, [uniforms, size.width, size.height]);
 
   // Shader material
   const material = useMemo(() => {

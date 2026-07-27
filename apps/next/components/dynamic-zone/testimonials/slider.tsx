@@ -19,16 +19,24 @@ export const TestimonialsSlider = ({
   const testimonialsRef = useRef<HTMLDivElement>(null);
 
   const slicedTestimonials = testimonials.slice(0, 3);
+  const slideCount = slicedTestimonials.length;
 
+  // Wrapping by modulo inside the updater keeps the whole transition in one
+  // place, so `active` is no longer a dependency and the interval survives a
+  // tick instead of being torn down and recreated by every one of them.
+  //
+  // The previous form mixed a value with an updater —
+  // `setActive(active + 1 === length ? 0 : (active) => active + 1)` — and only
+  // wrapped correctly because `active` sat in the dependency array. Removing it
+  // there, which is the obvious tidy-up, made the index climb without bound.
+  // See scripts/prototypes/ on the throwaway branch recorded in #41.
   useEffect(() => {
-    if (!autorotate) return;
+    if (!autorotate || slideCount === 0) return;
     const interval = setInterval(() => {
-      setActive(
-        active + 1 === slicedTestimonials.length ? 0 : (active) => active + 1
-      );
+      setActive((current) => (current + 1) % slideCount);
     }, 7000);
     return () => clearInterval(interval);
-  }, [active, autorotate, slicedTestimonials.length]);
+  }, [autorotate, slideCount]);
 
   const heightFix = () => {
     if (testimonialsRef.current && testimonialsRef.current.parentElement)

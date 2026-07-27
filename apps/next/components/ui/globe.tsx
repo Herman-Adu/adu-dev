@@ -8,8 +8,6 @@ import ThreeGlobe from 'three-globe';
 
 import countries from './data/globe.json';
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
 extend({ ThreeGlobe });
 
 const RING_PROPAGATION_SPEED = 3;
@@ -102,6 +100,11 @@ export function Globe({ globeConfig, data }: WorldProps) {
       _buildData();
       _buildMaterial();
     }
+    // `_buildData` and `_buildMaterial` are declared below and rebuilt every
+    // render; including them would rebuild the globe's geometry and material on
+    // every render. globeRef.current is a mutable ref, so it cannot trigger the
+    // effect either — this is deliberately keyed on mount, not on identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeRef.current, isMounted]);
 
   const _buildMaterial = () => {
@@ -225,6 +228,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
         startAnimation();
       }, 100);
     }
+    // `startAnimation` and the `defaultProps` fields it reads are stable for
+    // the life of the component; including them would restart the arc animation
+    // from the top on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeData, isAnimationStarted]);
 
   const startAnimation = () => {
@@ -340,6 +347,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
     return () => {
       clearInterval(interval);
     };
+    // Keyed on the data itself rather than on `data.length`; re-running would
+    // restart the interval that cycles the arcs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeRef.current, globeData]);
 
   // Prevent hydration mismatch by only rendering on client
@@ -361,6 +371,10 @@ export function WebGLRendererConfig() {
     gl.setPixelRatio(window.devicePixelRatio);
     gl.setSize(size.width, size.height);
     gl.setClearColor(0xffaaff, 0);
+    // One-time WebGL renderer setup. `gl` and `size` come from useThree and are
+    // stable for this canvas; re-running would reset the pixel ratio and clear
+    // colour mid-frame.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, []);
 
   return null;

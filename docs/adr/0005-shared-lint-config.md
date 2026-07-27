@@ -24,6 +24,23 @@ Three deliberate exemptions, each narrow and each with a reason rather than a bl
 - `*.example.*` files are ignored. They are scaffolding Strapi ships for developers to copy, never imported and never built.
 - `@typescript-eslint/no-require-imports` is off for config files and `scripts/`. Tailwind resolves plugins with `require()` by convention and Strapi's scripts are plain CommonJS run by `node`; in both cases the import style is imposed by the tool.
 
-`@typescript-eslint/no-explicit-any` is a **warning**, and 73 remain. Most are the Block components that #15 converts to `@repo/strapi-types`. It becomes an error under #30, once #15 has removed the bulk — promoting it earlier would force either a red build or the wave of suppressions this decision exists to avoid.
+## The ratchet (#30)
+
+The starting point above was chosen to be survivable, not final. #30 tightened it once #15 had converted the frontend, and kept the same rule: **measure first, publish the count, and give every exemption a reason.**
+
+| Rule                                 | Measured before enabling                       | Now   |
+| ------------------------------------ | ---------------------------------------------- | ----- |
+| `@typescript-eslint/no-explicit-any` | 73 warnings at #13, **0** after #15            | error |
+| `react-hooks/exhaustive-deps`        | **6** violations, hidden behind 3 suppressions | error |
+| `jsx-a11y` recommended               | **2** violations, both `media-has-caption`     | error |
+| `unused-imports/no-unused-imports`   | **0** violations                               | error |
+
+`exhaustive-deps` is the one that mattered. Three files suppressed it, one with a **file-wide** `/* eslint-disable */`, hiding six real findings. Two were fixed outright — a search result mirrored into state by an effect became derived state, and a `getUniforms` rebuilt every render became a `useCallback`, which had been silently defeating the memo below it. The four in `globe.tsx` are three.js lifecycle and are now disabled per line, each naming its specific hazard, rather than by a blanket at the top of the file.
+
+Promoting that rule needed #41's work first, and the ordering was not obvious. The testimonials slider only wrapped correctly _because_ `active` sat in its dependency array; removing it — exactly what a newly-strict rule invites — made the index climb without bound. A throwaway prototype (`pnpm prototype:slider`) drove three cases through both models and showed the shipped one going out of range in all three. Tightening the rule before fixing the state model would have invited the wrong fix.
+
+Four `any`s survive, each disabled in place where no non-`any` type exists: the dynamic-zone dispatcher (props are contravariant, so no type accepts twelve differing Block components), the polymorphic `Button` element, react-three-fiber's invariant mesh ref, and tsparticles' v2 boolean shorthand for `resize`.
+
+**Declined for now**, each with a reason rather than silence: `unicorn` and `sonarjs` (broad opinion sets whose violation count was not measured, so adopting them would breach this ADR's own rule), `import-x` with a TypeScript resolver (overlaps what `unused-imports` and `tsc` already catch here), `@stylistic` (Prettier owns formatting, and two tools arguing about it is worse than either deciding), and `eslint-plugin-turbo` (its value is catching undeclared env vars, and this repo declares them in `turbo.json` already).
 
 Fixing the 60 errors changed real code: dead imports removed, unused parameters prefixed or dropped, two empty `else` blocks deleted, a `@ts-ignore` narrowed to `@ts-expect-error`, and a `Function` type given a real signature. One latent bug was found and deliberately **not** fixed here — `components/elements/subheading.tsx` destructures `...props` and never spreads it, so the component silently drops the HTML attributes its own type advertises. Changing that alters rendering, which does not belong in a lint change.

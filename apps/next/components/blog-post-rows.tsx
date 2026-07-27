@@ -2,7 +2,7 @@
 
 import FuzzySearch from 'fuzzy-search';
 import { Link } from 'next-view-transitions';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { formatDate, truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
@@ -16,16 +16,17 @@ export const BlogPostRows = ({
 }) => {
   const [search, setSearch] = useState('');
 
-  const searcher = new FuzzySearch(articles, ['title'], {
-    caseSensitive: false,
-  });
-
-  const [results, setResults] = useState(articles);
-  useEffect(() => {
-    const results = searcher.search(search);
-    setResults(results);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  // Results are a pure function of the articles and the query, so they are
+  // derived during render rather than mirrored into state by an effect. The
+  // effect that did this listed only `search` as a dependency and suppressed
+  // the warning about `searcher`, which is rebuilt on every render.
+  const results = useMemo(
+    () =>
+      new FuzzySearch(articles, ['title'], { caseSensitive: false }).search(
+        search
+      ),
+    [articles, search]
+  );
 
   return (
     <div className="w-full py-20">
