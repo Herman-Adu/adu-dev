@@ -29,7 +29,9 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@strapi/icons": "^2.2.1",
+    "@strapi/admin": "5.50.0",
+    "@strapi/design-system": "2.2.1",
+    "@strapi/icons": "2.2.1",
     "@strapi/plugin-cloud": "5.50.0",
     "@strapi/plugin-seo": "^2.0.4",
     "@strapi/plugin-users-permissions": "5.50.0",
