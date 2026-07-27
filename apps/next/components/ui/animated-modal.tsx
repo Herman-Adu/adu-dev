@@ -74,12 +74,17 @@ export const ModalBody = ({
 }) => {
   const { open } = useModal();
 
+  // Kept: `document.body` is outside React's tree, so locking scroll is a real
+  // side effect. The hazard is leaving the lock behind — the effect had no
+  // cleanup, so unmounting while open (a route change with the modal up) left
+  // the whole page unscrollable until reload.
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
+    if (open === false) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open]);
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -223,6 +228,12 @@ export const useOutsideClick = (
   ref: React.RefObject<HTMLDivElement | null>,
   callback: (event: MouseEvent | TouchEvent) => void
 ) => {
+  // Kept: these listen on `document`, not on the ref'd node, so a ref callback
+  // cannot own them — the whole point is hearing clicks that land outside. The
+  // hazard is listener churn: callers pass an inline arrow, so `callback`
+  // changes identity every render and both listeners are detached and
+  // reattached each time. Harmless but wasteful, and the React Compiler removes
+  // it by memoizing the arrow at the call site — see ADR 0008.
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
       // DO NOTHING if the element being clicked is the target element or their children

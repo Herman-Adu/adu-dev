@@ -1,7 +1,7 @@
 'use client';
 
 import { Transition } from '@headlessui/react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { SparklesCore } from '../../ui/sparkles';
 import { StrapiMedia } from '@/components/ui/strapi-media';
@@ -32,24 +32,28 @@ export const TestimonialsSlider = ({
     return () => clearInterval(interval);
   }, [autorotate, slideCount]);
 
+  // Quotes vary in length and are stacked absolutely mid-transition, so the
+  // parent would collapse. Its height is set explicitly and CSS-transitioned,
+  // which is why this measures rather than letting layout do the work.
   const heightFix = () => {
     if (testimonialsRef.current && testimonialsRef.current.parentElement)
       testimonialsRef.current.parentElement.style.height = `${testimonialsRef.current.clientHeight}px`;
   };
 
-  useEffect(() => {
+  // A ref callback rather than an effect: React 19 lets one return a cleanup,
+  // so the observer's lifetime is the node's. A ResizeObserver fires whenever
+  // the measurement actually changes — late-loading webfonts and viewport
+  // resizes included. Memoized because an unstable ref detaches and reattaches
+  // every render, tearing the observer down and rebuilding it for nothing.
+  const measureRef = useCallback((node: HTMLDivElement | null) => {
+    testimonialsRef.current = node;
+    if (node === null) return;
     heightFix();
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        heightFix();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
+    const observer = new ResizeObserver(heightFix);
+    observer.observe(node);
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      observer.disconnect();
+      testimonialsRef.current = null;
     };
   }, []);
 
@@ -102,7 +106,7 @@ export const TestimonialsSlider = ({
             </div>
             {/* Text */}
             <div className="mb-10 transition-all duration-150 delay-300 ease-in-out px-8 sm:px-6">
-              <div className="relative flex flex-col" ref={testimonialsRef}>
+              <div className="relative flex flex-col" ref={measureRef}>
                 {slicedTestimonials.map((item, index: number) => (
                   <Transition
                     key={item.documentId}

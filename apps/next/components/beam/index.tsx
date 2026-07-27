@@ -1,9 +1,15 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback } from 'react';
 
 import styles from './styles.module.css';
 import { cn } from '@/lib/utils';
+
+const restartAnimation = (meteor: HTMLSpanElement) => {
+  meteor.style.animation = 'none';
+  void meteor.offsetWidth; // This forces a reflow, restarting the animation
+  meteor.style.animation = '';
+};
 
 const Beam = ({
   showBeam = true,
@@ -12,46 +18,43 @@ const Beam = ({
   showBeam?: boolean;
   className?: string;
 }) => {
-  const meteorRef = useRef<HTMLSpanElement>(null);
+  // These listeners belong to the node, not to the component, so they are
+  // attached by the ref callback and torn down by the cleanup React 19 lets it
+  // return. The span is only rendered when `showBeam`, so an effect keyed on
+  // `showBeam` was re-checking something the tree had already decided.
+  //
+  // The identity must be stable. An inline callback is a new function every
+  // render, so React detaches and reattaches on each one — and the CSS
+  // animation does not restart to match, so an `animationstart` firing in the
+  // gap is lost and the beam stays `visibility: hidden` forever. That is not
+  // theoretical: it is what an unmemoized version of this did.
+  const meteorRef = useCallback((meteor: HTMLSpanElement | null) => {
+    if (meteor === null) return;
 
-  useEffect(() => {
-    const meteor = meteorRef.current;
+    const handleAnimationEnd = () => {
+      meteor.style.visibility = 'hidden';
+      const animationDelay = Math.floor(Math.random() * (2 - 0) + 0);
+      const animationDuration = Math.floor(Math.random() * (4 - 0) + 0);
+      const meteorWidth = Math.floor(Math.random() * (150 - 80) + 80);
+      meteor.style.setProperty('--meteor-delay', `${animationDelay}s`);
+      meteor.style.setProperty('--meteor-duration', `${animationDuration}s`);
+      meteor.style.setProperty('--meteor-width', `${meteorWidth}px`);
 
-    if (showBeam && meteor) {
-      const handleAnimationEnd = () => {
-        meteor.style.visibility = 'hidden';
-        const animationDelay = Math.floor(Math.random() * (2 - 0) + 0);
-        const animationDuration = Math.floor(Math.random() * (4 - 0) + 0);
-        const meteorWidth = Math.floor(Math.random() * (150 - 80) + 80);
-        meteor.style.setProperty('--meteor-delay', `${animationDelay}s`);
-        meteor.style.setProperty('--meteor-duration', `${animationDuration}s`);
-        meteor.style.setProperty('--meteor-width', `${meteorWidth}px`);
+      restartAnimation(meteor);
+    };
 
-        restartAnimation();
-      };
+    const handleAnimationStart = () => {
+      meteor.style.visibility = 'visible';
+    };
 
-      const handleAnimationStart = () => {
-        meteor.style.visibility = 'visible';
-      };
+    meteor.addEventListener('animationend', handleAnimationEnd);
+    meteor.addEventListener('animationstart', handleAnimationStart);
 
-      meteor.addEventListener('animationend', handleAnimationEnd);
-      meteor.addEventListener('animationstart', handleAnimationStart);
-
-      return () => {
-        // Using the same meteor variable captured in the effect
-        meteor.removeEventListener('animationend', handleAnimationEnd);
-        meteor.removeEventListener('animationstart', handleAnimationStart);
-      };
-    }
-  }, [showBeam]);
-
-  const restartAnimation = () => {
-    const meteor = meteorRef.current;
-    if (!meteor) return;
-    meteor.style.animation = 'none';
-    void meteor.offsetWidth; // This forces a reflow, restarting the animation
-    meteor.style.animation = '';
-  };
+    return () => {
+      meteor.removeEventListener('animationend', handleAnimationEnd);
+      meteor.removeEventListener('animationstart', handleAnimationStart);
+    };
+  }, []);
 
   return (
     showBeam && (

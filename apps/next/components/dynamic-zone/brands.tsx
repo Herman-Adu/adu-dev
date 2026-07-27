@@ -19,27 +19,23 @@ export const Brands = ({ heading, sub_heading, logos }: BrandsProps) => {
   const secondHalf = allLogos.slice(middleIndex);
   const logosArraySplitInHalf = [firstHalf, secondHalf];
 
-  // State to track the current logo set
-  const [stateLogos, setLogos] = useState(logosArraySplitInHalf);
-  const [activeLogoSet, setActiveLogoSet] = useState(stateLogos[0]);
+  // Which half is on screen. The halves are derived during render, so the index
+  // is the only state there is.
+  const [activeHalf, setActiveHalf] = useState(0);
+  const activeLogoSet = logosArraySplitInHalf[activeHalf];
 
-  const flipLogos = () => {
-    // Shift the logos array and update the active logo set
-    setLogos((currentLogos) => {
-      const newLogos = [...currentLogos.slice(1), currentLogos[0]];
-      setActiveLogoSet(newLogos[0]); // Update the active set
-      return newLogos;
-    });
-  };
-
+  // Kept: an interval is scheduling, with no render-phase equivalent. The
+  // hazard is a timer outliving the component, so the cleanup clears it.
+  //
+  // Below two logos there is nothing to alternate — one logo puts the only
+  // entry in the second half, so flipping would blank the row every 3s.
   useEffect(() => {
-    // Flip logos every 3 seconds
-    const timer = setTimeout(() => {
-      flipLogos();
+    if (allLogos.length < 2) return;
+    const timer = setInterval(() => {
+      setActiveHalf((current) => (current + 1) % 2);
     }, 3000);
-
-    return () => clearTimeout(timer); // Clear timeout on component unmount or state update
-  }, [activeLogoSet]); // Depend on activeLogoSet to trigger flip every time it changes
+    return () => clearInterval(timer);
+  }, [allLogos.length]);
 
   return (
     <div className="relative z-20 py-10 md:py-40">

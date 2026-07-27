@@ -55,8 +55,6 @@ interface WorldProps {
   data: Position[];
 }
 
-let numbersOfRings = [0];
-
 export function Globe({ globeConfig, data }: WorldProps) {
   const [globeData, setGlobeData] = useState<
     | {
@@ -70,7 +68,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
   >(null);
 
   const [isMounted, setIsMounted] = useState(false);
-  const [isAnimationStarted, setIsAnimationStarted] = useState(false);
 
   const globeRef = useRef<ThreeGlobe | null>(null);
 
@@ -91,10 +88,17 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
+  // Kept: a hydration gate, not data flow. three.js needs a real WebGL context,
+  // which does not exist while rendering on the server, so the scene must not
+  // be built until after hydration. The hazard is rendering it too early and
+  // crashing on a missing context.
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Kept: builds the globe's geometry and material, which live in three.js
+  // rather than in React's tree. The hazard is rebuilding them needlessly, which
+  // the deliberately narrow dependency list below prevents.
   useEffect(() => {
     if (globeRef.current && isMounted) {
       _buildData();
@@ -190,13 +194,19 @@ export function Globe({ globeConfig, data }: WorldProps) {
     setGlobeData(filteredPoints);
   };
 
+  // Kept: hands the prepared data to the three.js globe, which owns its own
+  // scene graph and is not something React renders into.
+  //
+  // Deliberately re-entrant, with no "have I started yet" guard: every path in
+  // here ends with a cleanup that clears the 100ms timer, so anything that
+  // re-runs this effect kills the pending `startAnimation`. A guard turns the
+  // re-run into a no-op, and the arcs then never draw at all. This effect does
+  // re-run — `globeData` is rebuilt twice on mount — and StrictMode re-runs it
+  // again by design. Every call below is an idempotent assignment onto the same
+  // three.js object, so surviving a re-run is what makes it correct. See ADR
+  // 0008.
   useEffect(() => {
-    if (
-      globeRef.current &&
-      globeData &&
-      globeData.length > 0 &&
-      !isAnimationStarted
-    ) {
+    if (globeRef.current && globeData && globeData.length > 0) {
       // Validate countries data
       const validCountries = countries.features.filter((feature) => {
         if (!feature.geometry || !feature.geometry.coordinates) return false;
@@ -222,7 +232,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
           return defaultProps.polygonColor;
         });
 
-      setIsAnimationStarted(true);
       // Small delay to ensure initialization is complete
       const timer = setTimeout(() => {
         startAnimation();
@@ -232,9 +241,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
     // `startAnimation` is redeclared every render and `defaultProps` is a fresh
     // object literal, so both change identity every render — including them
     // would restart the arc animation continuously. The effect is idempotent
-    // instead: `isAnimationStarted` guards it, so it runs once per data set.
+    // instead, which is what lets it run more than once safely.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
-  }, [globeData, isAnimationStarted]);
+  }, [globeData]);
 
   const startAnimation = () => {
     if (!globeRef.current || !globeData) {
@@ -315,6 +324,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
     }
   };
 
+  // Kept: an interval driving the globe's arc animation, which mutates the
+  // three.js scene directly. The hazard is the timer outliving the scene and
+  // writing to a disposed object, so the cleanup clears it.
   useEffect(() => {
     if (!globeRef.current || !globeData) return;
 
@@ -322,7 +334,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
       try {
         if (!globeRef.current || !globeData) return;
 
-        numbersOfRings = genRandomNumbers(
+        // Local to the tick. This was module scope, so two globes on one page
+        // would overwrite each other's ring selection — the same defect ADR
+        // 0008 records in `skeletons/fourth.tsx`.
+        const numbersOfRings = genRandomNumbers(
           0,
           data.length,
           Math.floor((data.length * 4) / 5)
@@ -371,6 +386,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
 export function WebGLRendererConfig() {
   const { gl, size } = useThree();
 
+  // Kept: configures the WebGL renderer, an external system react-three-fiber
+  // hands us. The hazard is a stale size — see the note on the deps below.
   useEffect(() => {
     gl.setPixelRatio(window.devicePixelRatio);
     gl.setSize(size.width, size.height);

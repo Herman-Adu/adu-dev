@@ -32,12 +32,19 @@ export const SparklesCore = (props: ParticlesProps) => {
     particleDensity,
   } = props;
   const [init, setInit] = useState(false);
+  // Kept: booting the tsparticles engine is external-system setup and it is
+  // async. The hazard is the promise resolving after the component has gone and
+  // setting state on it, so the flag below drops the late resolution.
   useEffect(() => {
+    let cancelled = false;
     initParticlesEngine(async (engine) => {
       await loadSlim(engine);
     }).then(() => {
-      setInit(true);
+      if (cancelled === false) setInit(true);
     });
+    return () => {
+      cancelled = true;
+    };
   }, []);
   const controls = useAnimation();
 

@@ -8,6 +8,12 @@ import { API_URL } from '@/lib/utils';
 export const Preview = () => {
   const router = useRouter();
 
+  // Kept: a `message` listener on `window` plus a handshake `postMessage` to the
+  // parent frame — cross-window communication is an external system and there is
+  // no node to hang a ref callback on. The hazard is a listener surviving the
+  // component and refreshing a router that has moved on, so the cleanup removes
+  // it; and because the payload crosses a window boundary it is narrowed before
+  // being read, one branch of it injecting a script.
   useEffect(() => {
     const isStrapiPreviewMessage = (
       value: unknown
