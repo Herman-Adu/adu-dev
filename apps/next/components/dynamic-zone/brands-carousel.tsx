@@ -13,7 +13,11 @@ type BrandLogos = NonNullable<Block<'dynamic-zone.brands'>['logos']>;
  * client, so the Block's heading and subheading stay on the server.
  */
 export const BrandsCarousel = ({ logos }: { logos: BrandLogos }) => {
-  const middleIndex = Math.floor(logos.length / 2);
+  // `ceil`, not `floor`: the first half is what renders before any flip, so an
+  // odd logo belongs there. With `floor` a single logo lands entirely in the
+  // second half, leaving the first empty — and since the interval below does not
+  // run under two logos, nothing ever swaps it in and the row stays blank.
+  const middleIndex = Math.ceil(logos.length / 2);
   const firstHalf = logos.slice(0, middleIndex);
   const secondHalf = logos.slice(middleIndex);
   const logosArraySplitInHalf = [firstHalf, secondHalf];
@@ -26,8 +30,8 @@ export const BrandsCarousel = ({ logos }: { logos: BrandLogos }) => {
   // Kept: an interval is scheduling, with no render-phase equivalent. The
   // hazard is a timer outliving the component, so the cleanup clears it.
   //
-  // Below two logos there is nothing to alternate — one logo puts the only
-  // entry in the second half, so flipping would blank the row every 3s.
+  // Below two logos there is nothing to alternate — the single logo is the whole
+  // first half and the second is empty, so flipping would blank the row every 3s.
   useEffect(() => {
     if (logos.length < 2) return;
     const timer = setInterval(() => {
