@@ -26,6 +26,16 @@ _Avoid_: route, screen, collection type
 One of the two fixed pages that list published content — the blog listing and the product listing. Editors configure them but cannot create more.
 _Avoid_: index page, landing page, single type
 
+### Editorial
+
+**Article**:
+A dated piece of writing published on the blog, with its own page and slug.
+_Avoid_: post, blog post, story
+
+**Category**:
+A named grouping that Articles belong to — an Article carries as many as apply. Categories group Articles and nothing else; Products are organised by Featured.
+_Avoid_: tag, topic, subject, taxonomy
+
 ### Catalog
 
 **Product**:
