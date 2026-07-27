@@ -54,10 +54,10 @@ export interface CardsSocialMediaCard extends Struct.ComponentSchema {
     icon: 'dashboard';
   };
   attributes: {
-    Description: Schema.Attribute.String;
+    description: Schema.Attribute.String;
     logos: Schema.Attribute.Relation<'oneToMany', 'api::logo.logo'>;
     span: Schema.Attribute.Enumeration<['one', 'two', 'three']>;
-    Title: Schema.Attribute.String;
+    title: Schema.Attribute.String;
   };
 }
 
