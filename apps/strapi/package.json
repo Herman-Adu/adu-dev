@@ -14,8 +14,8 @@
     "test:watch": "vitest",
     "strapi": "strapi",
     "deploy": "strapi deploy",
-    "seed": "strapi import -f ./data/demo-data.tar.gz --force",
-    "export": "strapi export --no-encrypt -f ./data/demo-data",
+    "seed": "strapi import -f ./data/seed.tar.gz --force",
+    "export": "strapi export --no-encrypt -f ./data/seed",
     "postinstall": "node ./scripts/updateUuid.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
