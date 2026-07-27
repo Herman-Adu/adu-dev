@@ -79,7 +79,7 @@ export const ModalBody = ({
   // cleanup, so unmounting while open (a route change with the modal up) left
   // the whole page unscrollable until reload.
   useEffect(() => {
-    if (!open) return;
+    if (open === false) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {

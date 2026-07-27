@@ -40,7 +40,7 @@ export const SparklesCore = (props: ParticlesProps) => {
     initParticlesEngine(async (engine) => {
       await loadSlim(engine);
     }).then(() => {
-      if (!cancelled) setInit(true);
+      if (cancelled === false) setInit(true);
     });
     return () => {
       cancelled = true;

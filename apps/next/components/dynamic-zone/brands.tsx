@@ -19,19 +19,18 @@ export const Brands = ({ heading, sub_heading, logos }: BrandsProps) => {
   const secondHalf = allLogos.slice(middleIndex);
   const logosArraySplitInHalf = [firstHalf, secondHalf];
 
-  // Which half is on screen. The halves themselves are derived during render,
-  // so the only state is the index — the previous version kept the split array
-  // in state as well and rotated it, which meant the rendered set and the array
-  // it came from could disagree.
+  // Which half is on screen. The halves are derived during render, so the index
+  // is the only state there is.
   const [activeHalf, setActiveHalf] = useState(0);
   const activeLogoSet = logosArraySplitInHalf[activeHalf];
 
-  // A repeating interval, not a timeout that re-arms itself through its own
-  // dependency: the old effect depended on the state it set, so every flip tore
-  // the timer down and built a new one. Nothing here depends on the current
-  // index, so the timer outlives the flips.
+  // Kept: an interval is scheduling, with no render-phase equivalent. The
+  // hazard is a timer outliving the component, so the cleanup clears it.
+  //
+  // Below two logos there is nothing to alternate — one logo puts the only
+  // entry in the second half, so flipping would blank the row every 3s.
   useEffect(() => {
-    if (allLogos.length === 0) return;
+    if (allLogos.length < 2) return;
     const timer = setInterval(() => {
       setActiveHalf((current) => (current + 1) % 2);
     }, 3000);

@@ -41,11 +41,10 @@ export const TestimonialsSlider = ({
   };
 
   // A ref callback rather than an effect: React 19 lets one return a cleanup,
-  // so the observer's lifetime is the node's. A ResizeObserver also covers what
-  // the previous `visibilitychange` listener missed — late-loading webfonts and
-  // viewport resizes both change the measurement without the tab ever hiding.
-  // Memoized because an unstable ref detaches and reattaches every render, which
-  // tears the observer down and rebuilds it for nothing.
+  // so the observer's lifetime is the node's. A ResizeObserver fires whenever
+  // the measurement actually changes — late-loading webfonts and viewport
+  // resizes included. Memoized because an unstable ref detaches and reattaches
+  // every render, tearing the observer down and rebuilding it for nothing.
   const measureRef = useCallback((node: HTMLDivElement | null) => {
     testimonialsRef.current = node;
     if (node === null) return;

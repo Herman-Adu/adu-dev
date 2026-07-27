@@ -35,9 +35,8 @@ const ShootingStars: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Kept: spawning a star on a random delay is scheduling, which has no
-  // render-phase equivalent. The hazard is specific and this used to have it —
-  // `createStar` re-arms itself, and the cleanup was empty, so the chain
-  // outlived the component and went on calling `setStar` forever. Holding the
+  // render-phase equivalent. `createStar` re-arms itself, so the hazard is the
+  // chain outliving the component and calling `setStar` forever — holding the
   // pending id and clearing it is what bounds the recursion to the mount.
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;

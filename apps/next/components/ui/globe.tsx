@@ -55,8 +55,6 @@ interface WorldProps {
   data: Position[];
 }
 
-let numbersOfRings = [0];
-
 export function Globe({ globeConfig, data }: WorldProps) {
   const [globeData, setGlobeData] = useState<
     | {
@@ -199,17 +197,14 @@ export function Globe({ globeConfig, data }: WorldProps) {
   // Kept: hands the prepared data to the three.js globe, which owns its own
   // scene graph and is not something React renders into.
   //
-  // There is deliberately no "have I started yet" guard. One used to live here
-  // and it is why the arcs never drew. Every path into this effect ends with a
-  // cleanup that clears the 100ms timer: a re-run clears it, and StrictMode
-  // clears it by design, running effect → cleanup → effect on mount. A guard
-  // makes the second run a no-op, so the timer that was just cleared is never
-  // rescheduled and `startAnimation` is never called. Storing the guard in a
-  // ref rather than state makes it worse, since the ref survives the remount.
-  //
-  // `globeData` already bounds how often this runs — it changes once — and
-  // every call below is an idempotent assignment onto the same three.js object,
-  // so re-running is harmless and being re-entrant is what makes it correct.
+  // Deliberately re-entrant, with no "have I started yet" guard: every path in
+  // here ends with a cleanup that clears the 100ms timer, so anything that
+  // re-runs this effect kills the pending `startAnimation`. A guard turns the
+  // re-run into a no-op, and the arcs then never draw at all. This effect does
+  // re-run — `globeData` is rebuilt twice on mount — and StrictMode re-runs it
+  // again by design. Every call below is an idempotent assignment onto the same
+  // three.js object, so surviving a re-run is what makes it correct. See ADR
+  // 0008.
   useEffect(() => {
     if (globeRef.current && globeData && globeData.length > 0) {
       // Validate countries data
@@ -246,7 +241,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     // `startAnimation` is redeclared every render and `defaultProps` is a fresh
     // object literal, so both change identity every render — including them
     // would restart the arc animation continuously. The effect is idempotent
-    // instead: the ref above guards it, so it runs once per data set.
+    // instead, which is what lets it run more than once safely.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [globeData]);
 
@@ -339,7 +334,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
       try {
         if (!globeRef.current || !globeData) return;
 
-        numbersOfRings = genRandomNumbers(
+        // Local to the tick. This was module scope, so two globes on one page
+        // would overwrite each other's ring selection — the same defect ADR
+        // 0008 records in `skeletons/fourth.tsx`.
+        const numbersOfRings = genRandomNumbers(
           0,
           data.length,
           Math.floor((data.length * 4) / 5)

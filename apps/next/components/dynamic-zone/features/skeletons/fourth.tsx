@@ -96,10 +96,9 @@ export const SkeletonFour = () => {
 
   const [active, setActive] = useState(icons[0]);
 
-  // Kept: an interval is scheduling. The hazard was ownership rather than
-  // cleanup — the timer id lived at module scope, so a second instance
-  // overwrote the first's, and the first's cleanup then cleared the second's
-  // timer while its own ran on unwatched. One id per effect, per instance.
+  // Kept: an interval is scheduling. The hazard here is ownership rather than
+  // cleanup — the timer id must be local to the effect, or a second instance
+  // shares it and the two clear each other's timers instead of their own.
   useEffect(() => {
     const loopInterval = setInterval(() => {
       setActive(icons[Math.floor(Math.random() * icons.length)]);
