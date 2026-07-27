@@ -1,16 +1,25 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
+
+// Whether we are framed is a fact about the browser, not React state, and it
+// cannot change for the life of the document — hence a subscribe that never
+// fires. `useSyncExternalStore` is what reads that safely across the server
+// boundary: the server snapshot assumes framed, so the banner is absent from
+// the HTML and appears only once the client confirms it is a top-level window.
+const subscribeToNothing = () => () => {};
+const isFramed = () => window !== window.top;
+const isFramedOnServer = () => true;
 
 export function DraftModeBanner() {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
-  const [isIframe, setIsIframe] = useState(true);
-
-  useEffect(() => {
-    setIsIframe(window !== window.top);
-  }, []);
+  const isIframe = useSyncExternalStore(
+    subscribeToNothing,
+    isFramed,
+    isFramedOnServer
+  );
 
   const handleExitDraft = async () => {
     setIsExiting(true);

@@ -70,7 +70,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
   >(null);
 
   const [isMounted, setIsMounted] = useState(false);
-  const [isAnimationStarted, setIsAnimationStarted] = useState(false);
 
   const globeRef = useRef<ThreeGlobe | null>(null);
 
@@ -91,10 +90,17 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
+  // Kept: a hydration gate, not data flow. three.js needs a real WebGL context,
+  // which does not exist while rendering on the server, so the scene must not
+  // be built until after hydration. The hazard is rendering it too early and
+  // crashing on a missing context.
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Kept: builds the globe's geometry and material, which live in three.js
+  // rather than in React's tree. The hazard is rebuilding them needlessly, which
+  // the deliberately narrow dependency list below prevents.
   useEffect(() => {
     if (globeRef.current && isMounted) {
       _buildData();
@@ -190,13 +196,22 @@ export function Globe({ globeConfig, data }: WorldProps) {
     setGlobeData(filteredPoints);
   };
 
+  // Kept: hands the prepared data to the three.js globe, which owns its own
+  // scene graph and is not something React renders into.
+  //
+  // There is deliberately no "have I started yet" guard. One used to live here
+  // and it is why the arcs never drew. Every path into this effect ends with a
+  // cleanup that clears the 100ms timer: a re-run clears it, and StrictMode
+  // clears it by design, running effect → cleanup → effect on mount. A guard
+  // makes the second run a no-op, so the timer that was just cleared is never
+  // rescheduled and `startAnimation` is never called. Storing the guard in a
+  // ref rather than state makes it worse, since the ref survives the remount.
+  //
+  // `globeData` already bounds how often this runs — it changes once — and
+  // every call below is an idempotent assignment onto the same three.js object,
+  // so re-running is harmless and being re-entrant is what makes it correct.
   useEffect(() => {
-    if (
-      globeRef.current &&
-      globeData &&
-      globeData.length > 0 &&
-      !isAnimationStarted
-    ) {
+    if (globeRef.current && globeData && globeData.length > 0) {
       // Validate countries data
       const validCountries = countries.features.filter((feature) => {
         if (!feature.geometry || !feature.geometry.coordinates) return false;
@@ -222,7 +237,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
           return defaultProps.polygonColor;
         });
 
-      setIsAnimationStarted(true);
       // Small delay to ensure initialization is complete
       const timer = setTimeout(() => {
         startAnimation();
@@ -232,9 +246,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
     // `startAnimation` is redeclared every render and `defaultProps` is a fresh
     // object literal, so both change identity every render — including them
     // would restart the arc animation continuously. The effect is idempotent
-    // instead: `isAnimationStarted` guards it, so it runs once per data set.
+    // instead: the ref above guards it, so it runs once per data set.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
-  }, [globeData, isAnimationStarted]);
+  }, [globeData]);
 
   const startAnimation = () => {
     if (!globeRef.current || !globeData) {
@@ -315,6 +329,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
     }
   };
 
+  // Kept: an interval driving the globe's arc animation, which mutates the
+  // three.js scene directly. The hazard is the timer outliving the scene and
+  // writing to a disposed object, so the cleanup clears it.
   useEffect(() => {
     if (!globeRef.current || !globeData) return;
 
@@ -371,6 +388,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
 export function WebGLRendererConfig() {
   const { gl, size } = useThree();
 
+  // Kept: configures the WebGL renderer, an external system react-three-fiber
+  // hands us. The hazard is a stale size — see the note on the deps below.
   useEffect(() => {
     gl.setPixelRatio(window.devicePixelRatio);
     gl.setSize(size.width, size.height);

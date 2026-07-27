@@ -19,27 +19,24 @@ export const Brands = ({ heading, sub_heading, logos }: BrandsProps) => {
   const secondHalf = allLogos.slice(middleIndex);
   const logosArraySplitInHalf = [firstHalf, secondHalf];
 
-  // State to track the current logo set
-  const [stateLogos, setLogos] = useState(logosArraySplitInHalf);
-  const [activeLogoSet, setActiveLogoSet] = useState(stateLogos[0]);
+  // Which half is on screen. The halves themselves are derived during render,
+  // so the only state is the index — the previous version kept the split array
+  // in state as well and rotated it, which meant the rendered set and the array
+  // it came from could disagree.
+  const [activeHalf, setActiveHalf] = useState(0);
+  const activeLogoSet = logosArraySplitInHalf[activeHalf];
 
-  const flipLogos = () => {
-    // Shift the logos array and update the active logo set
-    setLogos((currentLogos) => {
-      const newLogos = [...currentLogos.slice(1), currentLogos[0]];
-      setActiveLogoSet(newLogos[0]); // Update the active set
-      return newLogos;
-    });
-  };
-
+  // A repeating interval, not a timeout that re-arms itself through its own
+  // dependency: the old effect depended on the state it set, so every flip tore
+  // the timer down and built a new one. Nothing here depends on the current
+  // index, so the timer outlives the flips.
   useEffect(() => {
-    // Flip logos every 3 seconds
-    const timer = setTimeout(() => {
-      flipLogos();
+    if (allLogos.length === 0) return;
+    const timer = setInterval(() => {
+      setActiveHalf((current) => (current + 1) % 2);
     }, 3000);
-
-    return () => clearTimeout(timer); // Clear timeout on component unmount or state update
-  }, [activeLogoSet]); // Depend on activeLogoSet to trigger flip every time it changes
+    return () => clearInterval(timer);
+  }, [allLogos.length]);
 
   return (
     <div className="relative z-20 py-10 md:py-40">

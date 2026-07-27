@@ -34,10 +34,17 @@ const ShootingStars: React.FC = () => {
   const [star, setStar] = useState<ShootingStar | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
+  // Kept: spawning a star on a random delay is scheduling, which has no
+  // render-phase equivalent. The hazard is specific and this used to have it —
+  // `createStar` re-arms itself, and the cleanup was empty, so the chain
+  // outlived the component and went on calling `setStar` forever. Holding the
+  // pending id and clearing it is what bounds the recursion to the mount.
   useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
     const createStar = () => {
       const { x, y, angle } = getRandomStartPoint();
-      const newStar: ShootingStar = {
+      setStar({
         id: Date.now(),
         x,
         y,
@@ -45,18 +52,21 @@ const ShootingStars: React.FC = () => {
         scale: 1,
         speed: Math.random() * 20 + 10,
         distance: 0,
-      };
-      setStar(newStar);
+      });
 
       const randomDelay = Math.random() * 4500 + 4200;
-      setTimeout(createStar, randomDelay);
+      timeout = setTimeout(createStar, randomDelay);
     };
 
     createStar();
 
-    return () => {};
+    return () => clearTimeout(timeout);
   }, []);
 
+  // Kept: an animation frame is an external scheduler. Re-running per `star` is
+  // what advances the position — each frame sets state, which re-runs this and
+  // queues the next. The hazard is a frame surviving the component, so the
+  // cleanup cancels it.
   useEffect(() => {
     const moveStar = () => {
       if (star) {

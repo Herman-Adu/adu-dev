@@ -17,7 +17,6 @@ import {
 } from '@/components/icons/illustrations';
 import { cn } from '@/lib/utils';
 
-let loopInterval: NodeJS.Timeout;
 export const SkeletonFour = () => {
   const icons = useMemo(
     () => [
@@ -97,8 +96,12 @@ export const SkeletonFour = () => {
 
   const [active, setActive] = useState(icons[0]);
 
+  // Kept: an interval is scheduling. The hazard was ownership rather than
+  // cleanup — the timer id lived at module scope, so a second instance
+  // overwrote the first's, and the first's cleanup then cleared the second's
+  // timer while its own ran on unwatched. One id per effect, per instance.
   useEffect(() => {
-    loopInterval = setInterval(() => {
+    const loopInterval = setInterval(() => {
       setActive(icons[Math.floor(Math.random() * icons.length)]);
     }, 3000);
     return () => clearInterval(loopInterval);

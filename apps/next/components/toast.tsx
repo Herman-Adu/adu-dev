@@ -9,6 +9,10 @@ import { XIcon } from '@/components/icons/x';
 export const AIToast = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Kept: scheduling is a side effect with no render-phase equivalent — the
+  // reveal happens two seconds after mount, which nothing about the props or
+  // state can express. The hazard is a timer outliving the component and
+  // setting state on it, so the cleanup below is the whole point.
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsOpen(true);

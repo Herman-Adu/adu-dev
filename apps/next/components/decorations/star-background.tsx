@@ -60,6 +60,10 @@ const StarBackground: React.FC<StarBackgroundProps> = ({
     ]
   );
 
+  // Kept: a ResizeObserver on a canvas is an external subscription, and the
+  // canvas bitmap has to be resized imperatively because its backing store is
+  // not driven by React. The hazard is an observer outliving the node, so the
+  // cleanup disconnects it.
   useEffect(() => {
     const updateStars = () => {
       const canvas = canvasRef.current;
@@ -96,6 +100,10 @@ const StarBackground: React.FC<StarBackgroundProps> = ({
     generateStars,
   ]);
 
+  // Kept: a self-perpetuating requestAnimationFrame loop painting to a canvas —
+  // an external system React does not render into. The hazard is the loop
+  // surviving unmount and painting to a detached context forever, so the
+  // cleanup cancels the pending frame.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
