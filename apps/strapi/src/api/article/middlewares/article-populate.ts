@@ -6,25 +6,7 @@ import type { Core } from '@strapi/strapi';
 const populate = {
   localizations: true,
   image: true,
-  categories: {
-    populate: {
-      product: true,
-      articles: {
-        populate: {
-          dynamic_zone: {
-            on: {
-              'dynamic-zone.related-articles': true,
-              'dynamic-zone.cta': {
-                populate: {
-                  CTAs: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
+  categories: true,
   dynamic_zone: {
     on: {
       'dynamic-zone.related-articles': {
