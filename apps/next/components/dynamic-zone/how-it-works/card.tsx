@@ -87,10 +87,10 @@ export const Card = ({ title, description, index }: CardProps) => {
           />
         </motion.div>
 
-        {title && (
+        {title !== null && title !== undefined && (
           <p className="text-xl font-bold relative z-20 mt-2">{title}</p>
         )}
-        {description && (
+        {description !== null && description !== undefined && (
           <p className="text-neutral-400 mt-4 relative z-20">{description}</p>
         )}
       </div>

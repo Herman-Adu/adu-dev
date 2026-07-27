@@ -78,9 +78,10 @@ export async function BlogLayout({
                 <div className="h-5 rounded-lg w-0.5 bg-neutral-700" />
                 <time
                   dateTime={
-                    article.publishedAt
-                      ? String(article.publishedAt)
-                      : undefined
+                    article.publishedAt === null ||
+                    article.publishedAt === undefined
+                      ? undefined
+                      : String(article.publishedAt)
                   }
                   className="flex items-center text-base "
                 >

@@ -1,22 +1,13 @@
 'use client';
 
 import { Transition } from '@headlessui/react';
-import type { Entry } from '@repo/strapi-types';
 import { memo, useEffect, useRef, useState } from 'react';
 
 import { SparklesCore } from '../../ui/sparkles';
 import { StrapiMedia } from '@/components/ui/strapi-media';
+import { testimonialFullName } from '@/lib/shared/testimonial';
 import { cn } from '@/lib/utils';
-
-export type Testimonial = Entry<'api::testimonial.testimonial'>;
-
-// `user` and both name parts are optional in the schema, so a testimonial can
-// legitimately arrive with none of them. Joining on the parts that are present
-// also fixes a missing separator this component had against the marquee's.
-const fullName = (testimonial: Testimonial) =>
-  [testimonial.user?.firstname, testimonial.user?.lastname]
-    .filter(Boolean)
-    .join(' ');
+import type { Testimonial } from '@/types/types';
 
 export const TestimonialsSlider = ({
   testimonials,
@@ -84,7 +75,7 @@ export const TestimonialsSlider = ({
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[480px] h-[480px] -z-10 pointer-events-none before:rounded-full rounded-full before:absolute before:inset-0 before:bg-gradient-to-b before:from-neutral-400/20 before:to-transparent before:to-20% after:rounded-full after:absolute after:inset-0 after:bg-neutral-900 after:m-px before:-z-20 after:-z-20">
                 {slicedTestimonials.map((item, index: number) => (
                   <Transition
-                    key={index}
+                    key={item.documentId}
                     show={active === index}
                     enter="transition ease-&lsqb;cubic-bezier(0.68,-0.3,0.32,1)&rsqb; duration-700 order-first"
                     enterFrom="opacity-0 -translate-x-20"
@@ -100,7 +91,7 @@ export const TestimonialsSlider = ({
                         src={item.user?.image?.url}
                         width={56}
                         height={56}
-                        alt={fullName(item)}
+                        alt={testimonialFullName(item)}
                       />
                     </div>
                   </Transition>
@@ -112,7 +103,7 @@ export const TestimonialsSlider = ({
               <div className="relative flex flex-col" ref={testimonialsRef}>
                 {slicedTestimonials.map((item, index: number) => (
                   <Transition
-                    key={index}
+                    key={item.documentId}
                     show={active === index}
                     enter="transition ease-in-out duration-500 delay-200 order-first"
                     enterFrom="opacity-0 -translate-x-4"
@@ -140,7 +131,7 @@ export const TestimonialsSlider = ({
                         : 'border-transparent opacity-70'
                     }`
                   )}
-                  key={index}
+                  key={item.documentId}
                   onClick={() => {
                     setActive(index);
                     setAutorotate(false);
@@ -148,7 +139,7 @@ export const TestimonialsSlider = ({
                 >
                   <span className="relative">
                     <span className="text-neutral-50 font-bold">
-                      {fullName(item)}
+                      {testimonialFullName(item)}
                     </span>{' '}
                     <br className="block sm:hidden" />
                     <span className="text-neutral-600 hidden sm:inline-block">

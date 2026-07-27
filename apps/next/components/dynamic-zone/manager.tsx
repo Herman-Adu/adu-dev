@@ -12,12 +12,12 @@ import React from 'react';
  */
 type DynamicZoneUid = Extract<UID.Component, `dynamic-zone.${string}`>;
 
-export type DynamicZoneEntry = {
+export type DynamicZoneBlock = {
   [K in DynamicZoneUid]: Block<K> & { __component: K };
 }[DynamicZoneUid];
 
 interface Props {
-  dynamicZone: DynamicZoneEntry[];
+  dynamicZone: DynamicZoneBlock[];
   locale: string;
 }
 

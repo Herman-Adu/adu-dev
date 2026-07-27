@@ -26,12 +26,14 @@ export const CTA = ({ heading, sub_heading, CTAs, locale }: CTAProps) => {
         </div>
         <div className="flex items-center gap-4">
           {CTAs &&
-            CTAs.map((cta, index) => (
+            CTAs.map((cta) => (
               <Button
                 as={Link}
-                key={index}
+                key={cta.id}
                 href={`/${locale}${cta.URL}`}
-                {...(cta.variant ? { variant: cta.variant } : {})}
+                {...(cta.variant === null || cta.variant === undefined
+                  ? {}
+                  : { variant: cta.variant })}
                 className="py-3"
               >
                 {cta.text}

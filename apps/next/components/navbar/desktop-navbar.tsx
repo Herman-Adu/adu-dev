@@ -1,6 +1,5 @@
 'use client';
 
-import type { Entry, Fieldset } from '@repo/strapi-types';
 import {
   AnimatePresence,
   motion,
@@ -12,21 +11,10 @@ import { useState } from 'react';
 
 import { LocaleSwitcher } from '../locale-switcher';
 import { NavbarItem } from './navbar-item';
+import type { NavbarProps as Props } from './types';
 import { Button } from '@/components/elements/button';
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
-
-// Both navbars render `shared.link` entries and the `api::logo.logo` relation
-// the global navbar points at, rather than hand-copied shapes of them.
-type NavbarLink = Fieldset<'shared.link'>;
-type Logo = Entry<'api::logo.logo'>;
-
-type Props = {
-  leftNavbarItems: NavbarLink[];
-  rightNavbarItems: NavbarLink[];
-  logo: Logo | null;
-  locale: string;
-};
 
 export const DesktopNavbar = ({
   leftNavbarItems,

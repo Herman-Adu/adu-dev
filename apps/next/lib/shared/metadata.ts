@@ -3,13 +3,13 @@ import type { Fieldset } from '@repo/strapi-types';
 import { strapiImage } from '../strapi/strapiImage';
 
 /**
- * This previously read `seo.ogTitle`, `ogDescription`, `twitterCard`,
- * `twitterTitle`, `twitterDescription` and `twitterImage`. None of those exist
- * on `shared.seo`, so every one was permanently undefined and the `||`
- * fallbacks were the only live path — the code implied editors could override
- * the OG and Twitter cards separately, and they could not. The reads are gone
- * rather than being carried forward as decoration; adding the fields to the
- * schema is a content-model change and is tracked separately.
+ * `shared.seo` has no per-network override fields, so the OG and Twitter cards
+ * are derived from the shared `meta*` ones. Adding real overrides is a
+ * content-model change, tracked in #40.
+ *
+ * Note the Twitter card now carries `metaImage`, which it did not before: it
+ * read a `twitterImage` field that does not exist, so the image was always
+ * empty. Using `metaImage` matches what `openGraph` above already does.
  */
 export function generateMetadataObject(
   seo: Fieldset<'shared.seo'> | null | undefined

@@ -1,11 +1,13 @@
 /**
  * Builds the locale → slug map the locale switcher reads.
  *
- * Six routes were each reducing over `localizations` with the same block and
- * the same `localization: any`, differing only in whether the slug came from
- * the entry or was a fixed path segment. Strapi types `locale` and `slug` as
- * optional, and `localizations` itself can be absent, so every one of those
- * copies had to get the same three guards right independently.
+ * `locale` and `slug` are optional on a localization, and `localizations`
+ * itself can be absent, so the guards live here once rather than in each of
+ * the six routes that need them.
+ *
+ * The current locale is always seeded. One route previously ended `|| {}` and
+ * so returned an empty map when `localizations` was absent, leaving the
+ * switcher without even the page it was on; the other five seeded it.
  */
 type Localization = {
   locale?: string | null;

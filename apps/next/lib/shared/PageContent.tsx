@@ -1,13 +1,13 @@
 import { AmbientColor } from '@/components/decorations/ambient-color';
 import DynamicZoneManager, {
-  type DynamicZoneEntry,
+  type DynamicZoneBlock,
 } from '@/components/dynamic-zone/manager';
 
 // Pages, products and articles all reach this with a dynamic zone, so it takes
 // the two fields it actually reads rather than one of those content types.
 type PageContentProps = {
   pageData: {
-    dynamic_zone?: DynamicZoneEntry[] | null;
+    dynamic_zone?: DynamicZoneBlock[] | null;
     locale?: string | null;
   } | null;
 };

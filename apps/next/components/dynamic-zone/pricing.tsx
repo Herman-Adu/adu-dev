@@ -47,7 +47,7 @@ export const Pricing = ({
           {(plans ?? []).map((plan) => (
             <Card
               onClick={onClick}
-              key={plan.name}
+              key={plan.documentId}
               plan={plan}
               locale={locale}
             />

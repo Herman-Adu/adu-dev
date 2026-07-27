@@ -27,7 +27,8 @@ const wordToNumber: { [key: string]: number } = {
 // `span` is an optional enumeration in the schema, so it arrives as null on
 // any card where an editor left it unset.
 function convertWordToNumber(word: string | null | undefined) {
-  return word ? (wordToNumber[word.toLowerCase()] ?? null) : null;
+  if (word === null || word === undefined) return null;
+  return wordToNumber[word.toLowerCase()] ?? null;
 }
 
 type FeaturesProps = Block<'dynamic-zone.features'>;

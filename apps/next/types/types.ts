@@ -1,21 +1,18 @@
 import type { Entry } from '@repo/strapi-types';
 
 /**
- * These were hand-written duplicates of content types the schema already
- * describes, and they had drifted: `Article` claimed a required `title` and
- * `slug` that the schema leaves optional, and `Product` typed six of its
- * fields as `any`. Aliasing the generated definitions means a schema change
- * reaches every consumer instead of being absorbed here.
+ * Aliases, not copies: a schema change has to reach every consumer rather than
+ * being absorbed by a duplicate that quietly drifts from it.
  */
 export type Article = Entry<'api::article.article'>;
 export type Product = Entry<'api::product.product'>;
 export type Category = Entry<'api::category.category'>;
+export type Testimonial = Entry<'api::testimonial.testimonial'>;
 
 /**
- * Strapi's generated types describe a media field as `any`, so this is the
- * shape the frontend relies on rather than one the schema guarantees. It is
- * the one place in this file still not backed by the generated types —
- * recorded in the pull request for #15.
+ * Strapi generates media fields as `any`, so this is the shape the frontend
+ * relies on rather than one the schema guarantees — the only type here not
+ * backed by the generated definitions.
  */
 export interface Image {
   url: string;

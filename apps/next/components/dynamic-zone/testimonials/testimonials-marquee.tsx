@@ -3,15 +3,10 @@
 import React from 'react';
 import Marquee from 'react-fast-marquee';
 
-import type { Testimonial } from './slider';
 import { StrapiMedia } from '@/components/ui/strapi-media';
+import { testimonialFullName } from '@/lib/shared/testimonial';
 import { cn } from '@/lib/utils';
-
-// See slider.tsx: `user` and both name parts are optional in the schema.
-const fullName = (testimonial: Testimonial) =>
-  [testimonial.user?.firstname, testimonial.user?.lastname]
-    .filter(Boolean)
-    .join(' ');
+import type { Testimonial } from '@/types/types';
 
 export const TestimonialsMarquee = ({
   testimonials,
@@ -35,14 +30,14 @@ export const TestimonialsMarquee = ({
               <div className="flex gap-2 items-center mt-8">
                 <StrapiMedia
                   src={testimonial?.user?.image?.url}
-                  alt={fullName(testimonial)}
+                  alt={testimonialFullName(testimonial)}
                   width={40}
                   height={40}
                   className="rounded-full"
                 />
                 <div className="flex flex-col">
                   <QuoteDescription className="text-neutral-300">
-                    {fullName(testimonial)}
+                    {testimonialFullName(testimonial)}
                   </QuoteDescription>
                   <QuoteDescription className="text-neutral-400">
                     {testimonial.user?.job}
@@ -66,14 +61,14 @@ export const TestimonialsMarquee = ({
               <div className="flex gap-2 items-center mt-8">
                 <StrapiMedia
                   src={testimonial?.user?.image?.url}
-                  alt={fullName(testimonial)}
+                  alt={testimonialFullName(testimonial)}
                   width={40}
                   height={40}
                   className="rounded-full"
                 />
                 <div className="flex flex-col">
                   <QuoteDescription className="text-neutral-300">
-                    {fullName(testimonial)}
+                    {testimonialFullName(testimonial)}
                   </QuoteDescription>
                   <QuoteDescription className="text-neutral-400">
                     {testimonial.user?.job}
