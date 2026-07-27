@@ -68,20 +68,21 @@ the bar. Measured 2026-07-27, on unchanged data:
 | links         | 715  | 715    | 715  |
 | configuration | 78   | 78     | 78   |
 
-All 83 populated **content** tables held identical row counts before and after.
-That count excludes Strapi's own `strapi_*` tables, which is where configuration
-lives — the two rows of the table above do not overlap, so both are true at once.
+All 82 populated **content** tables held identical row counts before and after.
+That count excludes the `strapi_*` and `admin_*` tables, which is where
+configuration lives — the two rows of the table above do not overlap, so both are
+true at once.
 
-Configuration converges rather than shedding a row per cycle. The archive
-committed before #53 carried one extra row,
+Configuration converges rather than shedding a row per cycle. An archive
+committed earlier carried one extra row,
 `plugin_content_manager_configuration_content_types::admin::audit-log` — a view
 setting for an Enterprise-only content type that does not exist in this Community
 Edition database, so export cannot emit it. It dropped once, on the first export,
 and every cycle since has reported 78.
 
-The entity figure has moved twice for different reasons. It was recorded here as
-191, which was never measured; measurement put it at 222. #53 then deleted six
-category rows, giving the 216 above.
+Re-measure these numbers whenever you regenerate the archive. They are a
+description of one export, not a guarantee, and every figure here has been wrong
+at least once.
 
 ## Environment files
 

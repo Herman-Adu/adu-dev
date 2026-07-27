@@ -1,5 +1,31 @@
 # Category groups Articles only, and is fully localised
 
+> **Correction, 2026-07-27, from implementing this record in #53.** The decision
+> below stands and has shipped. Its account of _why_ the cross-locale links
+> existed does not. The third paragraph says a relation without
+> `pluginOptions.i18n.localized` has "its value shared across a document's
+> locales", so "the French localisation inherited the English article's category
+> links verbatim". That mechanism could not be reproduced. With the setting
+> absent, creating a French localisation of an English Article inherits nothing,
+> in either write order; and linking a French Article to a Category by
+> `documentId` attaches the **French** localisation, not the English one. Links
+> live in `articles_categories_lnk`, which joins per-locale rows, so they are
+> per-locale by construction. Reading the installed source rather than running
+> it: the admin's relation picker filters candidates by locale on
+> `isLocalizedContentType(model)` — the content type, not the attribute
+> (`@strapi/content-manager` 5.50, `dist/server/controllers/relations.js:97`) —
+> and both Article and Category were already localised content types, so that
+> filtering predates this change too.
+>
+> The cross-locale links were therefore **bad authored data in the seeded
+> archive**, not a consequence of the missing setting, and #53 cured the visible
+> six-pill defect by cleaning the data. Setting `localized: true` on both sides
+> remains correct for a reason this record does not give: every other attribute
+> on Article states it, and a relation that silently omits it invites exactly the
+> reading that produced this error. One path was not tested — an editor driving
+> the admin HTTP API in a browser session. The original text is left below
+> unedited.
+
 Category arrived from Strapi's LaunchPad demo carrying two jobs: a `manyToMany` relation to Article that behaves like a taxonomy, and a `manyToOne` relation to Product that behaves like ownership. We keep the first, drop the second, and localise the surviving relation properly. Category groups Articles and nothing else; Products stay organised by `Featured`.
 
 The Product side modelled nothing. Every product-side category was a fragment of its own Product's name — `Content Rocket Booster` produced `rocket` and `booster`, `Enterprise Integration Kit` produced `integration` — so `manyToOne` was not a mis-shaped taxonomy awaiting correction but a faithful encoding of what the seeder did. A term derived from one Product's name can by construction never apply to a second, so nothing was ever grouped. A Product's capabilities already have a home in `shared.perks`, rendered as bullets twenty lines above the category pills on the same page.
