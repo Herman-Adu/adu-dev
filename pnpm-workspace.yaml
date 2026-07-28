@@ -25,9 +25,18 @@ onlyBuiltDependencies:
 # view holding a JSON field dies with "Unrecognized extension value in extension
 # set". The SEO component's structuredData put a JSON field on most types here,
 # which made that most of the content manager — until 0011-seo-sheds-its-unread-fields.md
-# shed it. The schema now declares no JSON field at all, so nothing currently
-# triggers the crash. The override stays anyway: the trigger returns with the next
-# JSON field anyone adds, and dropping it has not been verified against the admin.
+# shed it. The schema now declares no JSON field at all, so nothing in our own
+# content currently mounts the JSON editor.
+#
+# The override still stays, and #72 measured why rather than assuming. Three
+# findings, in ascending weight. @strapi/admin 5.50.0 still pins 2.2.1 exactly,
+# so removing this reinstates the broken version rather than picking up a fixed
+# one. 2.2.1 neither imports @codemirror/state nor has it linked as a sibling,
+# yet EditorState is present in its dist — it cannot be sharing the copy
+# @codemirror/lang-json brings, which is the two-instance bug stated as a fact
+# about the package rather than as a theory. And the admin's own non-EE form
+# Renderer references the JSON input, so that code path stays live whether or
+# not our schema declares a JSON field.
 #
 # 2.2.3 imports @codemirror/state and @codemirror/view rather than inlining them,
 # which collapses it back to one instance. Patch-level bump; remove this override
