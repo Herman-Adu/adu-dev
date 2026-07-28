@@ -23,23 +23,6 @@
       "allowedTypes": [
         "images"
       ]
-    },
-    "keywords": {
-      "type": "text",
-      "regex": "[^,]+"
-    },
-    "metaRobots": {
-      "type": "string",
-      "regex": "[^,]+"
-    },
-    "structuredData": {
-      "type": "json"
-    },
-    "metaViewport": {
-      "type": "string"
-    },
-    "canonicalURL": {
-      "type": "string"
     }
   }
 }

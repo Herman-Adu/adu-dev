@@ -23,8 +23,11 @@ onlyBuiltDependencies:
 # loads two copies: the JSON editor builds its extensions from one and calls
 # EditorState.create from the other, `instanceof` fails, and every content-manager
 # view holding a JSON field dies with "Unrecognized extension value in extension
-# set". The SEO component puts a JSON field on most types here, so that is most of
-# the content manager.
+# set". The SEO component's structuredData put a JSON field on most types here,
+# which made that most of the content manager — until 0011-seo-sheds-its-unread-fields.md
+# shed it. The schema now declares no JSON field at all, so nothing currently
+# triggers the crash. The override stays anyway: the trigger returns with the next
+# JSON field anyone adds, and dropping it has not been verified against the admin.
 #
 # 2.2.3 imports @codemirror/state and @codemirror/view rather than inlining them,
 # which collapses it back to one instance. Patch-level bump; remove this override
