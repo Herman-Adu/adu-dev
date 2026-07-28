@@ -452,7 +452,7 @@ export interface SharedSeo extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 50;
       }>;
-    metaImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    metaImage: Schema.Attribute.Media<'images'>;
     metaRobots: Schema.Attribute.String;
     metaTitle: Schema.Attribute.String &
       Schema.Attribute.Required &
@@ -472,7 +472,7 @@ export interface SharedSocialMediaIconLinks extends Struct.ComponentSchema {
     icon: 'expand';
   };
   attributes: {
-    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    image: Schema.Attribute.Media<'images'>;
     link: Schema.Attribute.Component<'shared.link', true>;
   };
 }

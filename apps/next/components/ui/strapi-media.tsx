@@ -1,10 +1,6 @@
 import { unstable_noStore as noStore } from 'next/cache';
 import Image from 'next/image';
-import {
-  AudioHTMLAttributes,
-  ComponentProps,
-  VideoHTMLAttributes,
-} from 'react';
+import { ComponentProps } from 'react';
 
 import { getStrapiSource } from '@/lib/strapi/sourceMap';
 import { API_URL, stripStegaMarkers } from '@/lib/utils';
@@ -15,9 +11,6 @@ interface StrapiMediaProps extends Omit<
 > {
   src: string;
   alt?: string | null;
-  mime?: string | null;
-  videoProps?: Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src' | 'className'>;
-  audioProps?: Omit<AudioHTMLAttributes<HTMLAudioElement>, 'src' | 'className'>;
 }
 
 export function getStrapiMedia(url: string | null) {
@@ -30,17 +23,14 @@ export function getStrapiMedia(url: string | null) {
 }
 
 /**
- * Renders a Strapi media field. Branches on `mime` so video/audio assets
- * get the right element instead of being fed to next/image (which can't
- * render them). Falls back to next/image when mime is absent or image-like.
+ * Renders a Strapi media field. Every media field in the schema declares
+ * `["images"]`, so an image is the only thing this can receive — see
+ * `docs/adr/0010-media-fields-accept-only-images.md`.
  */
 export function StrapiMedia({
   src,
-  mime,
   alt,
   className,
-  videoProps,
-  audioProps,
   ...imageProps
 }: Readonly<StrapiMediaProps>) {
   noStore();
@@ -49,37 +39,6 @@ export function StrapiMedia({
   // strips the markers, and render it as a literal data attribute the preview
   // overlay reads directly. Undefined outside draft mode -> attribute omitted.
   const strapiSource = getStrapiSource(src);
-
-  if (mime?.startsWith('video/')) {
-    const url = getStrapiMedia(src);
-    if (!url) return null;
-    return (
-      // eslint-disable-next-line jsx-a11y/media-has-caption -- see #46
-      <video
-        src={url}
-        controls
-        preload="metadata"
-        className={className}
-        data-strapi-source={strapiSource}
-        {...videoProps}
-      />
-    );
-  }
-
-  if (mime?.startsWith('audio/')) {
-    const url = getStrapiMedia(src);
-    if (!url) return null;
-    return (
-      // eslint-disable-next-line jsx-a11y/media-has-caption -- see #46
-      <audio
-        src={url}
-        controls
-        className={className}
-        data-strapi-source={strapiSource}
-        {...audioProps}
-      />
-    );
-  }
 
   const imageUrl = getStrapiMedia(src);
   if (!imageUrl) return null;

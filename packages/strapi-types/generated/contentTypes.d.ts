@@ -491,7 +491,7 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+    image: Schema.Attribute.Media<'images'> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -1051,7 +1051,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<false>;
-    images: Schema.Attribute.Media<'images' | 'files' | 'videos', true> &
+    images: Schema.Attribute.Media<'images', true> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

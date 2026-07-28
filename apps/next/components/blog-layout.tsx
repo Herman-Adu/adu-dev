@@ -31,7 +31,6 @@ export async function BlogLayout({
           {article?.image ? (
             <StrapiMedia
               src={article.image.url}
-              mime={article.image.mime}
               height={800}
               width={800}
               className="h-40 md:h-96 w-full aspect-square object-cover rounded-3xl [mask-image:radial-gradient(circle,white,transparent)]"
