@@ -106,13 +106,34 @@ Anything that silently produces nothing cannot be relied on to catch anything.
 skills, run `setup-matt-pocock-skills` to generate the per-project config, then
 apply the harness — and only the third step is undocumented.
 
-The harness has no home, no name and no install path. Giving it those is the next
-piece of work, and the playbook is its documentation rather than a separate
-deliverable.
+The harness has no home, no name and no install path, and the playbook is its
+documentation rather than a separate deliverable.
 
 This record does not decide how the harness is packaged — a repository, a
 template, a skill that writes it, or prose someone follows. It decides only what
 the thing is, so that the packaging question is asked about the right object.
+
+**Packaging it is deliberately deferred, and this is not a gap waiting to be
+filled.** Anyone arriving here intending to start on it should read the next
+paragraph first.
+
+The three-file contract is what makes waiting free. The harness forks nothing
+upstream, so Matt Pocock shipping new skills, changing existing ones or adding
+twenty more cannot invalidate it. There is no drift clock, and packaging later
+costs exactly what packaging now would.
+
+What waiting buys is knowing what a second project actually needs rather than
+guessing. `strapi-next-monorepo-starter` is the first real test, and the
+sharpest version of it is to install the upstream skills there **fresh** and use
+them without the harness — a control group this repository cannot provide. That
+answers the question the harness's value currently rests on: how far do vanilla
+skills plus `setup-matt-pocock-skills` get you on their own, and which parts of
+the harness does anyone actually reach for? It is entirely possible the answer is
+three or four rules rather than nine hundred lines of documentation, and porting
+on faith would never reveal that.
+
+Doing it by hand there first is the same experiment by another route, and just as
+valid.
 
 ## What would change the answer
 
