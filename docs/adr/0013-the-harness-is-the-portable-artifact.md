@@ -33,6 +33,36 @@ ours: `setup-matt-pocock-skills` already carries seed templates and writes those
 three files per repo. That problem is solved upstream, and re-solving it is the
 obvious wrong turn.
 
+## The contract between the two worlds is exactly three files
+
+The boundary above is not a judgement call. It is observable, and it is narrower
+than "everything in `docs/agents/`":
+
+- **The generated files are still upstream's, verbatim.** `domain.md`,
+  `issue-tracker.md` and `triage-labels.md` each differ from their seed template
+  in the skill folder by **zero lines**. The installer ran and its output was
+  never edited.
+- **The skills read those three and nothing else.** Across all 22, the only
+  `docs/agents/` paths referenced are `issue-tracker.md` (6 references),
+  `triage-labels.md` (3) and `domain.md` (2). `workflow.md`, `monorepo.md`,
+  `content-types.md`, `ci-and-branch-protection.md` and `setup.md` are referenced
+  **zero** times. Upstream does not know those files exist.
+- **The harness predates the skills.** `AGENTS.md` was added on 2026-06-23; the
+  skills were vendored on 2026-07-25, a month later. The five bespoke
+  `docs/agents/` files arrived on 2026-07-27, two days after vendoring, in this
+  repository's own commits. None of it can have come from upstream.
+
+So the seam is clean in both directions. Anything a skill needs, it takes from
+those three generated files. **Everything else is ours to design freely, because
+nothing upstream reads it** — the harness can be packaged, renamed or
+restructured without forking a single line of Matt Pocock's work, and a new
+project needs the skills, those three generated files, and whatever the harness
+turns out to be.
+
+That also sharpens what to watch. A future skill that starts reading a fourth
+file would widen the contract, and widening it is the thing that would make the
+harness hard to move.
+
 ## The harness splits again, and that is the real design question
 
 Some of it is true of any repository running these skills:
