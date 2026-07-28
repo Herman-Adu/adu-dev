@@ -62,18 +62,7 @@ export async function BlogLayout({
               </header>
               <div className="mt-8 prose prose-sm prose-invert">{children}</div>
               <div className="flex space-x-2 items-center pt-12 border-t border-neutral-800 mt-12">
-                <div className="flex space-x-2 items-center ">
-                  {/* <StrapiImage 
-                  src={article.authorAvatar}
-                  alt={article.author}
-                  width={20}
-                  height={20}
-                  className="rounded-full h-5 w-5"
-                />
-                <p className="text-sm font-normal text-muted">
-                  {article.author}
-                </p> */}
-                </div>
+                <div className="flex space-x-2 items-center " />
                 <div className="h-5 rounded-lg w-0.5 bg-neutral-700" />
                 <time
                   dateTime={

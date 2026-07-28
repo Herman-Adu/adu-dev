@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { normalizeStrapiMediaUrl, stripStegaMarkers, truncate } from './utils';
+import { stripStegaMarkers, truncate } from './utils';
 
 describe('truncate', () => {
   test('returns text unchanged when within the limit', () => {
@@ -24,17 +24,5 @@ describe('stripStegaMarkers', () => {
 
   test('leaves clean text untouched', () => {
     expect(stripStegaMarkers('LaunchPad')).toBe('LaunchPad');
-  });
-});
-
-describe('normalizeStrapiMediaUrl (no NEXT_PUBLIC_API_URL configured)', () => {
-  test('rebuilds /uploads/ URLs against the current Strapi host', () => {
-    expect(
-      normalizeStrapiMediaUrl('http://localhost:1337/uploads/img.png')
-    ).toBe('/uploads/img.png');
-  });
-
-  test('renders non-URL strings unchanged', () => {
-    expect(normalizeStrapiMediaUrl('not a url')).toBe('not a url');
   });
 });

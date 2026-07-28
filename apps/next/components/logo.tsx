@@ -2,7 +2,7 @@ import { Link } from 'next-view-transitions';
 import React from 'react';
 
 import { BlurImage } from './blur-image';
-import { resolveStrapiMedia } from '@/lib/strapi/strapiImage';
+import { resolveStrapiMedia } from '@/lib/strapi/media';
 import { Image } from '@/types/types';
 
 export const Logo = ({ image, locale }: { image?: Image; locale?: string }) => {

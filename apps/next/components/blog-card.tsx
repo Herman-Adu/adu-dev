@@ -2,7 +2,7 @@ import { Link } from 'next-view-transitions';
 import React from 'react';
 
 import { BlurImage } from '@/components/blur-image';
-import { resolveStrapiMedia } from '@/lib/strapi/strapiImage';
+import { resolveStrapiMedia } from '@/lib/strapi/media';
 import { formatDate, truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
 
