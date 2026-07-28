@@ -76,6 +76,16 @@ The caret range `^19.2.0` tracks the frontend's own declaration rather than
 pinning an exact version. If the two ever need to diverge, this is the record to
 revisit.
 
+**Every measurement here was taken on pnpm 10.28.1**, which `packageManager`
+pins. Hoisting layout is pnpm's own implementation detail and it has changed
+across majors before, so none of this transfers by assumption to another version.
+That matters more than it sounds: the sibling project this repository's tooling
+is being ported to — `strapi-next-monorepo-starter` — pins **pnpm 11.1.1**, so
+anyone carrying this fix across, or upgrading pnpm here, has to re-measure rather
+than re-apply. The check is cheap and specific: after a clean
+`--frozen-lockfile` install, confirm `node_modules/.pnpm/node_modules/` contains
+no `@types/react`, and confirm the repository root does.
+
 ## Consequences
 
 `node_modules/.pnpm/node_modules/` no longer holds `@types/react` or
