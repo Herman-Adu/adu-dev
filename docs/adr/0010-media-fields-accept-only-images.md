@@ -24,7 +24,7 @@ an audio file is not a thing anybody designed.
 ## Three findings that settle it
 
 **Only one call site can reach the video branch at all.** `StrapiMedia` branches
-on `mime`, and of its nine call sites exactly one passes it — `blog-layout.tsx`,
+on `mime`, and of its ten call sites exactly one passes it — `blog-layout.tsx`,
 for `article.image`. The other three permissive fields feed their URL to
 `next/image` with `mime` undefined, so a video uploaded to `product.images` or
 `seo.metaImage` today is handed to a component that cannot render it. That is a

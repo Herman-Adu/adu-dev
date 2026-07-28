@@ -17,7 +17,6 @@ export type Testimonial = Entry<'api::testimonial.testimonial'>;
 export interface Image {
   url: string;
   alternativeText: string;
-  mime?: string;
 }
 
 export type LocaleParamsProps = {
