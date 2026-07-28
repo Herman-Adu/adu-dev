@@ -9,8 +9,12 @@ there is how this file silts up.
 
 ## Repo overview
 
-adu-dev is a Strapi + Next.js monorepo template. It began as Strapi's LaunchPad
-demo and no longer tracks it.
+launchpad-skills-testbed is a Strapi + Next.js monorepo, and the testbed where
+this agent skills setup was installed and extended. It began as Strapi's
+LaunchPad demo and no longer tracks it. It is **not** the template that gets
+cloned — that is `strapi-next-monorepo-starter` — and it is not the agency site;
+see `docs/adr/0013-the-harness-is-the-portable-artifact.md` for what travels from
+here and what does not.
 
 - `apps/strapi/` — Strapi 5 backend, content types, components, seeded demo data,
   SQLite default database.
