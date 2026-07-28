@@ -77,3 +77,5 @@ question — whether the frontend should honour them or the schema should lose
 them — and that question is worth a ticket of its own. It is the more valuable
 half of what #40 uncovered, and it is left explicitly open rather than folded
 into a decision about overrides.
+
+Answered by `0011-seo-sheds-its-unread-fields.md`: the schema loses all five.
