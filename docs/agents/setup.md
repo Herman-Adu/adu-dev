@@ -62,6 +62,41 @@ replaced content without a restart.
 unencrypted; an encrypted archive would demand a key on every import. The
 archive is a 23 MB binary, so regenerate it only when the data actually changed.
 
+### The 15 Schema Integrity warnings a seed prints are expected
+
+`pnpm seed` prints fifteen lines of the form:
+
+```
+warn: (Schema Integrity) shared.seo.attributes.keywords does not exist on destination
+```
+
+They are noise, not damage. The archive was exported before two schema changes
+narrowed the destination, so it still describes fields and values the code no
+longer declares. Strapi discards the extras and imports everything else
+correctly — measured at 216 entities, 115 assets, 715 links and 78 configuration
+rows, with all 82 populated content tables identical before and after.
+
+The fifteen come from two changes, and knowing which is which is the quickest way
+to tell an expected warning from a new one:
+
+| Count | Cause                                                                                                                                                |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10    | `allowedTypes` narrowed to `["images"]` on four media fields — the archive still lists `files`, `videos` and `audios`, one warning per dropped entry |
+| 5     | The five unread SEO fields shed — `keywords`, `metaRobots`, `structuredData`, `metaViewport`, `canonicalURL`                                         |
+
+**The archive is deliberately not regenerated to silence them.** Regenerating
+commits a fresh 23 MB binary to history to remove fifteen lines of stdout, and
+the rule above is to regenerate only when the _data_ changed. It has not — only
+the schema the archive remembers. Importing the current archive against the
+narrowed schema was tested directly: it discards the extras and does **not**
+recreate the dropped columns.
+
+What would legitimately change this: **a data change**. Editing the demo content
+means running `pnpm export` anyway, and the archive that produces will describe
+the current schema, so these warnings disappear as a side effect rather than as a
+goal. A warning naming a field you did not knowingly remove is a real signal —
+read it rather than assuming it belongs to the fifteen.
+
 ### What the round trip does and does not preserve
 
 Content, yes. Bytes, no — timestamps make byte-equality meaningless, so it is not
