@@ -5,6 +5,12 @@ checkout — see `AGENTS.md` for the day-to-day commands.
 
 ## First run
 
+**Use the Node version in `.nvmrc` (22).** The install refuses to run on anything
+else — `pnpm-workspace.yaml` sets `engineStrict: true`, so a wrong major fails
+immediately with `ERR_PNPM_UNSUPPORTED_ENGINE` rather than getting as far as
+building `better-sqlite3` from source and failing with a `node-gyp` error about
+Visual Studio. `nvm use` before installing.
+
 From the repo root:
 
 ```sh

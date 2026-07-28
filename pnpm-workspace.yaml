@@ -31,3 +31,11 @@ onlyBuiltDependencies:
 # once @strapi/admin ships a design-system that does not inline.
 overrides:
   '@strapi/design-system': 2.2.3
+
+# apps/strapi already declares `engines: node >=18.0.0 <=22.x.x`, and .nvmrc
+# pins 22, but pnpm only warned — so an install on a newer Node got as far as
+# building better-sqlite3 from source and failed with a node-gyp error demanding
+# Visual Studio, which points nowhere near the real cause. Failing the install
+# outright turns a thirty-minute diagnosis into a one-line one. Raise the ceiling
+# in apps/strapi when Strapi itself supports a newer Node.
+engineStrict: true

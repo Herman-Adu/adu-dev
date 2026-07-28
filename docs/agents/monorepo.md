@@ -51,17 +51,23 @@ already satisfied rather than by picking an ambitious preset — see
 ## Two `@types/react` majors, and why that is correct
 
 The frontend runs React 19 and the backend React 18 — the split pnpm gives us by
-design. The Strapi admin panel's own dependency tree is cleanly React 18
-throughout; the second copy leaks in only through
+design. Each app's own tree is clean; a second copy leaks in only through
 `node_modules/.pnpm/node_modules/`, pnpm's **hidden hoist directory**, which holds
-exactly one version and holds 19 because the frontend needs it. Packages resolved
-from inside the virtual store, such as `@strapi/icons`, fall back to that
-directory when TypeScript looks up types for `react`.
+exactly one version of each package. Packages resolved from inside the virtual
+store fall back to that directory when TypeScript looks up types for `react`.
 
-The admin `tsconfig.json` therefore pins `react` and `react-dom` through `paths`
-to the app's own copies. **Do not "fix" this with a pnpm `overrides` entry**:
-nothing in the Strapi dependency graph resolves React 19, so there is no edge to
-override, and forcing the hoist would break the frontend. See
+**That one slot is chosen by graph-traversal order, not by the lockfile**, so it
+is not deterministic even under `--frozen-lockfile`. It is not reliably 19: it
+held 18 on two CI runs, which is what made the `Frontend` job fail on a correct
+commit and pass on a re-run. `@types/react` and `@types/react-dom` are therefore
+declared at the **workspace root**, which stops pnpm creating the slot at all —
+see `docs/adr/0012-react-types-resolve-from-the-root.md`. Adding a React types
+major to either app means considering that root declaration too.
+
+The admin `tsconfig.json` separately pins `react` and `react-dom` through `paths`
+to the app's own copies, and still needs to. **Do not "fix" either with a pnpm
+`overrides` entry**: nothing in the Strapi dependency graph resolves React 19, so
+there is no edge to override, and forcing the hoist would break the frontend. See
 `docs/adr/0006-admin-typecheck-react-types.md`.
 
 ## Typecheck scope
