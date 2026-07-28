@@ -3,9 +3,9 @@
 // the client. Importing it from a client component is now a build error naming
 // this file, rather than something review has to catch.
 //
-// Deliberately not applied to the siblings `sourceMap.ts` and `strapiImage.ts`.
-// Both are pure string handling, both are imported by client components, and
-// marking either would break the build rather than enforce anything.
+// Deliberately not applied to the siblings `sourceMap.ts` and `media.ts`. Both
+// are pure string handling, both are imported by client components, and marking
+// either would break the build rather than enforce anything.
 import 'server-only';
 
 import { strapi } from '@strapi/client';

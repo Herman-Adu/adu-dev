@@ -52,19 +52,3 @@ export const API_URL =
 // they get percent-encoded (breaking the URL) and cause hydration mismatches.
 export const stripStegaMarkers = (value: string): string =>
   value.replace(/[\u200B-\u200D\u2060\uFEFF]/g, '');
-
-// Blocks (rich text) content snapshots the media URL from the authoring
-// environment (e.g. http://localhost:1337/uploads/...), so any /uploads/
-// path must be rebuilt against the current Strapi host before rendering.
-export const normalizeStrapiMediaUrl = (url: string): string => {
-  const cleanUrl = stripStegaMarkers(url);
-  try {
-    const { pathname } = new URL(cleanUrl, API_URL || 'http://localhost');
-    if (pathname.startsWith('/uploads/')) {
-      return API_URL + pathname;
-    }
-  } catch {
-    // not a parseable URL; render it unchanged
-  }
-  return cleanUrl;
-};

@@ -1,9 +1,7 @@
-import { unstable_noStore as noStore } from 'next/cache';
 import Image from 'next/image';
 import { ComponentProps } from 'react';
 
-import { getStrapiSource } from '@/lib/strapi/sourceMap';
-import { API_URL, stripStegaMarkers } from '@/lib/utils';
+import { resolveStrapiMedia } from '@/lib/strapi/media';
 
 interface StrapiMediaProps extends Omit<
   ComponentProps<typeof Image>,
@@ -11,15 +9,6 @@ interface StrapiMediaProps extends Omit<
 > {
   src: string;
   alt?: string | null;
-}
-
-export function getStrapiMedia(url: string | null) {
-  if (url == null) return null;
-  const cleanUrl = stripStegaMarkers(url);
-  if (cleanUrl.startsWith('data:')) return cleanUrl;
-  if (cleanUrl.startsWith('http') || cleanUrl.startsWith('//')) return cleanUrl;
-
-  return API_URL + cleanUrl;
 }
 
 /**
@@ -33,21 +22,15 @@ export function StrapiMedia({
   className,
   ...imageProps
 }: Readonly<StrapiMediaProps>) {
-  noStore();
+  const { src: imageUrl, ...sourceProps } = resolveStrapiMedia(src);
+  if (imageUrl === '') return null;
 
-  // Decode the visual-editing source from the raw URL *before* getStrapiMedia
-  // strips the markers, and render it as a literal data attribute the preview
-  // overlay reads directly. Undefined outside draft mode -> attribute omitted.
-  const strapiSource = getStrapiSource(src);
-
-  const imageUrl = getStrapiMedia(src);
-  if (!imageUrl) return null;
   return (
     <Image
       src={imageUrl}
       alt={alt ?? 'No alternative text provided'}
       className={className}
-      data-strapi-source={strapiSource}
+      {...sourceProps}
       {...imageProps}
     />
   );

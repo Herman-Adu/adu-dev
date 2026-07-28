@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import AddToCartModal from '@/components/products/modal';
 import { StrapiMedia } from '@/components/ui/strapi-media';
 import { useCart } from '@/context/cart-context';
-import { strapiImage } from '@/lib/strapi/strapiImage';
+import { strapiMediaUrl } from '@/lib/strapi/media';
 import { cn, formatNumber } from '@/lib/utils';
 import { Product } from '@/types/types';
 
@@ -70,7 +70,7 @@ export const SingleProduct = ({
                       : 'border-2 border-transparent'
                   )}
                   style={{
-                    backgroundImage: `url(${strapiImage(image.url)})`,
+                    backgroundImage: `url(${strapiMediaUrl(image.url)})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
