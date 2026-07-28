@@ -1,5 +1,28 @@
 # The portable artifact is the harness around the skills, not the skills
 
+> **Correction, 2026-07-28, same day as the record.** The decision below stands,
+> and this strengthens it. One factual claim in _The evidence_ does not: it says
+> "no lock file or CI check enforces that". **`skills-lock.json` exists** —
+> version 1, 22 skills, each carrying `source`, `sourceType`, `skillPath` and a
+> `computedHash`, matching the 22 vendored on disk. `docs/agents/workflow.md`
+> names it in its opening sentence.
+>
+> There is a second mechanism too: `.prettierignore` excludes both
+> `.claude/skills/` and `skills-lock.json`, commented "keep byte-identical to
+> upstream for lock-hash updates" — so formatting, the likeliest accidental
+> drift, cannot happen.
+>
+> What is true is narrower, and was the load-bearing half of the point: **nothing
+> in this repository verifies the lock automatically.** No `package.json` script,
+> no CI job, no git hook, no lint-staged entry references it. One class of drift
+> is prevented and the rest is detectable on demand, but nothing fails on push.
+>
+> The claim was carried over from a session handoff and never checked against the
+> tree — which is precisely the habit `AGENTS.md` asks for and this record failed
+> to apply to itself. It makes the three-file contract more defensible rather than
+> less: a real hash per skill means a fork can be _proven_ absent instead of
+> assumed.
+
 What this repository contributes, and what should be carried to another project,
 is the **harness**: the router, the workflow rules, the CI shape and the working
 agreement that make the vendored skills productive. The skills themselves are
