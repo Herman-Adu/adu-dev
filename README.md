@@ -1,8 +1,10 @@
-# adu-dev
+# launchpad-skills-testbed
 
-![adu-dev](./LaunchPad.jpg)
+![launchpad-skills-testbed](./LaunchPad.jpg)
 
-A Strapi + Next.js monorepo template. It began life as Strapi's [LaunchPad](https://github.com/strapi/LaunchPad) demo and no longer tracks it.
+A Strapi + Next.js monorepo, used as the testbed for an agent skills setup — [mattpocock/skills](https://github.com/mattpocock/skills) vendored at the repo root, then extended to work across two apps with a shared types package, a protected `main` and a TDD workflow. It began life as Strapi's [LaunchPad](https://github.com/strapi/LaunchPad) demo and no longer tracks it.
+
+What was learned here is recorded in `docs/adr/` and routed from `AGENTS.md`. See `docs/adr/0013-the-harness-is-the-portable-artifact.md` for what is portable to another project and what is not.
 
 This repository contains:
 
@@ -38,8 +40,8 @@ Strap yourself in! Get started on your local machine by following the instructio
 To infinity and beyond! Clone the repo:
 
 ```sh
-git clone https://github.com/Herman-Adu/adu-dev.git
-cd adu-dev
+git clone https://github.com/Herman-Adu/launchpad-skills-testbed.git
+cd launchpad-skills-testbed
 ```
 
 ## 2. Setup

@@ -1,7 +1,7 @@
 {
-  "name": "adu-dev",
+  "name": "launchpad-skills-testbed",
   "version": "1.0.0",
-  "description": "Strapi + Next.js monorepo template",
+  "description": "Strapi + Next.js monorepo, and the testbed for an agent skills setup",
   "private": true,
   "type": "module",
   "scripts": {
