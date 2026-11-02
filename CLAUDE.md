@@ -1,5 +1,8 @@
 # adu-dev — working rules
 
+**Starting a session? Read `docs/STATE.md` first** — it holds current
+status, decisions already made, and what is next.
+
 ## Architecture
 
 Hybrid atomic + feature-sliced. The split is load-bearing, not cosmetic.
