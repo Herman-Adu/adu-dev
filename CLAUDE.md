@@ -78,3 +78,21 @@ npm run dev        # dev server
 npm run build      # production build (type errors fail the build)
 npm run typecheck  # tsc --noEmit
 ```
+
+## MCP — kie.ai
+
+`.mcp.json` registers the KIE.ai connector as a stdio server. It gives five
+generic tools (`kie_post`, `kie_get`, `kie_upload_file`, `kie_download`,
+`kie_fetch_model_docs`) covering every current and future KIE model; model
+specs are pulled live from docs.kie.ai rather than bundled.
+
+It needs two things that are **not** in this repo, set on the cloud
+environment and picked up when a session starts:
+
+1. `KIE_API_KEY` as an environment variable. `.mcp.json` references it as
+   `${KIE_API_KEY}` — the value itself is never committed.
+2. `*.kie.ai` on the network allowlist. Without it the server starts fine
+   and every call fails at the proxy, which looks like a bad key and is not.
+
+Generation costs KIE credits. It produces assets; it does not replace the
+Blender renders that scene 02 depends on.

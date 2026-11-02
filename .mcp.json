@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "kie": {
+      "command": "npx",
+      "args": ["-y", "dainami-kie-mcp@0.5.3"],
+      "env": {
+        "KIE_API_KEY": "${KIE_API_KEY}"
+      }
+    }
+  }
+}
