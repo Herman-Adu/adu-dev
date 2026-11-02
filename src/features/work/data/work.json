@@ -1,0 +1,48 @@
+[
+  {
+    "slug": "momo-audio",
+    "title": "momo-audio",
+    "summary": "A complete e-commerce template platform — catalogue, cart, checkout, CMS, documentation and a full social content kit. Built once to be licensed many times.",
+    "year": 2025,
+    "disciplines": ["ecommerce", "product"],
+    "liveUrl": "https://momo-audio.adudev.co.uk",
+    "scope": ["Design", "Build", "Documentation", "Content system"],
+    "stack": ["Next.js", "TypeScript", "PostgreSQL"],
+    "cover": null,
+    "constraint": "A template has to be generic and opinionated at the same time. Too specific and nobody else can use it; too generic and it is a blank page with a cart bolted on.",
+    "decision": {
+      "body": "The contract is the product. Every entity is defined as a schema the front end owns, and the CMS implements that schema rather than defining it — so a buyer can run the platform on their existing back end without touching a component.",
+      "rejectedOption": "Generating types from the CMS schema. Faster to start, but it inverts the dependency and turns migration into a rewrite.",
+      "cost": null
+    },
+    "result": {
+      "metrics": [],
+      "note": "Not yet measured. Figures will be added once the licensing listing is live."
+    },
+    "whatIWouldChange": null,
+    "featured": true
+  },
+  {
+    "slug": "nexgen-electrical",
+    "title": "NexGen Electrical Innovations",
+    "summary": "Next.js and TypeScript on a Strapi-ready headless stack. Fast, fully indexable, and editable by an owner who does not write code.",
+    "year": 2025,
+    "disciplines": ["marketing-site"],
+    "liveUrl": "https://nexgen-electrical.co.uk",
+    "scope": ["Design", "Build", "CMS", "Hosting"],
+    "stack": ["Next.js", "TypeScript", "Strapi", "PostgreSQL"],
+    "cover": null,
+    "constraint": "The owner needed to edit the site without a developer, on a budget that ruled out a bespoke admin build.",
+    "decision": {
+      "body": "Headless CMS with a tightly constrained content model, so the editor cannot break the layout. Fewer knobs beats more flexibility when the person using it is not a designer.",
+      "rejectedOption": null,
+      "cost": null
+    },
+    "result": {
+      "metrics": [],
+      "note": "Not yet measured."
+    },
+    "whatIWouldChange": null,
+    "featured": true
+  }
+]
