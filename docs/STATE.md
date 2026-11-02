@@ -4,11 +4,12 @@ Read this at the start of a session. It is the handoff: what exists, what
 was decided and why, and what is next. Keep it current — it is the only
 thing that survives between sessions.
 
-Last updated: 2026-11-02
+Last updated: 2026-11-02 (scene 02 complete)
 
 ## Where this is
 
-Design phase complete. Scaffold pushed. Nothing deployed.
+Design phase complete. Scaffold pushed. **Scene 02 built and working.**
+Nothing deployed.
 
 **Design canvas:** https://claude.ai/artifact/T5XWBmHmNJcY46x8tgAb1D
 Seven artboards: Foundations (tokens), Scroll spine (scene map + Blender
@@ -30,25 +31,40 @@ the rules extracted from it.
   impression is how a strong site turns to mush. They get their own
   properties later.
 - **Contract-first.** See CLAUDE.md. The front end owns the schema.
+- **No Blender.** Scene 02 is real-time WebGL in `features/hero`, not a
+  rendered frame sequence. The brand's geometry is an orbit and cut facets,
+  which procedural 3D does natively — this was the better choice, not a
+  fallback. `SequenceScene` still exists in `features/scroll` and still
+  works if a commissioned render ever lands.
 - **Glass has four sanctioned uses.** See CLAUDE.md. Not a general style.
 
 ## Next, in order
 
-1. **Blender scene 02.** The only blocker nothing can route around.
-   Spec: `public/sequences/hero/README.md`. 120 WebP frames 1600x900,
-   ground `#0F0F0F` baked in, under 4 MB total, plus `poster.webp` of the
-   end state. Option B (frame sequence) was chosen over a live GLB for
-   guaranteed frame rate on mid-range Android.
-2. **Build the home scroll spine** against those frames using
-   `SequenceScene` + `useScrollScene`. One scene at award standard proves
-   the whole site; breadth does not.
+1. **Scene 01 (title hold) and the nav.** The hero copy above the forge is
+   still placeholder layout; the canvas Home board has the real structure.
+2. **Scenes 03-06** from the Scroll spine board: stack peel, fleet
+   assembly, proof wall, release. Reuse `useScrollScene` for each.
 3. Services, Work and Case study pages from the canvas.
 4. Operator dashboard.
 5. Strapi 5 + Postgres behind the existing contract — a new adapter, not a
    rewrite.
 
+### Tuning knobs for scene 02
+
+All in `src/features/hero/lib/forge-config.ts`: `orbitRadius`, `cameraZ`,
+`offsetX` (keeps the form clear of the copy column), `shardCount`,
+`shellRadius`. Lighting is in `forge-scene.tsx` — the core's lower facets
+sit near-black by design; raise the `[0, -6, -4]` light to lift them.
+
+Verify changes by eye, not by assumption: `npm run dev`, then screenshot
+with the preinstalled Playwright (require it from CommonJS — ESM import
+does not resolve) using
+`--use-angle=swiftshader --enable-unsafe-swiftshader` for WebGL.
+
 ## Open items
 
+- `public/sequences/hero/` is now unused. Keep or delete depending on
+  whether a commissioned render is ever planned.
 - **Monogram asset** (the AD orbit mark) never reached the container.
   Needed for the nav below ~480px, the favicon, and the orbit loader.
   The wordmark is uploaded to the canvas and used in the page boards.
