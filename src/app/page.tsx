@@ -2,6 +2,7 @@ import { Container } from "@/global/ui/container";
 import { Eyebrow } from "@/global/ui/eyebrow";
 import { ButtonLink } from "@/global/ui/button";
 import { caseStudies } from "@/features/work/lib";
+import { HeroForge } from "@/features/hero/lib";
 
 export default async function HomePage() {
   // Server component reading through the contract. Swapping to Strapi is a
@@ -33,7 +34,9 @@ export default async function HomePage() {
         </div>
       </Container>
 
-      <Container className="pb-32">
+      <HeroForge />
+
+      <Container className="py-32">
         <Eyebrow>Built and shipped</Eyebrow>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((study) => (
