@@ -35,7 +35,7 @@ function forbid({ rule, why, re, include = /\.(ts|tsx|css)$/, allow = () => fals
     if (!include.test(path) || allow(path)) continue;
     text.split("\n").forEach((line, i) => {
       // A rule quoted in a comment is documentation, not a violation.
-      if (/^\s*(\/\/|\/\*|\*)/.test(line)) return;
+      if (/^\s*(\{\s*)?(\/\/|\/\*|\*)/.test(line)) return;
       if (re.test(line)) {
         failures.push(`${rule}\n    ${path}:${i + 1}  ${line.trim()}\n    ${why}`);
       }
