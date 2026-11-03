@@ -33,8 +33,15 @@ Hybrid atomic + feature-sliced. The split is load-bearing, not cosmetic.
 - GSAP owns anything scroll-linked. Framer Motion owns component state
   (hover, layout, route transitions). Two libraries on one property is a
   fight nobody can debug.
-- Every scene registers through `useScrollScene` — one `gsap.matchMedia()`,
-  one teardown. App-router remounts leak ScrollTriggers otherwise.
+- Every scroll-linked scene registers through `useScrollScene` — one
+  `gsap.matchMedia()`, one teardown. App-router remounts leak ScrollTriggers
+  otherwise.
+- **A scene with no scroll link is CSS, not GSAP.** If it plays once on load,
+  its from-state has to exist in the server-rendered HTML: a JS-only
+  from-state paints the finished markup, then hides it on hydration and
+  replays — invisible on a fast machine, a snap-back on a slow one. Scene 01
+  is the case. It creates no ScrollTrigger, so there is nothing to leak, and
+  the first viewport ships no JavaScript.
 - Three behaviours, always: `full` (pinned, desktop), `compact` (unpinned,
   narrow), `reduced` (static end state, zero scrub).
 - **Body text never scrubs.** Opacity on a paragraph tied to scroll position
@@ -51,13 +58,17 @@ Foundations board on the design canvas.
 | Token | Value | On `--color-ground` |
 |---|---|---|
 | `--color-ground` | `#0F0F0F` | — |
+| `--color-band` | `#141414` | — |
 | `--color-surface` | `#1A1A1A` | — |
+| `--color-hairline` | `#1F1F1F` | — |
+| `--color-line` | `#262626` | — |
 | `--color-border` | `#2D2D2D` | — |
 | `--color-ink` | `#FFFFFF` | 19.2:1 |
 | `--color-ink-2` | `#CACACA` | 11.7:1 |
 | `--color-ink-3` | `#8A8A8A` | 5.6:1 |
 | `--color-ink-mute` | `#6B6B73` | 3.6:1 |
 | `--color-brand` | `#F47C00` | 7.1:1 |
+| `--color-brand-hover` | `#FF8A1F` | 8.1:1 |
 
 `--color-ink-mute` is the quiet second line of a display pair, and clears
 the 3:1 large-text floor only — never body text. The canvas Home board draws

@@ -20,7 +20,7 @@ const sizes: Record<Size, string> = {
  * 2.7:1 and fails WCAG AA at every size, including large bold.
  */
 const variants: Record<Variant, string> = {
-  primary: "bg-brand text-ground hover:bg-[#ff8a1f]",
+  primary: "bg-brand text-ground hover:bg-brand-hover",
   ghost: "border border-border text-ink hover:border-ink-3",
 };
 

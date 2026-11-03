@@ -4,7 +4,7 @@ Read this at the start of a session. It is the handoff: what exists, what
 was decided and why, and what is next. Keep it current — it is the only
 thing that survives between sessions.
 
-Last updated: 2026-11-03 (scene 01 + nav complete)
+Last updated: 2026-11-03 (scene 01 + nav, reviewed; CI gate added)
 
 ## Where this is
 
@@ -49,10 +49,17 @@ the rules extracted from it.
 
 ### Tuning knobs for scene 01
 
-`TITLE_HOLD` in `src/features/hero/components/title-hold.tsx`: `duration`,
-`ease`, `stagger`, `rise`. The two display lines are the only thing on the
-first viewport that moves — eyebrow, standfirst and buttons are painted in
-their end state and stay there.
+`--title-hold-duration`, `--title-hold-stagger` and `--title-hold-rise` in
+`src/app/globals.css`, beside the keyframes. The two display lines are the
+only thing on the first viewport that moves — eyebrow, standfirst and
+buttons are painted in their end state and stay there.
+
+**Scene 01 is CSS, not GSAP, and `TitleHold` is a server component.** The
+first version used GSAP and flashed: the server painted the finished title,
+then hydration hid it and replayed it. The from-state has to be in the
+server-rendered HTML, so it is a keyframe gated on
+`prefers-reduced-motion: no-preference`. Verified with JavaScript disabled
+entirely — the reveal still runs. The first viewport now ships no JS.
 
 ### Tuning knobs for scene 02
 
@@ -66,6 +73,33 @@ with the preinstalled Playwright (require it from CommonJS — ESM import
 does not resolve) using
 `--use-angle=swiftshader --enable-unsafe-swiftshader` for WebGL.
 
+## The review gate
+
+`npm run house-rules` (`scripts/house-rules.mjs`) turns the silently-breaking
+rules into a pass/fail: the global/feature split, deep imports, white-on-brand,
+pill radii, raw hexes, placeholders reaching the DOM, and every colour token
+measured against the table in `CLAUDE.md`. It is self-tested — reinstating
+`#5E5E66` or deleting a token's table row both fail it.
+
+`.github/workflows/ci.yml` runs typecheck, the house rules, and a
+`CONTENT_SOURCE=local` build on every PR. `.github/pull_request_template.md`
+carries the checks CI cannot make: the two review axes, and the five states
+that have to be looked at.
+
+**The independent half is Copilot.** CI and `/code-review` are both run by
+whoever wrote the change, so neither is a gate on its own. Request Copilot on
+a PR via Reviewers → Copilot, or make it automatic in Settings → Rules →
+Rulesets ("Request pull request review from Copilot"). Requesting it through
+the API (`POST /pulls/{n}/requested_reviewers` with
+`copilot-pull-request-reviewer[bot]`) returns 200 and silently adds nobody
+when Copilot code review is not enabled for the account — check the PR's
+`requested_reviewers` actually changed rather than trusting the 200.
+
+`docs/agents/*.md` configures the mattpocock engineering skills. The GitHub
+template there had to be rewritten against `gh api` REST: every `gh issue`
+and `gh pr` subcommand routes through GraphQL, which is blocked in cloud
+sessions and returns 403.
+
 ## Open items
 
 - `public/sequences/hero/` is now unused. Keep or delete depending on
@@ -77,9 +111,20 @@ does not resolve) using
   one row. The **wordmark** is now in the repo at
   `public/brand/adu-dev-wordmark.png`, pulled from the canvas (988x333,
   light-on-transparent). The dark-on-light variant is still canvas-only.
+- **`npm run lint` is not a CI gate yet.** `eslint.config.mjs` now exists
+  (there was no config at all, so lint never ran), but `forge-scene.tsx`
+  carries 9 pre-existing `react-hooks/refs` errors from scene 02. Fix those,
+  then add `npm run lint` to the workflow — it is a one-line change.
+- **Open review findings on PR #1**, neither blocking: the 180ms UI duration
+  is hard-coded in two files while its ease is a token; and the skip link
+  targets `#main`, but `id="main"` lives per-page, so every future page has
+  to remember it.
 - **Nav routes that do not exist yet.** `/work`, `/services`, `/platform`,
   `/writing` and `/contact` all 404 until step 1-3 land. The hrefs are in
-  `src/features/chrome/lib/nav-links.ts`.
+  `src/features/chrome/lib/nav-links.ts`. **Departure from the board:** it
+  drew Writing and Start-a-build as same-page anchors (`#writing`,
+  `#contact`) because it is one long board; they are routes here because the
+  site is not. `Dashboard.dc.html` → `/platform` is the same remap.
 - **Two canvas values were overridden, both deliberately:**
   - The Home board draws the quiet second display line at `#5E5E66`, which
     measures **2.98:1** on `--color-ground` and misses the 3:1 large-text
