@@ -21,7 +21,10 @@ export const localCaseStudySource: CaseStudySource = {
     return all()
       .filter((c) => (q.featuredOnly ? c.featured : true))
       .filter((c) => (q.discipline ? c.disciplines.includes(q.discipline) : true))
-      .sort((a, b) => b.year - a.year)
+      // Year descending, slug ascending. The tie-break is not cosmetic:
+      // it is what makes this order reproducible, and what lets the Strapi
+      // source return the same sequence rather than a coincidental match.
+      .sort((a, b) => b.year - a.year || a.slug.localeCompare(b.slug))
       .slice(0, q.limit)
       .map((c) => CaseStudySummary.parse(c));
   },

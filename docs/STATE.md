@@ -168,6 +168,14 @@ Decisions worth not relitigating:
 - `slugs()` pages through to the end. Taking the first page only would
   silently stop building case-study pages at entry 101.
 
+**Copilot caught two on PR #9**, both fixed in it: `caption` was being used
+as a fallback for alt text (a caption is display copy, often a credit — it
+is not a description), and `year:desc` alone is not a total order, so paging
+an unordered tie can hand back one slug twice and miss another, which would
+quietly stop `generateStaticParams` building a page that had not changed.
+Both sources now sort year descending **then slug ascending**, so their
+agreement is by construction rather than coincidence.
+
 Verified against Strapi 5.60 + Postgres 16 standing up for real, seeded
 with the two live case studies through the admin content-manager API and
 read back through a read-only token:
