@@ -9,7 +9,9 @@ export default async function HomePage() {
   const featured = await caseStudies.list({ featuredOnly: true, limit: 3 });
 
   return (
-    <main id="main">
+    // scroll-mt clears the sticky header: without it the skip link parks
+    // the first 76px of content (108px once the bar wraps) behind the bar.
+    <main id="main" className="scroll-mt-[116px] sm:scroll-mt-[84px]">
       {/* 01 — title hold */}
       <TitleHold />
 

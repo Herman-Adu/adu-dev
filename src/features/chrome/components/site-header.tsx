@@ -29,12 +29,20 @@ export function SiteHeader() {
    * the component and cannot leak across an app-router remount.
    */
   const glassOnScroll: SceneSetup = ({ ScrollTrigger }) => {
+    // Derive the state from the scroll position, not from isActive. The
+    // trigger's end sits on the last scroll position, so at the very bottom
+    // isActive flips false and the bar would lose its glass while still
+    // over content. scroll() is true at the bottom, as it should be.
+    const glassy = (self: { scroll: () => number }) =>
+      setScrolled(self.scroll() > GLASS_AT);
+
     ScrollTrigger.create({
       start: GLASS_AT,
       end: "max",
-      onToggle: (self) => setScrolled(self.isActive),
+      onUpdate: glassy,
+      onToggle: glassy,
       // A reload lands mid-page with the bar already over content.
-      onRefresh: (self) => setScrolled(self.isActive),
+      onRefresh: glassy,
     });
   };
 
