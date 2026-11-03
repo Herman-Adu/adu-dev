@@ -280,7 +280,10 @@ function toMediaRef(
 ): z.infer<typeof CaseStudy>["cover"] {
   if (!wire?.url) return null;
 
-  const alt = wire.alternativeText ?? wire.caption;
+  // Alt text only ever comes from the alt-text field. A caption is
+  // display copy — often a credit — and reusing it would ship a photo
+  // credit to a screen reader as a description of the image.
+  const alt = wire.alternativeText?.trim();
   if (!alt) {
     console.warn(
       `[strapi] case study "${slug}": cover image has no alternative text, ` +
@@ -374,7 +377,10 @@ export const strapiCaseStudySource: CaseStudySource = {
       ...POPULATE_SUMMARY,
       // Newest first, matching the local source — ordering is part of the
       // behaviour a component sees, so the two adapters must agree on it.
+      // Slug breaks the tie: years repeat, and an unordered tie is free to
+      // come back differently on each request.
       ["sort[0]", "year:desc"],
+      ["sort[1]", "slug:asc"],
       ["pagination[page]", "1"],
       ["pagination[pageSize]", String(q.limit)],
       ["pagination[withCount]", "false"],
@@ -411,7 +417,12 @@ export const strapiCaseStudySource: CaseStudySource = {
     for (let page = 1; ; page += 1) {
       const raw = await get("/api/case-studies", [
         ...fields(["slug"]),
+        // The tie-break matters most here. Paging through an unordered
+        // tie can hand back the same slug twice and miss another, so
+        // `generateStaticParams` would quietly stop building a page that
+        // has not changed.
         ["sort[0]", "year:desc"],
+        ["sort[1]", "slug:asc"],
         ["pagination[page]", String(page)],
         ["pagination[pageSize]", String(PAGE_SIZE)],
         ["pagination[withCount]", "true"],
