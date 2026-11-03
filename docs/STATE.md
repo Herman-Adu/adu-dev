@@ -86,14 +86,20 @@ measured against the table in `CLAUDE.md`. It is self-tested — reinstating
 carries the checks CI cannot make: the two review axes, and the five states
 that have to be looked at.
 
-**The independent half is Copilot.** CI and `/code-review` are both run by
-whoever wrote the change, so neither is a gate on its own. Request Copilot on
-a PR via Reviewers → Copilot, or make it automatic in Settings → Rules →
-Rulesets ("Request pull request review from Copilot"). Requesting it through
-the API (`POST /pulls/{n}/requested_reviewers` with
-`copilot-pull-request-reviewer[bot]`) returns 200 and silently adds nobody
-when Copilot code review is not enabled for the account — check the PR's
-`requested_reviewers` actually changed rather than trusting the 200.
+**The independent half is Copilot**, added as a reviewer on the repo. CI and
+`/code-review` are both run by whoever wrote the change, so neither is a gate
+on its own; Copilot is the one reviewer that is not the author. It runs as a
+"Running Copilot Code Review" workflow on each push and posts real review
+threads — it caught two bugs on PR #1 that both the two-axis review and the
+house rules missed.
+
+Adding it is a repo setting, not an API call: `POST
+/pulls/{n}/requested_reviewers` with `copilot-pull-request-reviewer[bot]`
+returns 200 and attaches nobody, and the bot never appears in
+`requested_reviewers` even once it is reviewing. Judge by whether the
+workflow runs, not by the 200.
+
+Threads are resolved with `/resolve-review-suggestions`.
 
 `docs/agents/*.md` configures the mattpocock engineering skills. The GitHub
 template there had to be rewritten against `gh api` REST: every `gh issue`
@@ -119,6 +125,15 @@ sessions and returns 403.
   is hard-coded in two files while its ease is a token; and the skip link
   targets `#main`, but `id="main"` lives per-page, so every future page has
   to remember it.
+- **Playwright timing.** Scene 02's pin changes the document height, so a
+  fixed `waitForTimeout` after load measures the page before ScrollTrigger
+  has refreshed — it reports `max` ≈ 1320 instead of 4020 and every
+  scroll-state assertion comes back wrong. Wait on a readiness condition
+  (`waitForFunction` until the glass appears), never a sleep. This cost an
+  hour of chasing a regression that was not there.
+- **`pkill -f "next start"` matches its own command line** and kills the
+  shell running it, which silently truncates whatever came after — including
+  a build. Use a distinct port per run instead.
 - **Nav routes that do not exist yet.** `/work`, `/services`, `/platform`,
   `/writing` and `/contact` all 404 until step 1-3 land. The hrefs are in
   `src/features/chrome/lib/nav-links.ts`. **Departure from the board:** it
