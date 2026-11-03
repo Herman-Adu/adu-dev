@@ -99,13 +99,22 @@ emailAndPassword: { enabled: true, disableSignUp: true }, secret:
 env.BETTER_AUTH_SECRET, baseURL: env.BETTER_AUTH_URL })`. Check:
 `npm run typecheck`.
 
-**3. Migrate.** Better Auth ships a CLI that writes its own tables
-(`npx @better-auth/cli migrate`, or `generate` if you want to read the SQL
-first — do that the first time). Check: the tables exist in `adu_auth`.
+**3. Migrate.** Better Auth ships a CLI that writes its own tables. It
+discovers the config in the project root, `lib/` or `utils/` (and their
+`src/` equivalents) — **not** in a feature slice, so point it at the file:
+
+```bash
+npx @better-auth/cli generate --config src/features/auth/lib/auth.ts
+```
+
+Read that SQL the first time, then `migrate` with the same flag. Check: the
+tables exist in `adu_auth`.
 
 **4. Route handler.** `src/app/api/auth/[...all]/route.ts`, exporting the
 Next handler Better Auth provides (`toNextJsHandler`). Check:
-`curl -i localhost:3000/api/auth/session` returns JSON, not a 404.
+`curl -i localhost:3000/api/auth/get-session` returns JSON, not a 404 —
+the endpoint is `get-session`, and `/session` 404s even when the handler is
+mounted correctly.
 
 **5. Seed the operator and sign in.** Create the one user with a script
 against the auth API (sign-up is disabled for the public, so do it

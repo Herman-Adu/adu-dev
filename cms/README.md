@@ -28,7 +28,7 @@ createdb strapi
 ```
 
 ```bash
-npx create-strapi@5 cms --skip-cloud --ts --no-example \
+npx create-strapi@5 ../adu-cms --skip-cloud --ts --no-example \
   --dbclient=postgres --dbhost=127.0.0.1 --dbport=5432 --dbname=strapi \
   --dbusername=postgres --dbpassword=<password>
 ```
@@ -37,12 +37,12 @@ Copy the model in **before the first start**, so Strapi creates the tables
 from it rather than migrating them afterwards:
 
 ```bash
-cp -r cms/src/api/case-study <strapi>/src/api/
-cp -r cms/src/components/work <strapi>/src/components/
+cp -r cms/src/api/case-study ../adu-cms/src/api/
+cp -r cms/src/components/work ../adu-cms/src/components/
 ```
 
 ```bash
-cd <strapi> && npm run develop
+cd ../adu-cms && npm run develop
 ```
 
 Create the first administrator at `/admin`, then mint a token under
@@ -100,7 +100,8 @@ and the cover appears.
 ### Cache and revalidation
 
 Reads are tagged `case-studies` and revalidate after 60 seconds. A Strapi
-webhook pointed at a route that calls `revalidateTag("case-studies")` would
+webhook pointed at a route that calls
+`revalidateTag("case-studies", { expire: 0 })` would
 make publishing instant; until that route exists, a change is live within
 the minute.
 

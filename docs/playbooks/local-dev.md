@@ -34,21 +34,23 @@ createdb strapi
 ```
 
 ```bash
-npx create-strapi@5 cms --skip-cloud --ts --no-example \
+npx create-strapi@5 ../adu-cms --skip-cloud --ts --no-example \
   --dbclient=postgres --dbhost=127.0.0.1 --dbport=5432 --dbname=strapi \
   --dbusername=postgres --dbpassword=<password>
 ```
 
-Copy the committed model in **before the first start**, so Strapi creates
-the tables from it rather than migrating them afterwards:
+Scaffold **outside this repo**: `cms/` here holds the committed model, not
+a runnable project, and scaffolding into it would copy the models onto
+themselves. Then copy the model in **before the first start**, so Strapi
+creates the tables from it rather than migrating them afterwards:
 
 ```bash
-cp -r cms/src/api/case-study <strapi>/src/api/
-cp -r cms/src/components/work <strapi>/src/components/
+cp -r cms/src/api/case-study ../adu-cms/src/api/
+cp -r cms/src/components/work ../adu-cms/src/components/
 ```
 
 ```bash
-cd <strapi> && npm run develop
+cd ../adu-cms && npm run develop
 ```
 
 Create the admin at `/admin`, then Settings → API Tokens → **read-only**
@@ -76,7 +78,9 @@ import { localCaseStudySource } from "@/features/work/lib/source.local";
 import { strapiCaseStudySource } from "@/features/work/lib/source.strapi";
 
 export async function GET() {
-  revalidateTag("case-studies"); // otherwise you read the last minute's answer
+  // Two arguments in Next 16: the tag, then a cache profile. `{ expire: 0 }`
+  // drops it now; the "max" profile can still hand back stale data.
+  revalidateTag("case-studies", { expire: 0 });
   return Response.json({
     local: await localCaseStudySource.list({}),
     strapi: await strapiCaseStudySource.list({}),
@@ -126,9 +130,9 @@ alone just because CI is green.
   `__probe` returns 404 with no error anywhere. Name it `probe-tmp`.
 - **A cached `fetch` answer looks like a bug in your mapping.** Reads are
   tagged `case-studies` with `revalidate: 60`, so after changing CMS data
-  you keep reading the old answer. `revalidateTag("case-studies")` from a
-  route flips it immediately; `rm -rf .next/cache` plus a restart also
-  works. This exact thing read as "the media mapper is broken" for a while.
+  you keep reading the old answer. `revalidateTag("case-studies", { expire: 0 })`
+  from a route flips it immediately — note the second argument, which Next
+  16 requires; `rm -rf .next/cache` plus a restart also works. This exact thing read as "the media mapper is broken" for a while.
 - **Only one `next dev` runs at a time.** A second exits with "Another next
   dev server is already running" and prints the PID. Start it with `setsid`
   and kill it by PID — killing a plain background `next dev` can take the
