@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A superseded run on the same branch is wasted Actions minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Type errors fail the build by design; this surfaces them first and
+      # fastest, before the slower steps run.
+      - name: Typecheck
+        run: npm run typecheck
+
+      # The rules that pass tsc and next build while still being wrong.
+      - name: House rules
+        run: npm run house-rules
+
+      # CONTENT_SOURCE=local must always work with no back end running.
+      # Building under it is what keeps that promise true.
+      - name: Build (local content source)
+        run: npm run build
+        env:
+          CONTENT_SOURCE: local
