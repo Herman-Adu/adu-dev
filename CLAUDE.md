@@ -56,7 +56,12 @@ Foundations board on the design canvas.
 | `--color-ink` | `#FFFFFF` | 19.2:1 |
 | `--color-ink-2` | `#CACACA` | 11.7:1 |
 | `--color-ink-3` | `#8A8A8A` | 5.6:1 |
+| `--color-ink-mute` | `#6B6B73` | 3.6:1 |
 | `--color-brand` | `#F47C00` | 7.1:1 |
+
+`--color-ink-mute` is the quiet second line of a display pair, and clears
+the 3:1 large-text floor only — never body text. The canvas Home board draws
+that line at `#5E5E66`, which measures 2.98:1 and fails; the token wins.
 
 **Ink on brand is `--color-ground`, never white.** White on `#F47C00`
 measures 2.7:1 and fails WCAG AA at every size, including large bold.
@@ -99,3 +104,26 @@ environment and picked up when a session starts:
 
 Generation costs KIE credits. It produces assets; it does not replace the
 Blender renders that scene 02 depends on.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub issues on `Herman-Adu/adu-dev`, driven through `gh api` (REST) —
+`gh issue` and `gh pr` are blocked in cloud sessions. See
+`docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles, label strings unchanged. See
+`docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context. `docs/STATE.md` is the handoff and stands in for `CONTEXT.md`
+until one exists. See `docs/agents/domain.md`.
+
+### House review
+
+`/house-review` — runnable probes for the rules above that break silently.
+User-invoked; run it after `/code-review`, against the same range.
