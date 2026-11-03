@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { SiteHeader } from "@/features/chrome/lib";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,7 +30,18 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB" className={`${inter.variable} ${jetbrains.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* First tab stop on every page. The nav is four links deep before
+            content starts, and scene 01 sits behind a sticky bar. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:inline-flex focus:min-h-[44px] focus:items-center focus:rounded-[var(--radius-control)] focus:bg-brand focus:px-4 focus:font-semibold focus:text-ground"
+        >
+          Skip to content
+        </a>
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }

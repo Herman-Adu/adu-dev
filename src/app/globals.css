@@ -16,6 +16,11 @@
   --color-ink: #ffffff; /* 19.2:1 */
   --color-ink-2: #cacaca; /* 11.7:1 */
   --color-ink-3: #8a8a8a; /*  5.6:1 */
+  --color-ink-mute: #6b6b73; /*  3.6:1 — DISPLAY SIZES ONLY (>=24px, or >=19px bold).
+                                 The quiet second line of a display pair. Never body
+                                 text: it clears the 3:1 large-text floor, not 4.5:1.
+                                 The Home board draws this line at #5E5E66, which
+                                 measures 2.98:1 and misses the large-text floor. */
 
   --color-brand: #f47c00; /*  7.1:1 as text; use --color-ground as ink ON brand (7.1:1).
                               White on brand is 2.7:1 and fails AA at every size. */
@@ -68,6 +73,24 @@
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .glass {
       background: var(--color-surface);
+    }
+  }
+
+  /* Sanctioned use #1: the sticky nav, and only once it has scrolled. At the
+     top of the page the bar is transparent and borderless — the glass is what
+     tells you the page has moved. A hairline, not the panel border and drop
+     shadow .glass carries: the bar sits ON the page, it does not float above it. */
+  .glass-nav {
+    background: color-mix(in srgb, var(--color-ground) 68%, transparent);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--color-ink) 8%, transparent);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-nav {
+      background: var(--color-ground);
+      box-shadow: inset 0 -1px 0 var(--color-hairline);
     }
   }
 }

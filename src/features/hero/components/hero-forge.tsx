@@ -4,7 +4,7 @@ import { useCallback, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
-import { useScrollScene } from "@/features/scroll/lib/use-scroll-scene";
+import { useScrollScene } from "@/features/scroll/lib";
 import { COLOR, FORGE } from "../lib/forge-config";
 import { ForgeScene } from "./forge-scene";
 
