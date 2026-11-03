@@ -4,13 +4,13 @@ Read this at the start of a session. It is the handoff: what exists, what
 was decided and why, and what is next. Keep it current — it is the only
 thing that survives between sessions.
 
-Last updated: 2026-11-03 (spine complete; Services, Work, Case study live)
+Last updated: 2026-11-03 (site complete; dashboard contract + shell landed)
 
 ## Where this is
 
-Design phase complete. **The home scroll spine is complete — all six
-scenes — and Services, Work, Case study and Contact are live.** Deployed on
-Vercel from `main`.
+Design phase complete. **The site is built and deployed.** Six scroll
+scenes on the home page, every page the canvas defines, and the first slice
+of the operator dashboard. Live on Vercel from `main`.
 
 **Design canvas:** https://claude.ai/artifact/T5XWBmHmNJcY46x8tgAb1D
 Seven artboards: Foundations (tokens), Scroll spine (scene map + Blender
@@ -41,16 +41,27 @@ the rules extracted from it.
 
 ## Next, in order
 
-1. **Operator dashboard** (`/platform`) from the Dashboard board. The nav
-   entry exists but is hidden — flip `ready` in
-   `src/features/chrome/lib/nav-links.ts` in the same PR that adds the route.
-2. **Writing** (`/writing`). No board exists for it yet; it needs a design
-   pass before a build pass. Same hidden-nav treatment.
-3. **Strapi 5 + Postgres** behind the existing contract — a new adapter in
-   `src/features/work/lib/source.strapi.ts`, not a rewrite. The case study
-   pages already read every field off the schema, so they need no changes.
-4. **The Work filter row.** Held back deliberately: filtering two case
-   studies by discipline does nothing. Worth building at four or five.
+1. **The Strapi adapter.** `src/features/work/lib/source.strapi.ts` already
+   exists as a documented stub: `notReady()` throws, and the intended shape
+   is sketched in comments — fetch, map, then `CaseStudy.parse()` the mapped
+   object. `lib/index.ts` already selects on `CONTENT_SOURCE`, and
+   `STRAPI_URL` / `STRAPI_API_TOKEN` are already parsed in
+   `src/global/lib/env.ts`. So the work is: stand up Strapi 5 + Postgres,
+   model the content type against `contract.ts` (the schema is the spec —
+   do not generate the schema from Strapi), implement the three methods,
+   and keep `CONTENT_SOURCE=local` passing the whole time. No component
+   changes: the case study pages already read every field off the schema.
+2. **Auth, then one live source for the dashboard.** `/platform/app` renders
+   the shell against `DashboardSource` with an empty local seed. Agent runs
+   is the obvious first feed. Auth comes first — the route is `noindex` and
+   carries nothing, but it cannot hold real data until it is gated.
+3. **Writing** (`/writing`). No board exists; it needs a design pass before
+   a build pass. Nav entry is defined with `ready: false`.
+4. **Real figures.** Service prices, momo-audio's Lighthouse/LCP, company
+   number. Every page has a slot waiting; all are omitted rather than
+   guessed. See the Content rule.
+5. **The Work filter row** — worth building at four or five case studies.
+   Filtering two does nothing.
 
 ## The scroll spine, as built
 
@@ -72,6 +83,28 @@ scene taller than the viewport traps its own lower content, and a 1280x540
 window passes a width-only check. A viewport matching neither `full` nor
 `compact` runs no handler at all; every scene's markup is its static end
 state, so that is the correct fallback, not a gap.
+
+## The dashboard slice, as built
+
+`/platform` is the public product page. `/platform/app` is the shell.
+
+`src/features/dashboard/lib/contract.ts` owns `AgentRun`, `PipelineEntry`,
+`BrainNote` and a `DashboardSummary` that is **derived, never stored**, so a
+summary cannot drift from the data it describes.
+
+**Every figure is nullable, and the local seed ships empty.** A dashboard
+that cannot tell `0` from "not measured" invents the difference, and every
+number on the Dashboard board is a placeholder. `spendPence` and
+`evalPassRate` return null when nothing supports them and render an em dash.
+An empty seed means each panel shows its real empty state instead of sample
+data that would read as real operating figures on a public URL.
+
+Verified with a throwaway fixture (not committed): three runs and two
+projects derived £3.33 spend, 67% eval pass and "1 thing needs you".
+
+No auth and no live source. A live source is one more implementation of
+`DashboardSource`, selected in that feature's `lib/index.ts`; the shell does
+not change.
 
 ### Tuning knobs for scene 01
 
@@ -160,10 +193,14 @@ sessions and returns 403.
 - **`pkill -f "next start"` matches its own command line** and kills the
   shell running it, which silently truncates whatever came after — including
   a build. Use a distinct port per run instead.
-- **`NEXT_PUBLIC_CONTACT_EMAIL` is unset.** Until it is, every CTA routes to
-  `/contact`, which sends people to the work instead of offering a mailto.
-  Set it in Vercel and the whole site's primary CTA lights up. No address is
-  hardcoded anywhere.
+- **`NEXT_PUBLIC_CONTACT_EMAIL` is set in Vercel**, so every CTA opens a
+  mailto. It is not set locally, so `npm run dev` shows the fallback (links
+  to the work instead). That is the intended behaviour, not a bug. No
+  address is hardcoded anywhere.
+- **Re-tick "Restrict deletions"** on the `main-protection` ruleset. It was
+  unticked to let the agent delete branches; that does not work (see below)
+  and it only ever protected `main`, since the rule targets the default
+  branch.
 - **Two stale remote branches**, `scene-01-title-hold-and-nav` and
   `allow-scoped-pr-merge`, both pre-dating auto-delete-on-merge. Deleting a
   remote ref is blocked at the proxy in cloud sessions — over the API *and*
