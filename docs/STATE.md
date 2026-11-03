@@ -4,7 +4,8 @@ Read this at the start of a session. It is the handoff: what exists, what
 was decided and why, and what is next. Keep it current — it is the only
 thing that survives between sessions.
 
-Last updated: 2026-11-03 (site complete; dashboard contract + shell landed)
+Last updated: 2026-11-03 (site complete; dashboard shell landed; Strapi
+adapter implemented and verified against a real CMS)
 
 ## Where this is
 
@@ -41,16 +42,14 @@ the rules extracted from it.
 
 ## Next, in order
 
-1. **The Strapi adapter.** `src/features/work/lib/source.strapi.ts` already
-   exists as a documented stub: `notReady()` throws, and the intended shape
-   is sketched in comments — fetch, map, then `CaseStudy.parse()` the mapped
-   object. `lib/index.ts` already selects on `CONTENT_SOURCE`, and
-   `STRAPI_URL` / `STRAPI_API_TOKEN` are already parsed in
-   `src/global/lib/env.ts`. So the work is: stand up Strapi 5 + Postgres,
-   model the content type against `contract.ts` (the schema is the spec —
-   do not generate the schema from Strapi), implement the three methods,
-   and keep `CONTENT_SOURCE=local` passing the whole time. No component
-   changes: the case study pages already read every field off the schema.
+1. **Host the CMS.** The adapter is written and verified — see "The Strapi
+   adapter, as built". What is left is infrastructure, not code: a Strapi 5
+   + Postgres instance somewhere real, `cms/` copied in **before** its
+   first start, a read-only API token, and `CONTENT_SOURCE=strapi`,
+   `STRAPI_URL`, `STRAPI_API_TOKEN` set on Vercel. `cms/README.md` has the
+   commands. Then the one optional piece: a webhook route calling
+   `revalidateTag("case-studies")`, so a publish is live in seconds instead
+   of within the minute.
 2. **Auth, then one live source for the dashboard.** `/platform/app` renders
    the shell against `DashboardSource` with an empty local seed. Agent runs
    is the obvious first feed. Auth comes first — the route is `noindex` and
@@ -132,6 +131,60 @@ with the preinstalled Playwright (require it from CommonJS — ESM import
 does not resolve) using
 `--use-angle=swiftshader --enable-unsafe-swiftshader` for WebGL.
 
+## The Strapi adapter, as built
+
+`source.strapi.ts` implements all three methods of `CaseStudySource`. The
+content model it expects is committed at `cms/` — Strapi's own
+`schema.json` layout, copied into a Strapi project verbatim — with the
+field-by-field reasoning in `cms/README.md`. `tsconfig.json` and
+`eslint.config.mjs` exclude `cms`; it belongs to the Strapi project, not
+this one.
+
+Decisions worth not relitigating:
+
+- **The contract stayed the spec.** Nothing is generated from Strapi. The
+  Zod schemas are untouched by this work — the adapter was written to
+  them, and `CaseStudy.parse()` is the last thing every read passes
+  through.
+- **Two parse steps, not one.** A loose wire schema asks only "did the
+  transport deliver the right primitives"; the contract then decides what
+  is *required*. That split is what makes a failure legible: a wire error
+  means Strapi changed shape, a contract error means an entry is
+  incomplete, and the message names the entry and the field.
+- **String arrays are repeatable one-field components.** Strapi has no
+  multi-select enumeration, and `work.discipline` holds the **same** enum
+  strings as `Discipline`, hyphens included — so there is no translation
+  table to drift out of sync. Filtering reaches into it with
+  `filters[disciplines][value][$eq]`.
+- **`populate` is explicit.** `populate=*` reaches exactly one level,
+  which would return `result` with `metrics` missing. Every component the
+  app reads is named, and `result.metrics` uses the nested form.
+- **A cover with no alternative text is dropped,** with a server warning
+  naming the entry, not thrown and not given invented alt text. `cover` is
+  nullable in the contract and every component handles it.
+- **A read-only token is enough.** The site never writes.
+- **`status=published` is sent on every read** even though it is Strapi
+  5's default, so a draft cannot surface because a setting changed.
+- `slugs()` pages through to the end. Taking the first page only would
+  silently stop building case-study pages at entry 101.
+
+Verified against Strapi 5.60 + Postgres 16 standing up for real, seeded
+with the two live case studies through the admin content-manager API and
+read back through a read-only token:
+
+| Check | Result |
+|---|---|
+| `list` / `bySlug` / `slugs` vs the local source, 9 queries | byte-identical |
+| draft-only entry | invisible to all three methods |
+| cover with no alt text | dropped, warning logged |
+| cover with alt text | mapped, `/uploads/…` absolutised against `STRAPI_URL` |
+| `liveUrl` corrupted in the database, past Strapi's validation | caught at the boundary, message named `liveUrl` |
+| bad token / missing `STRAPI_URL` | message names the fix |
+| `revalidateTag("case-studies")` | flips the answer immediately |
+| `CONTENT_SOURCE=local` build | passes, both pages prerendered |
+
+No component changed, and no page knows which source answered.
+
 ## The review gate
 
 `npm run house-rules` (`scripts/house-rules.mjs`) turns the silently-breaking
@@ -190,6 +243,17 @@ sessions and returns 403.
   scroll-state assertion comes back wrong. Wait on a readiness condition
   (`waitForFunction` until the glass appears), never a sleep. This cost an
   hour of chasing a regression that was not there.
+- **A Postgres cluster cannot live in the session scratchpad.**
+  `/tmp/claude-0` has its mode reset to `700 root` part-way through a cloud
+  session, so a cluster running as the `postgres` user dies mid-write with
+  `could not open file … Permission denied` and every Strapi call then
+  returns 500 that looks like a bad query. Put the data directory under
+  `/var/lib/postgresql` instead; logs can stay in the scratchpad.
+- **Only one `next dev` runs at a time** — a second instance exits with
+  "Another next dev server is already running" and prints the PID to kill.
+  Start it with `setsid` and kill it by that PID: killing a plain
+  background `next dev` takes the shell with it, which truncates whatever
+  came after.
 - **`pkill -f "next start"` matches its own command line** and kills the
   shell running it, which silently truncates whatever came after — including
   a build. Use a distinct port per run instead.

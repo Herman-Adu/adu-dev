@@ -24,6 +24,10 @@ Hybrid atomic + feature-sliced. The split is load-bearing, not cosmetic.
   dependency and turns a migration into a rewrite.
 - Adapters (`source.local.ts`, `source.strapi.ts`) implement the source
   interface. `lib/index.ts` is the only file that knows which is active.
+- The Strapi side of the Work contract is committed at `cms/` — Strapi's own
+  `schema.json` layout, copied into a Strapi project verbatim, with the
+  field-by-field reasoning in `cms/README.md`. It is excluded from
+  `tsconfig.json` and `eslint.config.mjs`: it belongs to that project.
 - Validate at the boundary: `Schema.parse()` the mapped object so a CMS
   mismatch is a caught mapping bug, not a render crash.
 - `CONTENT_SOURCE=local` must always work with no back end running.

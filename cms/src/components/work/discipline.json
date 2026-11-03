@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_work_disciplines",
+  "info": {
+    "displayName": "Discipline",
+    "icon": "tag",
+    "description": "One value of the Discipline enum. Strapi has no multi-select enumeration, so the contract's string[] is a repeatable component of exactly one constrained field."
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "enumeration",
+      "enum": ["ecommerce", "marketing-site", "agent-system", "product"],
+      "required": true
+    }
+  }
+}

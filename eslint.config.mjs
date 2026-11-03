@@ -10,7 +10,9 @@ import coreWebVitals from "eslint-config-next/core-web-vitals";
  */
 const config = [
   {
-    ignores: [".next/**", "node_modules/**", "next-env.d.ts"],
+    // `cms/` is the Strapi content model, not part of this app. It is
+    // type-checked and linted by the Strapi project it is copied into.
+    ignores: [".next/**", "node_modules/**", "next-env.d.ts", "cms/**"],
   },
   ...coreWebVitals,
 ];
