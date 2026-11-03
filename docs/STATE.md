@@ -4,12 +4,12 @@ Read this at the start of a session. It is the handoff: what exists, what
 was decided and why, and what is next. Keep it current — it is the only
 thing that survives between sessions.
 
-Last updated: 2026-11-02 (scene 02 complete)
+Last updated: 2026-11-03 (scene 01 + nav complete)
 
 ## Where this is
 
-Design phase complete. Scaffold pushed. **Scene 02 built and working.**
-Nothing deployed.
+Design phase complete. Scaffold pushed. **Scene 01, the nav and scene 02
+are built and working.** Nothing deployed.
 
 **Design canvas:** https://claude.ai/artifact/T5XWBmHmNJcY46x8tgAb1D
 Seven artboards: Foundations (tokens), Scroll spine (scene map + Blender
@@ -40,14 +40,19 @@ the rules extracted from it.
 
 ## Next, in order
 
-1. **Scene 01 (title hold) and the nav.** The hero copy above the forge is
-   still placeholder layout; the canvas Home board has the real structure.
-2. **Scenes 03-06** from the Scroll spine board: stack peel, fleet
+1. **Scenes 03-06** from the Scroll spine board: stack peel, fleet
    assembly, proof wall, release. Reuse `useScrollScene` for each.
-3. Services, Work and Case study pages from the canvas.
-4. Operator dashboard.
-5. Strapi 5 + Postgres behind the existing contract — a new adapter, not a
+2. Services, Work and Case study pages from the canvas.
+3. Operator dashboard.
+4. Strapi 5 + Postgres behind the existing contract — a new adapter, not a
    rewrite.
+
+### Tuning knobs for scene 01
+
+`TITLE_HOLD` in `src/features/hero/components/title-hold.tsx`: `duration`,
+`ease`, `stagger`, `rise`. The two display lines are the only thing on the
+first viewport that moves — eyebrow, standfirst and buttons are painted in
+their end state and stay there.
 
 ### Tuning knobs for scene 02
 
@@ -65,9 +70,31 @@ does not resolve) using
 
 - `public/sequences/hero/` is now unused. Keep or delete depending on
   whether a commissioned render is ever planned.
-- **Monogram asset** (the AD orbit mark) never reached the container.
-  Needed for the nav below ~480px, the favicon, and the orbit loader.
-  The wordmark is uploaded to the canvas and used in the page boards.
+- **Monogram asset** (the AD orbit mark) still missing. Needed for the
+  favicon and the orbit loader. The nav no longer needs it: below `sm` the
+  bar wraps to two rows (wordmark + CTA, then the four links) at 108px, and
+  the wordmark stays legible at 22px. A monogram would let that collapse to
+  one row. The **wordmark** is now in the repo at
+  `public/brand/adu-dev-wordmark.png`, pulled from the canvas (988x333,
+  light-on-transparent). The dark-on-light variant is still canvas-only.
+- **Nav routes that do not exist yet.** `/work`, `/services`, `/platform`,
+  `/writing` and `/contact` all 404 until step 1-3 land. The hrefs are in
+  `src/features/chrome/lib/nav-links.ts`.
+- **Two canvas values were overridden, both deliberately:**
+  - The Home board draws the quiet second display line at `#5E5E66`, which
+    measures **2.98:1** on `--color-ground` and misses the 3:1 large-text
+    floor. Built as a new token `--color-ink-mute: #6b6b73` (3.6:1),
+    display sizes only. The board should be updated to match.
+  - The board sets the h1 at weight 700; Foundations and `CLAUDE.md` both
+    say 800 display. Built at 800. One of the two boards is wrong.
+- **Scene 01's stagger/travel differ from the Foundations motion tokens.**
+  The Scroll spine gives scene 01 `y 24 -> 0` and 80ms apart; Foundations
+  caps travel at `y 16px` and stagger at 60ms. The scene-specific numbers
+  were used. Worth reconciling on the canvas.
+- **Scene 01's first statement wraps to two visual lines** at every width
+  (`max-width: 16ch` against a 25-character string), so its mask sweeps the
+  whole two-line block as one. Per-visual-line masking would need SplitText.
+  This is what the board draws, so it was left alone.
 - **Every `[BRACKET]` on the canvas is a placeholder.** Real figures
   needed: service prices, momo-audio Lighthouse/LCP, contact email,
   company number, years. Where no number exists, the honest "not yet
