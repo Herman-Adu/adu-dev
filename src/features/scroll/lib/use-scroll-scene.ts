@@ -35,7 +35,16 @@ export interface ScrollSceneHandlers {
 }
 
 export const BREAKPOINTS = {
-  full: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+  /**
+   * Height matters as much as width. A pinned scene taller than the viewport
+   * pushes its own lower content out of reach for the length of the pin, and
+   * a 1280x540 window is wide enough to pass a width-only check. A viewport
+   * matching neither `full` nor `compact` runs no handler at all, which
+   * leaves the markup untouched — and every scene's markup is already its
+   * static end state, so that is the correct fallback rather than a gap.
+   */
+  full:
+    "(min-width: 1024px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)",
   compact: "(max-width: 1023px) and (prefers-reduced-motion: no-preference)",
   reduced: "(prefers-reduced-motion: reduce)",
 } as const;

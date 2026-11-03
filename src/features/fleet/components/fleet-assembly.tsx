@@ -112,7 +112,16 @@ export function FleetAssembly() {
 
       {/* The track overflows on purpose; the scrub carries it sideways. It
           stays keyboard- and touch-scrollable when nothing is driving it. */}
-      <div data-track-viewport className="overflow-x-auto overflow-y-hidden pb-4">
+      {/* Focusable and named: when nothing is driving the scrub, scrolling
+          this region is the only way to reach the later cards, and Safari
+          will not focus an overflow container on its own. */}
+      <div
+        data-track-viewport
+        tabIndex={0}
+        role="group"
+        aria-label="Agent fleet capabilities, scrollable"
+        className="overflow-x-auto overflow-y-hidden pb-4"
+      >
         <ul
           data-track
           className="flex w-max gap-4 px-6 will-change-transform sm:px-10 lg:px-20"

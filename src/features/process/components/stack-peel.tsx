@@ -35,19 +35,12 @@ export function StackPeel() {
     const first = plates[0];
     if (!first) return;
 
-    // Collapse each plate onto the first by its own measured offset, so the
-    // stack closes exactly however the layout has wrapped at this width.
-    const stackUp = () => {
-      const base = first.offsetTop;
-      gsap.set(plates, {
-        y: (_i: number, el: HTMLElement) => base - el.offsetTop,
-        rotateX: PEEL.tilt,
-        transformOrigin: "50% 0%",
-      });
-      gsap.set(labels, { opacity: 0 });
-    };
-    stackUp();
+    gsap.set(plates, { transformOrigin: "50% 0%" });
 
+    // The collapsed offsets are function-based so `invalidateOnRefresh`
+    // recomputes them on resize. Writing them with gsap.set in onRefresh
+    // instead would re-collapse the stack *after* ScrollTrigger had restored
+    // progress, stranding the scene collapsed if progress was already 1.
     gsap
       .timeline({
         scrollTrigger: {
@@ -58,11 +51,23 @@ export function StackPeel() {
           scrub: 1,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onRefresh: stackUp,
         },
       })
-      .to(plates, { y: 0, rotateX: 0, stagger: PEEL.stagger, ease: "none" }, 0)
-      .to(labels, { opacity: 1, stagger: PEEL.stagger, ease: "none" }, 0.1);
+      .fromTo(
+        plates,
+        {
+          y: (_i: number, el: HTMLElement) => first.offsetTop - el.offsetTop,
+          rotateX: PEEL.tilt,
+        },
+        { y: 0, rotateX: 0, stagger: PEEL.stagger, ease: "none" },
+        0,
+      )
+      .fromTo(
+        labels,
+        { opacity: 0 },
+        { opacity: 1, stagger: PEEL.stagger, ease: "none" },
+        0.1,
+      );
   };
 
   const scopeRef = useScrollScene<HTMLElement>({
