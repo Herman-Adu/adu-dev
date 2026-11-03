@@ -90,7 +90,7 @@ export function SiteHeader() {
             which keeps a sticky bar two rows tall instead of three. */}
         <nav aria-label="Primary" className="max-sm:order-3 max-sm:w-full">
           <ul className="flex flex-wrap items-center gap-x-5 text-[14px] sm:gap-x-7">
-            {NAV_LINKS.map((link) => {
+            {NAV_LINKS.filter((link) => link.ready).map((link) => {
               const current =
                 pathname === link.href || pathname.startsWith(`${link.href}/`);
 

@@ -8,14 +8,24 @@
 export interface NavLink {
   href: string;
   label: string;
+  /**
+   * Whether the page behind it exists. A nav that links to a 404 is worse
+   * than a nav with fewer links, so unready entries are not rendered. Flip
+   * the flag in the same PR that adds the route.
+   */
+  ready: boolean;
 }
 
 export const NAV_LINKS: readonly NavLink[] = [
-  { href: "/work", label: "Work" },
-  { href: "/services", label: "Services" },
-  { href: "/platform", label: "Platform" },
-  { href: "/writing", label: "Writing" },
+  { href: "/work", label: "Work", ready: true },
+  { href: "/services", label: "Services", ready: true },
+  { href: "/platform", label: "Platform", ready: false },
+  { href: "/writing", label: "Writing", ready: false },
 ] as const;
 
 /** The bordered CTA at the right of the bar. */
-export const PRIMARY_CTA: NavLink = { href: "/contact", label: "Start a build" };
+export const PRIMARY_CTA: NavLink = {
+  href: "/contact",
+  label: "Start a build",
+  ready: true,
+};

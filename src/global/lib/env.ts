@@ -9,6 +9,8 @@ const ServerEnv = z.object({
   STRAPI_URL: z.string().url().optional(),
   STRAPI_API_TOKEN: z.string().min(1).optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().default("https://adudev.co.uk"),
+  /** Set this and every CTA becomes a mailto. Unset, the page still works. */
+  NEXT_PUBLIC_CONTACT_EMAIL: z.string().email().optional(),
 });
 
 export type ServerEnv = z.infer<typeof ServerEnv>;
@@ -18,4 +20,5 @@ export const env: ServerEnv = ServerEnv.parse({
   STRAPI_URL: process.env.STRAPI_URL,
   STRAPI_API_TOKEN: process.env.STRAPI_API_TOKEN,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  NEXT_PUBLIC_CONTACT_EMAIL: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
 });

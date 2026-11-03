@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { SiteHeader } from "@/features/chrome/lib";
+import { SiteHeader, SiteFooter } from "@/features/chrome/lib";
 import "./globals.css";
 
 const inter = Inter({
@@ -41,6 +41,7 @@ export default function RootLayout({
         </a>
         <SiteHeader />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
