@@ -2,6 +2,7 @@ import { Container } from "@/global/ui/container";
 import { Eyebrow } from "@/global/ui/eyebrow";
 import { caseStudies } from "@/features/work/lib";
 import { HeroForge, TitleHold } from "@/features/hero/lib";
+import { StackPeel } from "@/features/process/lib";
 
 export default async function HomePage() {
   // Server component reading through the contract. Swapping to Strapi is a
@@ -16,6 +17,9 @@ export default async function HomePage() {
       <TitleHold />
 
       <HeroForge />
+
+      {/* 03 — stack peel */}
+      <StackPeel />
 
       <Container className="py-32">
         <Eyebrow>Built and shipped</Eyebrow>
