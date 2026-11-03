@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_work_decisions",
+  "info": {
+    "displayName": "Decision",
+    "icon": "shuffle",
+    "description": "CaseStudy.decision. body is required; the other two are nullable on purpose."
+  },
+  "options": {},
+  "attributes": {
+    "body": {
+      "type": "text",
+      "required": true,
+      "minLength": 1
+    },
+    "rejectedOption": {
+      "type": "text",
+      "required": false
+    },
+    "cost": {
+      "type": "text",
+      "required": false
+    }
+  }
+}

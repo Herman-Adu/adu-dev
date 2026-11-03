@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_work_results",
+  "info": {
+    "displayName": "Result",
+    "icon": "chartBubble",
+    "description": "CaseStudy.result. metrics may be empty and note may be null — an honest \"not yet measured\" is a valid result, an invented figure is not."
+  },
+  "options": {},
+  "attributes": {
+    "metrics": {
+      "type": "component",
+      "component": "work.metric",
+      "repeatable": true,
+      "required": false
+    },
+    "note": {
+      "type": "text",
+      "required": false
+    }
+  }
+}

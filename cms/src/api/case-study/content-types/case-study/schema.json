@@ -1,0 +1,95 @@
+{
+  "kind": "collectionType",
+  "collectionName": "case_studies",
+  "info": {
+    "singularName": "case-study",
+    "pluralName": "case-studies",
+    "displayName": "Case study",
+    "description": "Implements CaseStudy in src/features/work/lib/contract.ts. The Zod schema is the spec; this file follows it. Never regenerate the schema from this."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "minLength": 1
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true,
+      "regex": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "summary": {
+      "type": "text",
+      "required": true,
+      "minLength": 1
+    },
+    "year": {
+      "type": "integer",
+      "required": true,
+      "min": 1990,
+      "max": 2100
+    },
+    "disciplines": {
+      "type": "component",
+      "component": "work.discipline",
+      "repeatable": true,
+      "required": true,
+      "min": 1
+    },
+    "liveUrl": {
+      "type": "string",
+      "required": false,
+      "regex": "^https?://"
+    },
+    "scope": {
+      "type": "component",
+      "component": "work.text-item",
+      "repeatable": true,
+      "required": true,
+      "min": 1
+    },
+    "stack": {
+      "type": "component",
+      "component": "work.text-item",
+      "repeatable": true,
+      "required": false
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "constraint": {
+      "type": "text",
+      "required": true,
+      "minLength": 1
+    },
+    "decision": {
+      "type": "component",
+      "component": "work.decision",
+      "repeatable": false,
+      "required": true
+    },
+    "result": {
+      "type": "component",
+      "component": "work.result",
+      "repeatable": false,
+      "required": true
+    },
+    "whatIWouldChange": {
+      "type": "text",
+      "required": false
+    },
+    "featured": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    }
+  }
+}

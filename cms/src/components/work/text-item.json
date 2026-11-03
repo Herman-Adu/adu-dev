@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_work_text_items",
+  "info": {
+    "displayName": "Text item",
+    "icon": "bulletList",
+    "description": "One entry of a string[] (scope, stack). A repeatable component is Strapi's only ordered list of plain strings."
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true,
+      "minLength": 1
+    }
+  }
+}

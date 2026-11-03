@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_work_metrics",
+  "info": {
+    "displayName": "Metric",
+    "icon": "chartCircle",
+    "description": "One measured figure. Both halves are free text so a unit travels with its value (\"LCP\", \"0.9s\")."
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "minLength": 1
+    },
+    "value": {
+      "type": "string",
+      "required": true,
+      "minLength": 1
+    }
+  }
+}
