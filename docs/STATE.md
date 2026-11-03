@@ -4,12 +4,13 @@ Read this at the start of a session. It is the handoff: what exists, what
 was decided and why, and what is next. Keep it current — it is the only
 thing that survives between sessions.
 
-Last updated: 2026-11-03 (scene 01 + nav, reviewed; CI gate added)
+Last updated: 2026-11-03 (spine complete; Services, Work, Case study live)
 
 ## Where this is
 
-Design phase complete. Scaffold pushed. **Scene 01, the nav and scene 02
-are built and working.** Nothing deployed.
+Design phase complete. **The home scroll spine is complete — all six
+scenes — and Services, Work, Case study and Contact are live.** Deployed on
+Vercel from `main`.
 
 **Design canvas:** https://claude.ai/artifact/T5XWBmHmNJcY46x8tgAb1D
 Seven artboards: Foundations (tokens), Scroll spine (scene map + Blender
@@ -40,12 +41,37 @@ the rules extracted from it.
 
 ## Next, in order
 
-1. **Scenes 03-06** from the Scroll spine board: stack peel, fleet
-   assembly, proof wall, release. Reuse `useScrollScene` for each.
-2. Services, Work and Case study pages from the canvas.
-3. Operator dashboard.
-4. Strapi 5 + Postgres behind the existing contract — a new adapter, not a
-   rewrite.
+1. **Operator dashboard** (`/platform`) from the Dashboard board. The nav
+   entry exists but is hidden — flip `ready` in
+   `src/features/chrome/lib/nav-links.ts` in the same PR that adds the route.
+2. **Writing** (`/writing`). No board exists for it yet; it needs a design
+   pass before a build pass. Same hidden-nav treatment.
+3. **Strapi 5 + Postgres** behind the existing contract — a new adapter in
+   `src/features/work/lib/source.strapi.ts`, not a rewrite. The case study
+   pages already read every field off the schema, so they need no changes.
+4. **The Work filter row.** Held back deliberately: filtering two case
+   studies by discipline does nothing. Worth building at four or five.
+
+## The scroll spine, as built
+
+| | Scene | Behaviour |
+|---|---|---|
+| 01 | Title hold | CSS keyframe reveal, no JS on the first viewport |
+| 02 | The forge | Pinned 300vh, real-time WebGL |
+| 03 | Stack peel | Pinned 240vh, layers separate, mono labels land |
+| 04 | Fleet assembly | Pinned 280vh, horizontal scrub, inline SVG nodes |
+| 05 | Proof wall | Unpinned parallax, reads the work contract |
+| 06 | Release | Zero ScrollTriggers, deliberately still |
+
+Scene 04 was specified as a second Blender plate. Superseded by the
+"No Blender" decision *and* by one-Canvas-per-page — the forge owns the
+page's only R3F context, so the nodes are inline SVG.
+
+`full` requires `min-height: 700px` as well as `min-width: 1024px`. A pinned
+scene taller than the viewport traps its own lower content, and a 1280x540
+window passes a width-only check. A viewport matching neither `full` nor
+`compact` runs no handler at all; every scene's markup is its static end
+state, so that is the correct fallback, not a gap.
 
 ### Tuning knobs for scene 01
 
@@ -134,7 +160,16 @@ sessions and returns 403.
 - **`pkill -f "next start"` matches its own command line** and kills the
   shell running it, which silently truncates whatever came after — including
   a build. Use a distinct port per run instead.
-- **Nav routes that do not exist yet.** `/work`, `/services`, `/platform`,
+- **`NEXT_PUBLIC_CONTACT_EMAIL` is unset.** Until it is, every CTA routes to
+  `/contact`, which sends people to the work instead of offering a mailto.
+  Set it in Vercel and the whole site's primary CTA lights up. No address is
+  hardcoded anywhere.
+- **Two stale remote branches**, `scene-01-title-hold-and-nav` and
+  `allow-scoped-pr-merge`, both pre-dating auto-delete-on-merge. Deleting a
+  remote ref is blocked at the proxy in cloud sessions — over the API *and*
+  over the git protocol — so they need a human click. Everything merged
+  since cleans itself up.
+- **Old note, now stale — nav routes that did not exist.** `/work`, `/services`, `/platform`,
   `/writing` and `/contact` all 404 until step 1-3 land. The hrefs are in
   `src/features/chrome/lib/nav-links.ts`. **Departure from the board:** it
   drew Writing and Start-a-build as same-page anchors (`#writing`,
