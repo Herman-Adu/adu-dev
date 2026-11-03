@@ -13,3 +13,4 @@ export const caseStudies: CaseStudySource =
   env.CONTENT_SOURCE === "strapi" ? strapiCaseStudySource : localCaseStudySource;
 
 export * from "./contract";
+export { ProofWall } from "../components/proof-wall";
