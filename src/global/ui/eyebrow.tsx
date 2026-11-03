@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import { cn } from "@/global/lib/cn";
 
-/** mute is the section marker; secondary is the hero's standfirst line. */
-type Tone = "mute" | "secondary";
+/** mute is the section marker; secondary is the hero's standfirst line;
+ *  brand marks the one accent section per page. */
+type Tone = "mute" | "secondary" | "brand";
 
 const tones: Record<Tone, string> = {
   mute: "text-ink-3",
   secondary: "text-ink-2",
+  brand: "text-brand",
 };
 
 /** Mono, tracked, uppercase. Reserved for metadata and section markers. */
