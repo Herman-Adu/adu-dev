@@ -54,6 +54,16 @@ the rules extracted from it.
    the shell against `DashboardSource` with an empty local seed. Agent runs
    is the obvious first feed. Auth comes first — the route is `noindex` and
    carries nothing, but it cannot hold real data until it is gated.
+   **Step-by-step in `docs/playbooks/auth.md`**, with the architectural
+   calls already made. Decided: Better Auth, which is a library running
+   inside this app against its own Postgres database — separate from
+   Strapi's, because Strapi migrates that schema. The API key from a Better
+   Auth account is a **different thing**: it belongs to Better Auth
+   Infrastructure (the `dash()` plugin — analytics, activity, admin APIs),
+   reads from `BETTER_AUTH_API_KEY`, and is additive. Sessions need
+   `BETTER_AUTH_SECRET` and a database URL, nothing hosted. No sign-up: one
+   operator, seeded. Middleware redirects, but the server component is the
+   gate.
 3. **Writing** (`/writing`). No board exists; it needs a design pass before
    a build pass. Nav entry is defined with `ready: false`.
 4. **Real figures.** Service prices, momo-audio's Lighthouse/LCP, company
@@ -61,6 +71,19 @@ the rules extracted from it.
    guessed. See the Content rule.
 5. **The Work filter row** — worth building at four or five case studies.
    Filtering two does nothing.
+
+## Playbooks
+
+`docs/playbooks/` holds the step-by-step for work that is decided but not
+built, so the reasoning does not have to be rebuilt from this file.
+
+- `auth.md` — item 2, Better Auth sessions gating `/platform/app`, then the
+  live dashboard source.
+- `local-dev.md` — running the site, standing Strapi + Postgres up locally,
+  the throwaway-probe pattern for verifying an adapter with no test runner,
+  the three commands CI runs, and the gotchas that each cost an hour.
+
+`.env.example` lists every variable with no values in it.
 
 ## The scroll spine, as built
 
