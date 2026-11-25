@@ -11,8 +11,10 @@
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+// fileURLToPath, not URL.pathname: the latter yields "/C:/..." on Windows.
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const failures = [];
 
 function walk(dir, out = []) {
