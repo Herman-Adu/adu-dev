@@ -287,9 +287,17 @@ registries, the exact collision Matt documents for parallel tickets.
   `strapi-next-starter`. Observed on 2026-11-27: that project's compose file
   resolved to an old worktree (`worktrees/fix-146-seed-check-never-exits`),
   so whichever checkout started it last owns the Postgres container, ports
-  and volume. The worktree recipe either gives each job its own project name
-  (`COMPOSE_PROJECT_NAME`) and ports, or deliberately shares one database,
-  which is only safe because `strapi-schema` jobs are serialised.
+  and volume. A shared database is worse than a naming clash: Strapi's
+  startup schema sync makes the database match *that checkout's* schema
+  files, so starting Strapi from an older worktree can drop columns another
+  worktree just added (`docs/research/strapi-mcp-and-nextjs-workflow.md`,
+  section 3). Two safe shapes, nothing in between:
+  - **Default: an isolated database per job.** The worktree recipe sets its
+    own `COMPOSE_PROJECT_NAME`, ports and volume, seeded from the baseline.
+  - **Or one authoritative Strapi, run from `main` only.** Jobs never start
+    Strapi themselves, and a schema change or restart is exclusive with
+    every job that reads or writes the CMS (`strapi-schema`,
+    `strapi-content` and adapter tickets), not only with other schema jobs.
 
 ## Learning loop
 
