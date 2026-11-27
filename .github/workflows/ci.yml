@@ -9,30 +9,17 @@ on:
 permissions:
   contents: read
 
-# A superseded run on the same PR is wasted minutes. Runs on main are never
-# cancelled: each one is the record for the commit it tested.
+# A superseded run on the same PR is wasted minutes, so PRs share one group
+# per PR and cancel. Every push to main gets its own group (run_id): GitHub
+# keeps only one *pending* run per group, so a shared group would silently
+# drop the middle commit's run and leave it with no record.
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# PR title and branch name are checked in conventions.yml, which also runs on
+# title edits without re-running this build.
 jobs:
-  conventions:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      # Title and branch come in through env, never inlined into the script:
-      # a PR title is user input.
-      - name: PR title and branch name
-        run: node scripts/check-conventions.mjs
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          HEAD_REF: ${{ github.head_ref }}
-
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -1,0 +1,33 @@
+name: Conventions
+
+# Separate from CI so an edited title re-runs this ten-second check, not the
+# build. `edited` also fires on description edits; that is cheap here.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conventions-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/check-conventions.mjs
+          sparse-checkout-cone-mode: false
+
+      # Title and branch come in through env, never inlined into the script:
+      # a PR title is user input.
+      - name: PR title and branch name
+        run: node scripts/check-conventions.mjs
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          HEAD_REF: ${{ github.head_ref }}
