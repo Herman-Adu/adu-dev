@@ -5,20 +5,46 @@ on:
   push:
     branches: [main]
 
-# A superseded run on the same branch is wasted Actions minutes.
+# Least privilege: nothing here writes to the repo.
+permissions:
+  contents: read
+
+# A superseded run on the same PR is wasted minutes. Runs on main are never
+# cancelled: each one is the record for the commit it tested.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  conventions:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Title and branch come in through env, never inlined into the script:
+      # a PR title is user input.
+      - name: PR title and branch name
+        run: node scripts/check-conventions.mjs
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          HEAD_REF: ${{ github.head_ref }}
+
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: 20
+          persist-credentials: false
+
+      # Same Node as every developer machine: .nvmrc is the single source.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -38,3 +64,5 @@ jobs:
         run: npm run build
         env:
           CONTENT_SOURCE: local
+
+      # Lint joins this list once #16 clears forge-scene.tsx.

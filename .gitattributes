@@ -1,0 +1,29 @@
+# Line endings are decided here, not by each clone's core.autocrlf.
+# Without this, Windows checks text out as CRLF while CI and every other
+# machine see LF, so diffs, hashes and formatters disagree between them.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary: never normalise, never diff as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.glb binary
+*.gltf binary
+*.hdr binary
+*.ktx2 binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp4 binary
+*.webm binary
+*.pdf binary

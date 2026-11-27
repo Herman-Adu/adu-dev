@@ -1,0 +1,33 @@
+# Keeps dependency and action pins current without a flood of PRs: weekly,
+# grouped, capped. Titles follow Conventional Commits so the conventions
+# check passes on Dependabot's PRs too.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    groups:
+      # Pinned together on purpose (see #13): they move as one.
+      next:
+        patterns: ["next", "eslint-config-next"]
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+        exclude-patterns: ["next", "eslint-config-next"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "ci(deps)"
+    groups:
+      actions:
+        patterns: ["*"]
