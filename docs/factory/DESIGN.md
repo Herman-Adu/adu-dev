@@ -328,8 +328,14 @@ One skill per job. Two skills that both answer "how do I plan / test /
 review" make the model pick at random and cost context every session.
 Audit of 2026-11-27, and the target state:
 
+**Applied 2026-11-27** (backup: `~/.claude/settings.json.bak-2026-11-27`):
+the three plugins below disabled, the loose files moved to
+`~/.claude/skills-archive/`, both global MCPs removed (re-add per project),
+stale permission allows pruned.
+
 **Keep: the spine of the workflow**
-- `mattpocock-skills` plugin (v1.2.3): planning, building, review, learning.
+- Matt's skills, **vendored and pinned per repo** (see *Cross-project
+  standards*), then the global `mattpocock-skills` plugin is disabled.
 - `frontend-design`, `context7` (current library docs instead of guessing),
   `typescript-lsp`, `watch`, `generate-anything`, `graphify`, `scroll-world`:
   no overlap with the chain.
@@ -360,6 +366,62 @@ Audit of 2026-11-27, and the target state:
   deterministic referee. That is the token saving: agents never read CI logs
   unless a check fails, and then only the failing step's tail.
 - `main` branch protection requires the `verify` check.
+
+## Cross-project standards (settled 2026-11-27)
+
+The template carries these into every project, so no project re-decides them.
+
+1. **Matt's skills are vendored and pinned per repo**: copies in
+   `.claude/skills/`, `skills-lock.json` plus Notum's commit-pinned
+   integrity check (`skills-vendor-baseline.json`). Updates arrive as a
+   reviewed diff. Why: the global plugin auto-updates (`autoUpdatesChannel:
+   latest`) and changed behaviour silently (`CONTEXT.md`→`GLOSSARY.md`); in
+   Notum the plugin and the vendored copies both load. A cloud runner or a
+   client checkout must get the same skills as this machine.
+2. **Conventional Commits and `<type>/<issue>-<slug>` branches**, enforced
+   by a git hook and re-checked in CI (Notum's pattern: lefthook locally, CI
+   the authority). Factory branches follow it too (`feat/123-…`, not
+   `factory/<id>`); a `factory` label marks factory PRs.
+3. **`.gitattributes` (LF) and `.nvmrc` (Node 24)**, and CI reads `.nvmrc`.
+   Today adu-dev has neither, `core.autocrlf` is `true`, and CI runs Node 20
+   while this machine runs 24.
+4. **Agent safety**: Matt's `git-guardrails-claude-code` hook (blocks
+   force-push, `reset --hard` and similar); every factory agent declares a
+   `tools:` allowlist (intake: no shell; reviewers: read + gate); the
+   factory runs in normal permission mode with a project allowlist, never
+   bypass.
+5. **The factory's own files are a contract**: `job.json`, `config.json`
+   and the ticket format have versioned Zod schemas from day one, so the
+   future agency dashboard reads them rather than reverse-engineering them.
+6. **Factory PRs will come from a GitHub App identity**, so you review
+   rather than self-approve (GitHub refuses approval on your own PR). Phase 1
+   uses your account with auto-merge off.
+7. **Client repos: decide per engagement, before the first one.** Either the
+   factory runs from your side against a client repo and is never committed
+   there, or it ships under a licence you choose. It is all our code, so the
+   choice is open.
+8. **Memory is keyed to the folder path**, so worktree sessions and other
+   projects don't share it. Cross-project lessons go into the template
+   (checks, reviewer standards); project facts stay in project memory; the
+   global `CLAUDE.md` stays minimal. Factory agents run inside the
+   orchestrator's session, so worktrees don't fragment memory.
+
+**Design for now, build later**
+- *Cloud runners*: GitHub stays the source of truth; only job logs are
+  local.
+- *Ticket sources* (Sentry, feedback button, socials, contact forms) file
+  into triage, never straight into `ready-for-agent`.
+- *UI review*: per-worktree dev-server ports (Notum `preview`), so a reviewer
+  can take Playwright screenshots later.
+- *Gate tiers*: the factory gate is the fast tier; the slow tier (Notum
+  `verify:full` takes ~2h40m on Windows) stays in CI.
+- *Deploys* never happen inside the factory. The `vps` skill stays
+  user-invoked only.
+- *Default project shape* for new apps (Notum's pnpm + Turborepo monorepo or
+  not) can be decided later: `checks.json` keeps the factory
+  package-manager-agnostic.
+- *Cost*: once this design is approved, the default session model goes back
+  to Sonnet; the factory routes Opus only to the roles that need it.
 
 ## Phases, each with a test
 
