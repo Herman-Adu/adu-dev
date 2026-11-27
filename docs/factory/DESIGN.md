@@ -111,7 +111,10 @@ intake shrinks to a deterministic check plus a short judgment.
 1. Has the queue label, is open, is not a PR.
 2. Every blocker is **merged into main** (computed by the spine from merged
    PRs, not GitHub's blocked-by count, which goes stale mid-run — Matt,
-   `implement-spec.md`).
+   `implement-spec.md`). The spine reads the `dependencies/blocked_by` list,
+   never `issue_dependencies_summary`: the summary lagged about 20 s behind
+   a fresh edge in our test, long enough to start a blocked ticket
+   (`docs/agents/issue-tracker.md`).
 3. Body has acceptance criteria and a parent spec link.
 4. Exactly one `surface:*` label (**ours**: one surface per job keeps routing
    and the gate simple; `/to-tickets` vertical slices that cross surfaces get

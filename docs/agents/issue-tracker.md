@@ -42,9 +42,20 @@ GitHub template uses `gh issue create --parent` / `--blocked-by`, which need
   `.../dependencies/blocking`, or the `sub_issues_summary` and
   `issue_dependencies_summary` fields on the issue itself.
 
-`{id}` is the issue's numeric **`id`** from the REST response, not its
-`#number`. Read paths were verified on 2026-11-27; the write calls are
-documented but not yet exercised in this repo. Confirm them on the first run.
+`{id}` is the issue's numeric **`id`** (the database id) from the REST
+response, not its `#number` or `node_id`. The v1.3.2 tracker template in
+`.claude/skills/setup-matt-pocock-skills/issue-tracker-github.md` documents
+the same calls.
+
+Verified on 2026-11-27:
+- **Add a blocker** works (#16 blocked by #23). Its response body is the
+  child issue, not the blocker.
+- **The summary lags.** Right after the write, `issue_dependencies_summary`
+  still read `blocked_by: 0` while the `dependencies/blocked_by` list already
+  showed the blocker; about 20 s later both agreed. So anything deciding
+  "can this ticket start?" right after tickets are published reads the
+  **list**, never the summary.
+- **Make a sub-issue** is not yet exercised here.
 
 Publish blockers first so their ids exist when the dependent ticket is made.
 
@@ -93,7 +104,11 @@ Used by `/wayfinder`. The **map** is one issue; **children** are its tickets.
   Fall back to a `Blocked by: #<n>` line. Unblocked when every blocker closes.
 - **Frontier**: the map's open children, dropping any with
   `issue_dependencies_summary.blocked_by > 0` or an assignee; map order wins.
-- **Claim**: `gh api -X PATCH repos/{o}/{r}/issues/{n} -f assignees[]=@me` —
-  the session's first write.
+- **Claim**: `gh api -X POST repos/{o}/{r}/issues/{n}/assignees -f
+  "assignees[]=$(gh api user --jq .login)" --jq '[.assignees[].login]'` —
+  the session's first write. Use the real login: REST **silently ignores**
+  `@me` (it returns no assignees and no error; verified 2026-11-27), so a
+  claim made with it looks done but is invisible to other sessions. Check
+  the returned list contains the login before working the ticket.
 - **Resolve**: comment the answer, close, then append a context pointer to the
   map's Decisions-so-far.
