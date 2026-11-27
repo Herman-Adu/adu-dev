@@ -39,8 +39,9 @@ GitHub template uses `gh issue create --parent` / `--blocked-by`, which need
 - **Make a sub-issue**: `gh api repos/{o}/{r}/issues/{parent}/sub_issues -F sub_issue_id={id}`
 - **Add a blocker**: `gh api repos/{o}/{r}/issues/{n}/dependencies/blocked_by -F issue_id={id}`
 - **Read**: `.../issues/{n}/sub_issues`, `.../dependencies/blocked_by`,
-  `.../dependencies/blocking`, or the `sub_issues_summary` and
-  `issue_dependencies_summary` fields on the issue itself.
+  `.../dependencies/blocking`. The `sub_issues_summary` and
+  `issue_dependencies_summary` fields on the issue are for display only:
+  they lag (below), so never decide whether a ticket can start from them.
 
 `{id}` is the issue's numeric **`id`** (the database id) from the REST
 response, not its `#number` or `node_id`. The v1.3.2 tracker template in
@@ -102,8 +103,11 @@ Used by `/wayfinder`. The **map** is one issue; **children** are its tickets.
   issue_id=<blocker-db-id>`. That is the numeric **database id** from
   `gh api repos/{o}/{r}/issues/{n} --jq .id`, not the `#number` or `node_id`.
   Fall back to a `Blocked by: #<n>` line. Unblocked when every blocker closes.
-- **Frontier**: the map's open children, dropping any with
-  `issue_dependencies_summary.blocked_by > 0` or an assignee; map order wins.
+- **Frontier**: the map's open children, dropping any with an assignee or
+  with an open blocker in `gh api repos/{o}/{r}/issues/{n}/dependencies/blocked_by
+  --jq '[.[] | select(.state == "open")] | length'` (non-zero means blocked);
+  map order wins. Read that list, not `issue_dependencies_summary`, which
+  lags a fresh edge (see *Sub-issues and blocking edges* above).
 - **Claim**: `gh api -X POST repos/{o}/{r}/issues/{n}/assignees -f
   "assignees[]=$(gh api user --jq .login)" --jq '[.assignees[].login]'` —
   the session's first write. Use the real login: REST **silently ignores**

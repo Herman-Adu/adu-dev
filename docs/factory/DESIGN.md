@@ -451,7 +451,9 @@ The template carries these into every project, so no project re-decides them.
 - **Q1. Sub-issues and blocked-by over REST: supported.** Verified by reads
   on a public issue: `GET /issues/{n}/sub_issues`,
   `/dependencies/blocked_by` and `/dependencies/blocking` return 200, and
-  each issue carries `sub_issues_summary` and `issue_dependencies_summary`.
+  each issue carries `sub_issues_summary` and `issue_dependencies_summary`
+  (display only: the summary lags a fresh edge, so the spine reads the
+  `dependencies/blocked_by` list).
   Local `gh` is 2.83.2, which lacks the `gh issue create --parent` /
   `--blocked-by` flags Matt's template uses (2.94+), and those go through
   GraphQL anyway. So writes use REST, documented in
