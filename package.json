@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "house-rules": "node scripts/house-rules.mjs"
+    "house-rules": "node scripts/house-rules.mjs",
+    "skills:check": "node scripts/skills-vendor.mjs check",
+    "skills:pull": "node scripts/skills-vendor.mjs pull"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

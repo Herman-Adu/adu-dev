@@ -248,7 +248,7 @@ for a new content type, each a vertical slice that still demos:
 For "take an existing app's data and build Strapi for it", a prior **mapping
 decision** runs through `/grill-with-docs` or a wayfinder `grilling` ticket:
 component vs dynamic zone, relations, i18n, draft/publish. Those are design
-choices and land as `CONTEXT.md` terms and ADRs via `/domain-modeling`
+choices and land as glossary terms (Q5) and ADRs via `/domain-modeling`
 (invoked by name — Matt notes models skip it otherwise). The factory builds
 only after the mapping is decided.
 
@@ -467,11 +467,12 @@ The template carries these into every project, so no project re-decides them.
   horizontal slicing. The primary surface decides gate scope and rules;
   `+ui` only adds the UI reviewer. `strapi-schema` never combines with
   anything.
-- **Q5. Glossary file: `CONTEXT.md`.** The installed `mattpocock-skills`
-  v1.2.3 `domain-modeling` writes `CONTEXT.md` (and `CONTEXT-MAP.md` for
-  multi-context), matching `docs/agents/domain.md` and Notum. Matt's newer
-  upstream docs say `GLOSSARY.md`; rename in the same commit as the skills
-  upgrade that changes it, never before.
+- **Q5. Glossary file: follows the vendored skills, renamed in the same
+  commit as the upgrade that changes it.** adu-dev vendors v1.3.2 (#23),
+  whose `domain-modeling` writes `GLOSSARY.md` (and `GLOSSARY-MAP.md` for
+  multi-context; upstream renamed it from `CONTEXT.md` on 2026-08-15), so
+  adu-dev uses `GLOSSARY.md`. Notum stays on `CONTEXT.md` until its own
+  upgrade renames its file in that commit.
 - **Q6. The template lives in its own repo.** adu-dev is a product; its
   gate, history and `CLAUDE.md` should not carry tooling. Each project pins
   a factory version (like Notum's `skills-vendor-baseline.json`). An install
