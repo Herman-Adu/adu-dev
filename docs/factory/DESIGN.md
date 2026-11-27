@@ -282,6 +282,14 @@ registries, the exact collision Matt documents for parallel tickets.
 - Tests reading untracked fixtures silently skip in a worktree (Matt). Any
   such ticket is marked `runs-in-main` and never runs concurrently.
 - Each worktree gets its own dev-server ports (Notum `preview.portBase`).
+- **Docker Compose projects collide across worktrees.** Compose groups
+  containers by project name, and every checkout of the Notum starter uses
+  `strapi-next-starter`. Observed on 2026-11-27: that project's compose file
+  resolved to an old worktree (`worktrees/fix-146-seed-check-never-exits`),
+  so whichever checkout started it last owns the Postgres container, ports
+  and volume. The worktree recipe either gives each job its own project name
+  (`COMPOSE_PROJECT_NAME`) and ports, or deliberately shares one database,
+  which is only safe because `strapi-schema` jobs are serialised.
 
 ## Learning loop
 
