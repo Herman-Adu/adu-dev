@@ -259,6 +259,10 @@ only after the mapping is decided.
 - Block, unless a matching migration exists: field or type removed or
   renamed, type changed, `required`/`unique` added, file deleted. Schema sync
   drops removed columns on startup with no prompt, in dev and prod.
+- A matching migration does **not** pass the job: it sends it to
+  `needs-human`. Notum's check matches migrations by substring, so a stub
+  that only names the field turns a block into exit 2; its own skill says
+  "review, do not auto-pass" (`docs/research/notum-starter-digest.md`, E).
 - Renames only through `strapi rename:field` (5.57+), never a key edit.
 - `strapi export` of the dev DB before any destructive change.
 - Never `strapi import` / `transfer` for incremental seeding: both wipe the

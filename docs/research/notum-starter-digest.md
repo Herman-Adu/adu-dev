@@ -304,7 +304,7 @@ All from PR#480.
   - An import overwrites existing data (`D:strapi/data-seeding.md`).
 - **Schema checks.**
   - The `strapi-schema-check` skill and `.claude/skills/strapi-schema-check/scripts/check.sh` compare `schema.json` against the base branch and flag renames, deletes, type changes and tightened constraints. They look for a matching migration under `apps/strapi/database/migrations/`.
-  - Exit codes: 0 = no risky changes; 1 = risky changes with no migration (block); 2 = risky changes with a matching migration (warn only); 3 = the check itself failed.
+  - Exit codes: 0 = no risky changes; 1 = risky changes with no migration (block); 2 = risky changes with a matching migration; 3 = the check itself failed. The script's header calls exit 2 "warn only" (`U:.claude/skills/strapi-schema-check/scripts/check.sh` line 25), but the skill's own instructions say "review, do not auto-pass": the match is a substring search, so a stub migration that merely mentions the attribute and collection downgrades exit 1 to exit 2, and "a human reviewer must verify" (`U:.claude/skills/strapi-schema-check/SKILL.md`, exit-code table and Limitations). Treat exit 2 as needing human review of the migration.
   - The skill auto-loads on schema edits through `paths:` (`U:.claude/skills/strapi-schema-check/*`).
   - The fork adds `types:check` (drift between schema and types) and `config:check` (`F:package.json`).
 - **Data import, export and config:**
@@ -405,7 +405,7 @@ All from PR#480.
 
 ## H. Fork vs upstream
 
-**Sync point.** The fork's history contains upstream commits up to `5778c3b3` "Merge pull request #349 from notum-cz/dev" (2026-06-24), which is **v3.4.1** (`gh api .../commits/v3.4.1`). After that, every commit is the fork's own, numbered #1 to #454 in the fork's tracker (`git log`). It is a separate repository history, not a merge-tracking fork. MY-INFERENCE: syncing means cherry-picking or porting, not `git merge upstream/main`, because 656 diverged commits sit on top of v3.4.1.
+**Sync point.** The fork's history contains upstream commits up to `5778c3b3` "Merge pull request #349 from notum-cz/dev" (2026-06-24), which is **v3.4.1** (`gh api .../commits/v3.4.1`). After that, every commit is the fork's own, numbered #1 to #454 in the fork's tracker (`git log`). It is a separate GitHub repository, but it shares upstream's history up to v3.4.1, so `git merge upstream/main` has a real merge base and is possible. MY-INFERENCE, a recommendation rather than a constraint: selective porting (cherry-picking or re-applying upstream changes) may still be the better strategy, because the fork has intentional divergences (its own gate, skills, docs and deploy path) across 656 commits that a full merge would conflict with in many places. The trade-off: a merge keeps the two histories connected for future syncs; porting keeps control but has to be repeated by hand each time.
 
 **Version deltas:** see the table in B.
 
@@ -485,26 +485,27 @@ adu-dev today: a single Next 16.4.6 app on npm with `package-lock.json`. Node is
 
 | Item | Verdict | Why / how |
 |---|---|---|
-| `apps/web`, `apps/strapi` (`cms/` promoted), `apps/docs`, `packages/*` layout under pnpm workspaces and Turborepo | **Adopt** | Matches upstream (`U:pnpm-workspace.yaml`, `U:turbo.json`). Moving from npm to pnpm is the actual migration, so decide it first. |
-| Node and pnpm pins: `.nvmrc 26`, `engines ^26`, `packageManager pnpm@12.18.0` | **Adapt** | Upstream's current target (PR#480). adu-dev is on Node 24. Remember the Corepack note: run `npm i -g pnpm@x` per Node version. |
+| `apps/ui` (Notum's name, chosen 2026-11-27), `apps/strapi` (`cms/` promoted), `apps/docs`, `packages/*` layout under pnpm workspaces and Turborepo | **Adopt** | Matches upstream (`U:pnpm-workspace.yaml`, `U:turbo.json`). Moving from npm to pnpm is the actual migration, so decide it first. |
+| Node and pnpm pins: `.nvmrc 26`, `engines ^26`, `packageManager pnpm@12.18.0` | **Adopt** | Upstream's current target (PR#480). adu-dev already pins Node 26 (`.nvmrc`, `engines ^26.0.0`, merged in #26), so what remains is the npm-to-pnpm move and the `packageManager` pin. Remember the Corepack note: run `npm i -g pnpm@x` once per Node version. |
 | `pnpm-workspace.yaml`: `minimumReleaseAge`, `allowBuilds`, `<fixed` overrides with advisory comments | **Adopt** | Low cost, explicit supply-chain policy (`U:pnpm-workspace.yaml`). |
 | Composite `setup-pnpm` action, CI env `NPM_CONFIG_IGNORE_SCRIPTS`, concurrency cancel | **Adopt** | `U:.github/actions/setup-pnpm/action.yml`, `U:ci.yml`. Add `typecheck` to CI; upstream omits it. |
 | Dependabot with a single root `directory: "/"` | **Adopt** | Subdirectory jobs never update the lockfile (PR#480). |
 | Leak guard | **Adapt** | Useful only if a public mirror exists. Note that it fails closed without the secret (`U:leak-guard.yml`). |
-| `@repo/shared-data`, `@repo/logging`, `@repo/typescript-config`, `@repo/eslint-config` | **Adapt** | Good seams. Keep adu-dev's `src/global` and `src/features` split inside `apps/web`. |
+| `@repo/shared-data`, `@repo/logging`, `@repo/typescript-config`, `@repo/eslint-config` | **Adapt** | Good seams. Keep adu-dev's `src/global` and `src/features` split inside `apps/ui`. |
 | `@repo/design-system` | **Adapt** | Move the brand tokens from `globals.css @theme` into a package only if Strapi admin or editors need them. Drop Roboto, CKEditor and TipTap if they aren't used. |
 | `@repo/strapi-types` consumed by UI components | **Avoid** | Violates the contract rule (section I). If generated types are kept at all, import them only inside `source.strapi.ts` as the mapper's input type. |
 | `PublicStrapiClient` and the proxy allowlist | **Adapt** | Use them as the transport inside the Strapi adapter. Parse into the Zod contract at the boundary. |
 | Smart-populate `"smart"` tokens | **Adapt** | Fine inside the adapter. Never at a UI call site. |
 | Document-middleware revalidation, bearer secret, constant-time compare, tag-plus-path strategy | **Adopt** | `D:reference/cache-revalidation.md`. It fits behind the adapter boundary. |
-| Document middlewares over lifecycles; `strapi-schema-check` script | **Adopt** | They prevent the drop-and-create data loss that comes from renamed fields (`D:strapi/strapi-schemas.md`, `U:.claude/skills/strapi-schema-check`). |
+| Document middlewares over lifecycles; `strapi-schema-check` script | **Adopt** | Middlewares are the documented hook (`D:strapi/strapi-schemas.md`); the check *flags* risky renames, deletes and type changes (`U:.claude/skills/strapi-schema-check`). Neither prevents rename data loss by itself: that takes a correct migration (`strapi rename:field`, 5.57+, see `strapi-mcp-and-nextjs-workflow.md`), and exit 2 means a human verifies it. |
 | Seed export and runner (`AUTO_SEED_*`) | **Adapt** | Useful for the `CONTENT_SOURCE=strapi` dev loop. `CONTENT_SOURCE=local` must still work without it. |
 | Security headers split, CSP derived from `STRAPI_URL`, preview `no-store` | **Adopt** | `D:ui/next-proxies.md`. |
-| Better Auth and the Strapi JWT bridge | **Avoid** (for now) | No end-user auth in adu-dev's scope as I understand it (UNVERIFIED). Upstream ships a removal checklist (`D:how-to/index.md`). |
+| Better Auth | **Adapt** | adu-dev already chose Better Auth for the operator dashboard (`docs/STATE.md`), with its own database separate from Strapi's and public sign-up turned off (`docs/playbooks/auth.md`). Take the library, not the starter's wiring. |
+| The starter's Strapi JWT bridge (Better Auth sessions mapped to Strapi users) | **Avoid** | It couples the auth database to Strapi's, which `docs/playbooks/auth.md` rules out. Upstream ships a removal checklist (`D:how-to/index.md`). |
 | Lefthook, commitlint, `STAR-` branch pattern | **Adapt** | Keep the hooks. Change the branch regex to adu-dev's issue numbering. |
 | Auto PR `dev` to `main`, merge-commit only | **Avoid** unless a `dev` branch is introduced | Upstream assumes a `dev` branch (`U:auto-pr.yml`). |
 | semantic-release (GitHub releases only) | **Adapt** | Optional. The `security:` patch rule is a nice touch. |
-| Worktree manifest scripts | **Adapt** | adu-dev already uses worktrees. The fork's hardened version (`clearOnReuse`, health checks) is the more tested of the two. |
+| Worktree manifest scripts | **Adapt** | The factory design runs one worktree per job (`docs/factory/DESIGN.md`, Concurrency); adu-dev has no worktree tooling yet. The fork's hardened version (`clearOnReuse`, health checks) is the more tested of the two. |
 | Playwright QA groups, axe/SEO/visual, LHCI history, k6 | **Adapt** | k6 measures server load, not frame rate, so it does not test the 60fps mobile budget. Use LHCI and visual tests for scenes, and k6 only before a traffic event. |
 | Heroku helper scripts | **Avoid** | Their `TURBO_VERSION` is stale (`D:reference/deployment/heroku.md`). |
 | `sync-types` copy fallback | **Avoid** | The fork measured it corrupting the types on Windows (`FD:reference/packages/strapi-types.md`). |
@@ -527,4 +528,4 @@ adu-dev today: a single Next 16.4.6 app on npm with `package-lock.json`. Node is
 - **Rate limiting in the fork.** I found none in `F:apps/strapi/config` (grep for `ratelimit`). It may live elsewhere. UNVERIFIED.
 - **How the upstream UI uses zod** (env, forms, anything else). Not inspected; MY-INFERENCE says env (t3-env) and forms (`@hookform/resolvers`).
 - **Azure as an intended deploy host** (Container Apps) is inferred from the env vars only. No page documents it.
-- **adu-dev's need for auth, i18n or a `dev` branch.** Not established here, so the verdicts above depend on those answers.
+- **adu-dev's need for i18n or a `dev` branch.** Not established here, so those verdicts depend on the answers. (Auth is settled: Better Auth for the operator dashboard, see above.)
