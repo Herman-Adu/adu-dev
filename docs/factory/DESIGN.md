@@ -158,7 +158,9 @@ one red-green slice at a time, typecheck often, full suite once, commit
   no diff (Matt, `implement.md`). In the factory the builder **does not
   review itself**; review is a separate stage on the committed branch.
 
-First round pushes the branch `factory/<id>` and opens a **draft** PR
+First round pushes the branch `<type>/<issue>-<slug>` (the settled
+convention, e.g. `feat/123-case-study-filter`; the `factory` label marks it
+as factory-made) and opens a **draft** PR
 `Closes #<n>` (Notum's draft-first rule, so CI minutes are spent after review).
 
 ### Gate (the deterministic brake)
@@ -218,7 +220,10 @@ schema: the official one has no schema tools; l33tdawg's drives the
 Content-Type Builder with an admin password, is stale, and has an unguarded
 `delete_content_type`; the VirtusLab plugin is read-only but unauthenticated
 by default. Strapi's own blog pattern is: introspect read-only, write
-`schema.json`, restart, seed via API.
+`schema.json`, restart, seed via API. We add one ordering rule to it:
+**Strapi is stopped while schema files change.** `strapi develop` watches
+the source tree and restarts on edits, and that restart runs the
+destructive schema sync before any gate has looked at the diff.
 
 **The official MCP is for content**: introspection reads and seeding on a
 **local dev** Strapi only, with a least-privilege admin token from an
@@ -230,8 +235,10 @@ for a new content type, each a vertical slice that still demos:
 1. `surface:contract` — Zod schema in `src/features/<x>/lib/contract.ts`,
    local adapter + seed JSON, UI reading it with `CONTENT_SOURCE=local`.
    Demoable with no back end (the repo's own rule).
-2. `surface:strapi-schema` — `schema.json` + components written to mirror the
-   contract, restart, regenerate types, field map in `cms/README.md`.
+2. `surface:strapi-schema` — with Strapi and its watcher **stopped**: write
+   `schema.json` + components to mirror the contract and update the field
+   map in `cms/README.md`. The drift gate runs on that diff. Only after it
+   passes does Strapi start (schema sync), and then types regenerate.
 3. `surface:strapi-content` — seed through `bootstrap()` / official MCP,
    find-before-create on a unique key, media first, read back after writes.
 4. Adapter ticket — `source.strapi.ts` maps wire → contract → `Schema.parse()`;
@@ -241,7 +248,7 @@ for a new content type, each a vertical slice that still demos:
 For "take an existing app's data and build Strapi for it", a prior **mapping
 decision** runs through `/grill-with-docs` or a wayfinder `grilling` ticket:
 component vs dynamic zone, relations, i18n, draft/publish. Those are design
-choices and land as `GLOSSARY.md` terms and ADRs via `/domain-modeling`
+choices and land as `CONTEXT.md` terms and ADRs via `/domain-modeling`
 (invoked by name — Matt notes models skip it otherwise). The factory builds
 only after the mapping is decided.
 
@@ -253,8 +260,8 @@ only after the mapping is decided.
 - `strapi export` of the dev DB before any destructive change.
 - Never `strapi import` / `transfer` for incremental seeding: both wipe the
   destination.
-- Preflight refuses to run unless Strapi is in develop mode and the target is
-  the dev database.
+- Preflight refuses to run unless the target is the dev database and Strapi
+  is stopped. It restarts under `strapi develop` only once the gate passes.
 
 **Serialised**: at most one `strapi-schema` job in flight
 (`exclusive_surfaces` in config). Schema jobs share generated types and
@@ -299,7 +306,7 @@ The point of the harness is that the same mistake never happens twice.
 | Cheap reviewers cost more (Zazen) | Same-tier reviewers until measured. |
 | Killing the orchestrator kills in-flight agents (Zazen) | Resume from files; in-flight stage restarts. Accepted. |
 | Prompt injection via issue text (Zazen) | Queue label needs write access; issue text is quoted data; intake has no shell. |
-| Schema sync data loss (research) | Drift gate, export-before, serialised schema jobs. |
+| Schema sync data loss (research) | Strapi stopped while schema files change, drift gate before restart, export-before, serialised schema jobs. |
 
 ## Template layout
 
@@ -319,8 +326,10 @@ factory/
 ```
 
 Only `checks.json`, `worktree.json` and `config.json` differ per project.
-Matt's skills stay installed through `npx skills add`; the factory calls them
-by name and does not vendor them.
+Matt's skills are vendored and pinned in each project's `.claude/skills/`
+(see *Cross-project standards*), so the factory calls the exact versions
+that project has accepted, on this machine, a cloud runner or a client
+checkout alike. The factory template itself ships none of them.
 
 ## Harness hygiene
 
