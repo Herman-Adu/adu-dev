@@ -5,20 +5,33 @@ on:
   push:
     branches: [main]
 
-# A superseded run on the same branch is wasted Actions minutes.
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+# Least privilege: nothing here writes to the repo.
+permissions:
+  contents: read
 
+# A superseded run on the same PR is wasted minutes, so PRs share one group
+# per PR and cancel. Every push to main gets its own group (run_id): GitHub
+# keeps only one *pending* run per group, so a shared group would silently
+# drop the middle commit's run and leave it with no record.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# PR title and branch name are checked in conventions.yml, which also runs on
+# title edits without re-running this build.
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: 20
+          persist-credentials: false
+
+      # Same Node as every developer machine: .nvmrc is the single source.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -38,3 +51,5 @@ jobs:
         run: npm run build
         env:
           CONTENT_SOURCE: local
+
+      # Lint joins this list once #16 clears forge-scene.tsx.
