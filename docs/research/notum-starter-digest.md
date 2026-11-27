@@ -224,7 +224,7 @@ All from PR#480.
 
 ## D. CI/CD
 
-**Upstream workflows** (`U:.github/workflows/*.yml`; every job uses `./.github/actions/setup-pnpm`, which runs pnpm/action-setup v6.1.1 by SHA, then setup-node from `.nvmrc` with a pnpm cache, then `pnpm install --frozen-lockfile --prefer-offline`):
+**Upstream workflows** (`U:.github/workflows/*.yml`). The shared action `./.github/actions/setup-pnpm` runs pnpm/action-setup v6.1.1 by SHA, then setup-node from `.nvmrc` with a pnpm cache, then `pnpm install --frozen-lockfile --prefer-offline`. Only the jobs that need workspace dependencies use it: `ci.yml` (1 use), `docs.yml` (1, the build job; its deploy job only deploys the uploaded artifact), `qa.yml` (5) and `release.yml` (1). `auto-pr.yml` and `leak-guard.yml` never call it (counted at v3.6.1, 2026-11-27):
 
 | Workflow | Trigger | What it runs | What it gates |
 |---|---|---|---|
