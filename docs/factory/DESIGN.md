@@ -111,7 +111,10 @@ intake shrinks to a deterministic check plus a short judgment.
 1. Has the queue label, is open, is not a PR.
 2. Every blocker is **merged into main** (computed by the spine from merged
    PRs, not GitHub's blocked-by count, which goes stale mid-run — Matt,
-   `implement-spec.md`).
+   `implement-spec.md`). The spine reads the `dependencies/blocked_by` list,
+   never `issue_dependencies_summary`: the summary lagged about 20 s behind
+   a fresh edge in our test, long enough to start a blocked ticket
+   (`docs/agents/issue-tracker.md`).
 3. Body has acceptance criteria and a parent spec link.
 4. Exactly one `surface:*` label (**ours**: one surface per job keeps routing
    and the gate simple; `/to-tickets` vertical slices that cross surfaces get
@@ -248,7 +251,7 @@ for a new content type, each a vertical slice that still demos:
 For "take an existing app's data and build Strapi for it", a prior **mapping
 decision** runs through `/grill-with-docs` or a wayfinder `grilling` ticket:
 component vs dynamic zone, relations, i18n, draft/publish. Those are design
-choices and land as `CONTEXT.md` terms and ADRs via `/domain-modeling`
+choices and land as glossary terms (Q5) and ADRs via `/domain-modeling`
 (invoked by name — Matt notes models skip it otherwise). The factory builds
 only after the mapping is decided.
 
@@ -448,7 +451,9 @@ The template carries these into every project, so no project re-decides them.
 - **Q1. Sub-issues and blocked-by over REST: supported.** Verified by reads
   on a public issue: `GET /issues/{n}/sub_issues`,
   `/dependencies/blocked_by` and `/dependencies/blocking` return 200, and
-  each issue carries `sub_issues_summary` and `issue_dependencies_summary`.
+  each issue carries `sub_issues_summary` and `issue_dependencies_summary`
+  (display only: the summary lags a fresh edge, so the spine reads the
+  `dependencies/blocked_by` list).
   Local `gh` is 2.83.2, which lacks the `gh issue create --parent` /
   `--blocked-by` flags Matt's template uses (2.94+), and those go through
   GraphQL anyway. So writes use REST, documented in
@@ -467,11 +472,12 @@ The template carries these into every project, so no project re-decides them.
   horizontal slicing. The primary surface decides gate scope and rules;
   `+ui` only adds the UI reviewer. `strapi-schema` never combines with
   anything.
-- **Q5. Glossary file: `CONTEXT.md`.** The installed `mattpocock-skills`
-  v1.2.3 `domain-modeling` writes `CONTEXT.md` (and `CONTEXT-MAP.md` for
-  multi-context), matching `docs/agents/domain.md` and Notum. Matt's newer
-  upstream docs say `GLOSSARY.md`; rename in the same commit as the skills
-  upgrade that changes it, never before.
+- **Q5. Glossary file: follows the vendored skills, renamed in the same
+  commit as the upgrade that changes it.** adu-dev vendors v1.3.2 (#23),
+  whose `domain-modeling` writes `GLOSSARY.md` (and `GLOSSARY-MAP.md` for
+  multi-context; upstream renamed it from `CONTEXT.md` on 2026-08-15), so
+  adu-dev uses `GLOSSARY.md`. Notum stays on `CONTEXT.md` until its own
+  upgrade renames its file in that commit.
 - **Q6. The template lives in its own repo.** adu-dev is a product; its
   gate, history and `CLAUDE.md` should not carry tooling. Each project pins
   a factory version (like Notum's `skills-vendor-baseline.json`). An install

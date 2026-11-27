@@ -11,7 +11,7 @@ Layout: **single-context** (one package, no workspaces).
   between sessions.
 - **`CLAUDE.md`** — the working rules: the architecture split, the contract
   rule, the motion rules, the brand tokens, the content rule.
-- **`CONTEXT.md`** at the root and **`docs/adr/`** — neither exists yet.
+- **`GLOSSARY.md`** at the root and **`docs/adr/`** — neither exists yet.
   Proceed silently; do not flag their absence or propose creating them
   upfront. `/domain-modeling` creates them lazily, when a term or a decision
   actually needs resolving.

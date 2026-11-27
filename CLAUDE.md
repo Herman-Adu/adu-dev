@@ -135,8 +135,15 @@ The five canonical roles, label strings unchanged. See
 
 ### Domain docs
 
-Single-context. `docs/STATE.md` is the handoff and stands in for `CONTEXT.md`
+Single-context. `docs/STATE.md` is the handoff and stands in for `GLOSSARY.md`
 until one exists. See `docs/agents/domain.md`.
+
+### Vendored skills
+
+Matt Pocock's skills live in `.claude/skills/`, pinned to a release in
+`vendor.lock.json`. Never edit them in place: `npm run skills:check` (in CI)
+fails on drift. Upgrade with `npm run skills:pull -- <tag>` and review the
+diff. See `.claude/skills/README.md`.
 
 ### House review
 

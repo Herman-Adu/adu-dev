@@ -45,6 +45,10 @@ jobs:
       - name: House rules
         run: npm run house-rules
 
+      # Matt's skills are pinned; a local edit would silently fork them.
+      - name: Vendored skills unchanged
+        run: npm run skills:check
+
       # CONTENT_SOURCE=local must always work with no back end running.
       # Building under it is what keeps that promise true.
       - name: Build (local content source)
