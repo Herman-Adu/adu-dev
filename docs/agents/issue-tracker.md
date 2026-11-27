@@ -30,6 +30,24 @@ reports a false "token is invalid" while REST works fine. Reach for
   remove with `-X DELETE .../labels/{label}`.
 - **Close**: `gh api -X PATCH repos/{o}/{r}/issues/{n} -f state=closed`
 
+## Sub-issues and blocking edges (REST)
+
+`/to-tickets` and `/wayfinder` need parent links and blocking edges. Their
+GitHub template uses `gh issue create --parent` / `--blocked-by`, which need
+`gh` 2.94+ and go through GraphQL. Use REST instead:
+
+- **Make a sub-issue**: `gh api repos/{o}/{r}/issues/{parent}/sub_issues -F sub_issue_id={id}`
+- **Add a blocker**: `gh api repos/{o}/{r}/issues/{n}/dependencies/blocked_by -F issue_id={id}`
+- **Read**: `.../issues/{n}/sub_issues`, `.../dependencies/blocked_by`,
+  `.../dependencies/blocking`, or the `sub_issues_summary` and
+  `issue_dependencies_summary` fields on the issue itself.
+
+`{id}` is the issue's numeric **`id`** from the REST response, not its
+`#number`. Read paths were verified on 2026-11-27; the write calls are
+documented but not yet exercised in this repo. Confirm them on the first run.
+
+Publish blockers first so their ids exist when the dependent ticket is made.
+
 **The REST `/issues` collection includes pull requests.** GitHub shares one
 number space, and a PR comes back as an issue with a `pull_request` key.
 Filter every list: `--jq '[.[] | select(.pull_request == null)]'`. Omitting
