@@ -7,6 +7,20 @@ thing that survives between sessions.
 Last updated: 2026-11-03 (site complete; dashboard shell landed; Strapi
 adapter implemented and verified against a real CMS)
 
+## Current focus (2026-11-27): the dev environment
+
+Building one harness for every Adu Dev project before more site work:
+Matt Pocock's skills plan the work into GitHub issues; our own software
+factory runs ready tickets concurrently to reviewed PRs. Design approved
+as a draft: `docs/factory/DESIGN.md` (decisions Q1–Q6 at its end). Strapi
+backend research: `docs/research/strapi-mcp-and-nextjs-workflow.md`.
+Done 2026-11-27: overlapping plugins retired, MCP servers moved to
+project or local scope, global git guardrail hook, CI hardened (#17),
+`main` protected (required `verify` + `conventions`, squash-only).
+Next: #16 (forge-scene lint, then lint joins CI) as the first ticket
+through the new flow; vendor Matt's skills into this repo; Phase 0
+(Vitest, labels); Phase 1 (spine on a sandbox repo).
+
 ## Where this is
 
 Design phase complete. **The site is built and deployed.** Six scroll
