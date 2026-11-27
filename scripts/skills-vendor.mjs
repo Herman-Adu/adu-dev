@@ -119,23 +119,36 @@ function pull(ref) {
     const src = join(work, top);
 
     const previous = existsSync(LOCK) ? JSON.parse(readFileSync(LOCK, "utf8")) : { skills: {} };
+
+    const incoming = [];
+    for (const group of GROUPS) {
+      const groupDir = join(src, "skills", group);
+      for (const name of readdirSync(groupDir).sort()) {
+        if (statSync(join(groupDir, name)).isDirectory()) incoming.push({ group, name });
+      }
+    }
+
+    // Refuse before touching anything: a collision found mid-copy would leave
+    // the installed release half-deleted and the lock pointing at it.
+    const collisions = incoming
+      .map(({ name }) => name)
+      .filter((name) => existsSync(join(SKILLS, name)) && !previous.skills[name]);
+    if (collisions.length > 0) {
+      throw new Error(
+        `Not vendored, but already in .claude/skills: ${collisions.join(", ")}. ` +
+          `Refusing to overwrite repo-authored skills; nothing was changed.`,
+      );
+    }
+
     for (const name of Object.keys(previous.skills)) {
       rmSync(join(SKILLS, name), { recursive: true, force: true });
     }
 
     const skills = {};
-    for (const group of GROUPS) {
-      const groupDir = join(src, "skills", group);
-      for (const name of readdirSync(groupDir).sort()) {
-        const from = join(groupDir, name);
-        if (!statSync(from).isDirectory()) continue;
-        const to = join(SKILLS, name);
-        if (existsSync(to) && !previous.skills[name]) {
-          throw new Error(`${name} already exists in .claude/skills and is not vendored; refusing to overwrite it.`);
-        }
-        cpSync(from, to, { recursive: true });
-        skills[name] = { path: `skills/${group}/${name}`, sha256: hashOf(to) };
-      }
+    for (const { group, name } of incoming) {
+      const to = join(SKILLS, name);
+      cpSync(join(src, "skills", group, name), to, { recursive: true });
+      skills[name] = { path: `skills/${group}/${name}`, sha256: hashOf(to) };
     }
     cpSync(join(src, "LICENSE"), join(SKILLS, LICENSE_FILE));
 
