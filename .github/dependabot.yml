@@ -16,9 +16,15 @@ updates:
       # Pinned together on purpose (see #13): they move as one.
       next:
         patterns: ["next", "eslint-config-next"]
+      # three is 0.x, so a minor bump can break the hero scene, and the R3F
+      # packages track its version. Own group keeps them out of
+      # minor-and-patch and reviewable together.
+      three:
+        patterns: ["three", "@types/three", "@react-three/*"]
       minor-and-patch:
         update-types: ["minor", "patch"]
-        exclude-patterns: ["next", "eslint-config-next"]
+        exclude-patterns:
+          ["next", "eslint-config-next", "three", "@types/three", "@react-three/*"]
 
   - package-ecosystem: github-actions
     directory: /
